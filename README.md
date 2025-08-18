@@ -43,4 +43,4 @@ No arquivo `package.json`, você pode encontrar os seguintes scripts para rodar:
 - `build`: Compila o projeto para produção.
 - `build:dev`: Compila o projeto em modo de desenvolvimento.
 - `lint`: Executa o linter para verificar erros de código.
-- `preview`: Inicia um servidor local para visualizar a build de produção.
+- `preview`: Inicia um servidor local para visualizar a build de produção
