@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Droplets, Thermometer, Zap, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+//zona do mapa
 interface Zone {
   id: string;
   name: string;
