@@ -2,7 +2,6 @@ import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardCard } from "@/components/DashboardCard";
 import { StatusIndicator } from "@/components/StatusIndicator";
-import { ZoneMap } from "@/components/ZoneMap";
 import { MLAnalyticsCharts } from "@/components/MLAnalyticsCharts";
 import { AIDecisionCenter } from "@/components/AIDecisionCenter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -268,12 +267,6 @@ const Index = () => {
               </CardContent>
             </Card>
             </div>
-          </div>
-
-          {/* Mapa das Zonas */}
-          <div className="space-y-6">
-            <h3 className="text-xl font-semibold">Mapa das Zonas de Irrigação</h3>
-            <ZoneMap />
           </div>
 
           {/* Análise Avançada de ML */}
