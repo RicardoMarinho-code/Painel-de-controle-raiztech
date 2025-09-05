@@ -205,7 +205,7 @@ const Weather = () => {
               </div>
 
               <div className="mt-6 p-4 bg-primary/5 rounded-lg">
-                <h4 className="font-medium text-primary mb-2">💡 Resumo de Economia</h4>
+                <h4 className="font-medium text-primary mb-2"><strong> Resumo de Economia </strong></h4>
                 <p className="text-sm text-muted-foreground">
                   Seguindo as recomendações, você pode economizar aproximadamente <strong>2.000 litros</strong> de água 
                   esta semana, mantendo a qualidade da irrigação.

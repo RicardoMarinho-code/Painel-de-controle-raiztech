@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -27,7 +27,14 @@ const menuItems = [
 ];
 
 export const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const savedState = localStorage.getItem("sidebar-collapsed");
+    return savedState ? JSON.parse(savedState) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("sidebar-collapsed", JSON.stringify(isCollapsed));
+  }, [isCollapsed]);
 
   return (
     <aside className={cn(
@@ -35,7 +42,10 @@ export const Sidebar = () => {
       isCollapsed ? "w-16" : "w-64"
     )}>
       <div className="flex h-full flex-col">
-        <div className="flex h-16 items-center justify-between px-4 border-b border-border">
+        <div className={cn(
+          "flex h-16 items-center border-b border-border px-4",
+          isCollapsed ? "justify-center" : "justify-between"
+        )}>
           {!isCollapsed && (
             <span className="text-sm font-medium text-muted-foreground">
               Navegação
@@ -43,8 +53,9 @@ export const Sidebar = () => {
           )}
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={() => setIsCollapsed(!isCollapsed)}
+            className="h-8 w-8"
           >
             {isCollapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
@@ -57,16 +68,18 @@ export const Sidebar = () => {
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center rounded-lg p-2 text-sm font-medium transition-colors",
+                  isCollapsed ? "justify-center" : "space-x-3",
                   "hover:bg-primary/10 hover:text-primary",
                   isActive
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground"
                 )
               }
+              title={isCollapsed ? item.title : undefined}
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
-              {!isCollapsed && <span>{item.title}</span>}
+              {!isCollapsed && <span className="whitespace-nowrap">{item.title}</span>}
             </NavLink>
           ))}
         </nav>

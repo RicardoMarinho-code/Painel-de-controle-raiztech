@@ -11,7 +11,11 @@ import {
   Target,
   Droplets,
   Zap,
-  CheckCircle
+  CheckCircle,
+  Sprout,
+  TrendingUp,
+  AlertTriangle,
+  HelpCircle
 } from "lucide-react";
 
 const Areas = () => {
@@ -136,15 +140,64 @@ const Areas = () => {
     }
   };
 
-  const getCropIcon = (crop: string) => {
-    switch (crop.toLowerCase()) {
-      case "milho": return "🌽";
-      case "soja": return "🫘";
-      case "feijão": return "🫘";
-      case "verduras": return "🥬";
-      case "tomate": return "🍅";
-      default: return "🌱";
+  const getZoneStatusIcon = (status: string) => {
+    const props = { className: "h-5 w-5", title: status };
+    switch (status) {
+      case "Otimizado":
+        return <CheckCircle {...props} className={`${props.className} text-success`} />;
+      case "Aprendendo":
+        return <Brain {...props} className={`${props.className} text-primary animate-pulse`} />;
+      case "Treinando":
+        return <TrendingUp {...props} className={`${props.className} text-accent`} />;
+      case "Manutenção":
+        return <AlertTriangle {...props} className={`${props.className} text-destructive`} />;
+      default:
+        return <HelpCircle {...props} className={`${props.className} text-muted-foreground`} />;
     }
+  };
+
+  const ProgressCircle = ({ percentage }: { percentage: number }) => {
+    const radius = 52;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (percentage / 100) * circumference;
+  
+    let colorClass = "text-success";
+    if (percentage < 90) colorClass = "text-warning";
+    if (percentage < 75) colorClass = "text-destructive";
+    if (percentage === 0) colorClass = "text-muted-foreground";
+  
+    return (
+      <div className="relative w-28 h-28">
+        <svg className="w-full h-full" viewBox="0 0 120 120">
+          <circle
+            className="text-muted/10"
+            strokeWidth="8"
+            stroke="currentColor"
+            fill="transparent"
+            r={radius}
+            cx="60"
+            cy="60"
+          />
+          <circle
+            className={`${colorClass} transition-all duration-500`}
+            strokeWidth="8"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            stroke="currentColor"
+            fill="transparent"
+            r={radius}
+            cx="60"
+            cy="60"
+            transform="rotate(-90 60 60)"
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className={`text-2xl font-bold ${colorClass}`}>{percentage}%</span>
+          <span className="text-xs text-muted-foreground">Eficiência</span>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -211,7 +264,7 @@ const Areas = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="text-2xl">{getCropIcon(zone.crop)}</div>
+                      <Sprout className="h-8 w-8 text-primary" />
                       <div>
                         <CardTitle className="text-lg">{zone.name}</CardTitle>
                         <p className="text-sm text-muted-foreground">{zone.crop} • {zone.area} ha</p>
@@ -272,49 +325,34 @@ const Areas = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5" />
+                <MapPin className="h-5 w-5 text-primary" />
                 <span>Mapa de Cobertura Inteligente</span>
               </CardTitle>
+              <p className="text-sm text-muted-foreground pt-1">
+                Visão geral da eficiência e status de cada zona da fazenda.
+              </p>
             </CardHeader>
             <CardContent>
-              <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg p-8 min-h-[400px]">
-                <div className="text-center space-y-6">
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">Sistema de Cobertura Completa</h3>
-                    <p className="text-muted-foreground mb-6">
-                      6 irrigadores inteligentes com raio de ação otimizado por IA
-                    </p>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-                    {zones.map((zone) => (
-                      <div key={zone.id} className="p-4 rounded-lg bg-background border">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="text-lg">{getCropIcon(zone.crop)}</div>
-                          {zone.aiStatus === "Otimizado" ? (
-                            <CheckCircle className="h-4 w-4 text-success" />
-                          ) : zone.aiStatus === "Manutenção" ? (
-                            <div className="h-4 w-4 rounded-full bg-destructive" />
-                          ) : (
-                            <Brain className="h-4 w-4 text-primary" />
-                          )}
+              <div className="p-4 sm:p-6 bg-muted/30 rounded-xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {zones.map((zone) => {
+                    const efficiencyValue = parseFloat(zone.efficiency) || 0;
+                    return (
+                      <div key={zone.id} className="p-4 rounded-xl bg-background border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 ease-in-out">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <p className="font-bold text-foreground">{zone.name}</p>
+                            <p className="text-xs text-muted-foreground">{zone.crop}</p>
+                          </div>
+                          {getZoneStatusIcon(zone.aiStatus)}
                         </div>
-                        <div className="text-sm font-medium">{zone.name}</div>
-                        <div className="text-xs text-muted-foreground">{zone.area} hectares</div>
-                        <div className="text-xs text-primary mt-1">{zone.efficiency}</div>
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <ProgressCircle percentage={efficiencyValue} />
+                          <div className="text-sm font-medium text-muted-foreground">{zone.area} ha</div>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                    <h4 className="font-medium text-primary mb-2">🎯 Cobertura Otimizada</h4>
-                    <div className="text-sm space-y-1">
-                      <div>• Raio efetivo: 1,2-1,5 km por irrigador</div>
-                      <div>• Sobreposição inteligente nas bordas</div>
-                      <div>• Adaptação automática por cultura e terreno</div>
-                      <div>• Redundância para segurança da irrigação</div>
-                    </div>
-                  </div>
+                    )
+                  })}
                 </div>
               </div>
             </CardContent>
