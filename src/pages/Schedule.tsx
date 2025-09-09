@@ -194,7 +194,7 @@ const Schedule = () => {
                               <h3 className="font-semibold text-foreground">{decision.irrigator}</h3>
                               <Badge variant="outline">{decision.zone}</Badge>
                             </div>
-                            <p className={`font-medium mb-2 ${statusInfo.text}`}>{decision.decision}</p>
+                            <p className={`font-medium mb-2 ${statusInfo.text} dark:text-foreground`}>{decision.decision}</p>
                             <p className="text-sm text-muted-foreground">{decision.reason}</p>
                             <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {decision.time}</span>

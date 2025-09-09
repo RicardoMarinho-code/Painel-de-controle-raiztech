@@ -303,7 +303,7 @@ const Reports = () => {
                     <div className="flex items-start gap-3">
                       <Brain className="h-5 w-5 text-accent flex-shrink-0 mt-1" />
                       <div>
-                        <p className="font-medium text-accent">615 Padrões Identificados</p>
+                        <p className="font-medium">615 Padrões Identificados</p>
                         <p className="text-xs text-muted-foreground">em 5 meses de operação.</p>
                       </div>
                     </div>

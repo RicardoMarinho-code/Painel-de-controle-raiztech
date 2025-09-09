@@ -133,17 +133,13 @@ export const AIDecisionCenter = () => {
               Ativo
             </Badge>
           </div>
-          <Button variant="outline" size="sm">
-            <Eye className="h-4 w-4 mr-2" />
-            Ver Histórico
-          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* AI Status */}
         <div className="grid grid-cols-3 gap-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
           <div className="text-center">
-            <div className="text-lg font-bold text-primary">847</div>
+            <div className="text-lg font-bold text-primary dark:text-foreground">847</div>
             <div className="text-xs text-muted-foreground">Decisões hoje</div>
           </div>
           <div className="text-center">
@@ -151,7 +147,7 @@ export const AIDecisionCenter = () => {
             <div className="text-xs text-muted-foreground">Água economizada</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-bold text-accent">93%</div>
+            <div className="text-lg font-bold text-accent dark:text-foreground">93%</div>
             <div className="text-xs text-muted-foreground">Precisão média</div>
           </div>
         </div>

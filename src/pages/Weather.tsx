@@ -127,7 +127,7 @@ const Weather = () => {
                   <p className="text-sm text-muted-foreground">Umidade</p>
                 </div>
                 <div className="text-center">
-                  <Wind className="h-6 w-6 mx-auto mb-2 text-accent" />
+                  <Wind className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
                   <div className="text-xl font-semibold">{currentWeather.windSpeed}</div>
                   <p className="text-sm text-muted-foreground">Vento</p>
                 </div>
