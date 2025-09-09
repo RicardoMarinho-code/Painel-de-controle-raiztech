@@ -8,7 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Settings, TrendingUp, Zap, Save, RotateCcw } from "lucide-react";
+import { Brain, Settings, Zap, Save, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export const MLConfigPanel = () => {

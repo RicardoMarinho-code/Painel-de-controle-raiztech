@@ -38,7 +38,7 @@ All colors MUST be HSL.
     --success: 140 65% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 45 90% 55%;
-    --warning-foreground: 0 0% 100%;
+    --warning-foreground: 45 90% 10%; /* Texto escuro para melhor contraste */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
@@ -76,14 +76,14 @@ All colors MUST be HSL.
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+
 
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Cor primária ajustada para manter o verde da marca com texto branco */
+    --primary: 142 70% 45%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -94,8 +94,13 @@ All colors MUST be HSL.
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    /* Cores de status ajustadas para melhor visibilidade */
+    --success: 140 65% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45 90% 55%;
+    --warning-foreground: 45 90% 10%; /* Texto escuro para melhor contraste */
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
