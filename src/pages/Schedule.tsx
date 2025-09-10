@@ -161,7 +161,7 @@ const Schedule = () => {
                   <p className="text-sm text-muted-foreground">Precisão Decisões</p>
                 </div>
                 <div className="text-center p-4 bg-muted/40 rounded-lg">
-                  <div className="text-2xl font-bold text-accent">94.2%</div>
+                  <div className="text-2xl font-bold text-success">94.2%</div>
                   <p className="text-sm text-muted-foreground">Eficiência Hídrica</p>
                 </div>
                 <div className="text-center p-4 bg-muted/40 rounded-lg">
