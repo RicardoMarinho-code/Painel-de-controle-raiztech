@@ -104,7 +104,7 @@ const Reports = () => {
     switch (status) {
       case "Otimizado": return "text-success";
       case "Especialista": return "text-primary";
-      case "Aprendendo": return "text-accent";
+      case "Aprendendo": return "text-primary";
       default: return "text-muted-foreground";
     }
   };
