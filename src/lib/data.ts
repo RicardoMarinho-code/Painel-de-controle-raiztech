@@ -1,15 +1,7 @@
 
 
 export const aiReports = [
-  {
-    title: "Padrões de Aprendizado da IA",
-    type: "ai-learning",
-    period: "Última semana",
-    value: "127 novos",
-    change: "+23%",
-    trend: "up",
-    description: "Novos padrões identificados pelo machine learning"
-  },
+
   {
     title: "Eficiência Hídrica Global",
     type: "efficiency",

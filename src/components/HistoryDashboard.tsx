@@ -17,6 +17,10 @@ export const HistoryDashboard = () => {
 
   // Filtra dados baseado no período selecionado
   const getFilteredData = () => {
+    // GUARDA: Se productivityData for nulo ou vazio, retorna um array vazio para não quebrar.
+    if (!productivityData) {
+      return [];
+    }
     const monthsToShow = selectedPeriod === "3months" ? 3 : selectedPeriod === "6months" ? 6 : 12;
     return productivityData.slice(0, monthsToShow);
   };
@@ -59,28 +63,35 @@ export const HistoryDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={getFilteredData()}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="period" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="traditional" stroke="#94a3b8" strokeWidth={2} name="Sistema Tradicional" strokeDasharray="5 5" />
-                  <Line type="monotone" dataKey="withAI" stroke="#22c55e" strokeWidth={3} name="Sistema com IA" />
-                </LineChart>
-              </ResponsiveContainer>
-              
-              <div className="mt-6 p-4 bg-success/10 rounded-lg border border-success/20">
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-success">
-                    +{getFilteredData()[getFilteredData().length - 1]?.increase}% de Aumento
-                  </h3>
-                  <p className="text-success/80">
-                    na produtividade em {selectedPeriod === "3months" ? "3" : selectedPeriod === "6months" ? "6" : "12"} meses
-                  </p>
-                </div>
-              </div>
+              {/* VERIFICAÇÃO: Só renderiza o gráfico se houver dados */}
+              {getFilteredData().length > 0 ? (
+                <>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <LineChart data={getFilteredData()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="period" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="traditional" stroke="#94a3b8" strokeWidth={2} name="Sistema Tradicional" strokeDasharray="5 5" />
+                      <Line type="monotone" dataKey="withAI" stroke="#22c55e" strokeWidth={3} name="Sistema com IA" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  
+                  <div className="mt-6 p-4 bg-success/10 rounded-lg border border-success/20">
+                    <div className="text-center">
+                      <h3 className="text-2xl font-bold text-success">
+                        +{getFilteredData()[getFilteredData().length - 1]?.increase}% de Aumento
+                      </h3>
+                      <p className="text-success/80">
+                        na produtividade em {selectedPeriod === "3months" ? "3" : selectedPeriod === "6months" ? "6" : "12"} meses
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-center text-muted-foreground">Dados de produtividade não disponíveis.</p>
+              )}
             </CardContent>
           </Card>
 
@@ -91,22 +102,27 @@ export const HistoryDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {getImprovements(selectedPeriod).map((item, index) => (
-                  <div key={index} className="p-4 border rounded-lg bg-card">
-                    <h4 className="font-semibold mb-2">{item.metric}</h4>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-muted-foreground">Antes:</span>
-                      <span>{item.before}</span>
+                {/* VERIFICAÇÃO: A função getImprovements também precisa ser segura */}
+                {getImprovements(selectedPeriod).length > 0 ? (
+                  getImprovements(selectedPeriod).map((item, index) => (
+                    <div key={index} className="p-4 border rounded-lg bg-card">
+                      <h4 className="font-semibold mb-2">{item.metric}</h4>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-muted-foreground">Antes:</span>
+                        <span>{item.before}</span>
+                      </div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-muted-foreground">Agora:</span>
+                        <span className="font-medium">{item.after}</span>
+                      </div>
+                      <Badge variant="default" className="w-full justify-center bg-success text-success-foreground">
+                        {item.improvement}
+                      </Badge>
                     </div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-muted-foreground">Agora:</span>
-                      <span className="font-medium">{item.after}</span>
-                    </div>
-                    <Badge variant="default" className="w-full justify-center bg-success text-success-foreground">
-                      {item.improvement}
-                    </Badge>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="col-span-full text-center text-muted-foreground">Dados de melhorias não disponíveis.</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -126,48 +142,53 @@ export const HistoryDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {decisionFlowData.map((entry, index) => (
-                  <div key={index} className="p-4 border rounded-lg bg-muted/20">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold">{entry.time}</span>
-                        <Badge variant={entry.decision.includes("Irrigar") ? "default" : entry.decision.includes("Chuva") ? "secondary" : "outline"}>
-                          {entry.decision}
-                        </Badge>
+                {/* VERIFICAÇÃO: Checa se decisionFlowData existe e tem itens */}
+                {decisionFlowData && decisionFlowData.length > 0 ? (
+                  decisionFlowData.map((entry, index) => (
+                    <div key={index} className="p-4 border rounded-lg bg-muted/20">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">{entry.time}</span>
+                          <Badge variant={entry.decision.includes("Irrigar") ? "default" : entry.decision.includes("Chuva") ? "secondary" : "outline"}>
+                            {entry.decision}
+                          </Badge>
+                        </div>
+                        {entry.duration > 0 && (
+                          <span className="text-sm text-muted-foreground">{entry.duration} min</span>
+                        )}
                       </div>
-                      {entry.duration > 0 && (
-                        <span className="text-sm text-muted-foreground">{entry.duration} min</span>
-                      )}
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
+                        <div className="flex items-center gap-1">
+                          <Droplets className="h-4 w-4 text-blue-500" />
+                          <span>Água: {entry.waterLevel}%</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <CloudRain className="h-4 w-4 text-blue-600" />
+                          <span>Chuva: {entry.isRaining ? "Sim" : "Não"}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Droplets className="h-4 w-4 text-green-500" />
+                          <span>Solo: {entry.soilMoisture}%</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <TestTube className="h-4 w-4 text-purple-500" />
+                          <span>pH: {entry.ph}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Thermometer className="h-4 w-4 text-red-500" />
+                          <span>{entry.temperature}°C</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Sun className="h-4 w-4 text-yellow-500" />
+                          <span>Sol: {entry.sunIntensity}%</span>
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
-                      <div className="flex items-center gap-1">
-                        <Droplets className="h-4 w-4 text-blue-500" />
-                        <span>Água: {entry.waterLevel}%</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <CloudRain className="h-4 w-4 text-blue-600" />
-                        <span>Chuva: {entry.isRaining ? "Sim" : "Não"}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Droplets className="h-4 w-4 text-green-500" />
-                        <span>Solo: {entry.soilMoisture}%</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <TestTube className="h-4 w-4 text-purple-500" />
-                        <span>pH: {entry.ph}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Thermometer className="h-4 w-4 text-red-500" />
-                        <span>{entry.temperature}°C</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Sun className="h-4 w-4 text-yellow-500" />
-                        <span>Sol: {entry.sunIntensity}%</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-center text-muted-foreground">Nenhum fluxo de decisão registrado para hoje.</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -183,19 +204,24 @@ export const HistoryDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <AreaChart data={environmentalCorrelation}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="hour" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Area type="monotone" dataKey="sunIntensity" stackId="1" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.3} name="Intensidade Solar %" />
-                  <Area type="monotone" dataKey="temperature" stackId="2" stroke="#ef4444" fill="#ef4444" fillOpacity={0.3} name="Temperatura °C" />
-                  <Area type="monotone" dataKey="soilMoisture" stackId="3" stroke="#22c55e" fill="#22c55e" fillOpacity={0.3} name="Umidade Solo %" />
-                  <Area type="monotone" dataKey="ph" stackId="4" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} name="pH × 10" />
-                </AreaChart>
-              </ResponsiveContainer>
+              {/* VERIFICAÇÃO: Checa se environmentalCorrelation existe e tem itens */}
+              {environmentalCorrelation && environmentalCorrelation.length > 0 ? (
+                <ResponsiveContainer width="100%" height={400}>
+                  <AreaChart data={environmentalCorrelation}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="hour" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Area type="monotone" dataKey="sunIntensity" stackId="1" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.3} name="Intensidade Solar %" />
+                    <Area type="monotone" dataKey="temperature" stackId="2" stroke="#ef4444" fill="#ef4444" fillOpacity={0.3} name="Temperatura °C" />
+                    <Area type="monotone" dataKey="soilMoisture" stackId="3" stroke="#22c55e" fill="#22c55e" fillOpacity={0.3} name="Umidade Solo %" />
+                    <Area type="monotone" dataKey="ph" stackId="4" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} name="pH × 10" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-center text-muted-foreground">Dados de correlação ambiental não disponíveis.</p>
+              )}
             </CardContent>
           </Card>
 
