@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { aiReports, cultureAnalysis, learningEvolutionData } from "@/lib/data";
 import { 
   Brain, 
   Download,
@@ -18,80 +19,6 @@ import {
 } from "lucide-react";
 
 const Reports = () => {
-  const aiReports = [
-    {
-      title: "Padrões de Aprendizado da IA",
-      type: "ai-learning",
-      period: "Última semana",
-      value: "127 novos",
-      change: "+23%",
-      trend: "up",
-      description: "Novos padrões identificados pelo machine learning"
-    },
-    {
-      title: "Eficiência Hídrica Global", 
-      type: "efficiency",
-      period: "Último mês",
-      value: "94.2%",
-      change: "+2.1%",
-      trend: "up",
-      description: "Eficiência média dos 6 irrigadores inteligentes"
-    },
-    {
-      title: "Economia por IA",
-      type: "ai-savings",
-      period: "Março 2024",
-      value: "3.240L",
-      change: "+18.7%",
-      trend: "up",
-      description: "Água economizada pelas decisões inteligentes da IA"
-    },
-    {
-      title: "Precisão das Decisões",
-      type: "accuracy",
-      period: "Safra atual",
-      value: "96.8%",
-      change: "+4.2%",
-      trend: "up", 
-      description: "Acurácia das decisões de irrigação da IA"
-    }
-  ];
-
-  const cultureAnalysis = [
-    {
-      culture: "Milho",
-      irrigators: 2,
-      patternsLearned: 161,
-      efficiency: "94.5%",
-      waterSaved: "460L/semana",
-      aiStatus: "Otimizado"
-    },
-    {
-      culture: "Soja",
-      irrigators: 2,
-      patternsLearned: 89,
-      efficiency: "89.1%",
-      waterSaved: "280L/semana",
-      aiStatus: "Aprendendo"
-    },
-    {
-      culture: "Feijão",
-      irrigators: 1,
-      patternsLearned: 156,
-      efficiency: "92.7%",
-      waterSaved: "420L/semana",
-      aiStatus: "Otimizado"
-    },
-    {
-      culture: "Verduras",
-      irrigators: 1,
-      patternsLearned: 203,
-      efficiency: "94.8%",
-      waterSaved: "380L/semana",
-      aiStatus: "Especialista"
-    }
-  ];
-
   const getTrendIcon = (trend: string) => {
     return trend === "up" ? TrendingUp : TrendingDown;
   };
@@ -107,15 +34,7 @@ const Reports = () => {
       case "Aprendendo": return "text-primary";
       default: return "text-muted-foreground";
     }
-  };
-
-  const learningEvolutionData = [
-    { month: "Jan", "Padrões": 150, "Eficiência (%)": 85.2 },
-    { month: "Fev", "Padrões": 280, "Eficiência (%)": 88.9 },
-    { month: "Mar", "Padrões": 410, "Eficiência (%)": 92.1 },
-    { month: "Abr", "Padrões": 550, "Eficiência (%)": 95.6 },
-    { month: "Mai", "Padrões": 615, "Eficiência (%)": 97.6 },
-  ];
+  };  
 
   return (
     <div className="min-h-screen bg-background">
