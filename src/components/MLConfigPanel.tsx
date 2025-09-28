@@ -1,19 +1,51 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Settings, Zap, Save, RotateCcw } from "lucide-react";
+import { Brain, Settings, TrendingUp, Zap, Save, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { defaultMLConfig } from "@/lib/data";
 
 export const MLConfigPanel = () => {
   const { toast } = useToast();
-  const [config, setConfig] = useState(defaultMLConfig);
+  const [config, setConfig] = useState({
+    // Configurações Gerais
+    autoLearning: true,
+    adaptiveMode: true,
+    confidenceThreshold: [85],
+    learningRate: [0.01],
+    
+    // Algoritmos
+    primaryAlgorithm: "neural_network",
+    predictionModel: "lstm",
+    optimizationTarget: "water_efficiency",
+    
+    // Sensores e Dados
+    soilMoistureSensitivity: [75],
+    temperatureWeight: [60],
+    humidityWeight: [40],
+    windWeight: [30],
+    
+    // Padrões de Irrigação
+    minIrrigationDuration: [10],
+    maxIrrigationDuration: [45],
+    cooldownPeriod: [2],
+    
+    // Alertas ML
+    lowConfidenceAlert: true,
+    patternChangeAlert: true,
+    anomalyDetection: true,
+    
+    // Backup e Segurança
+    autoBackup: true,
+    failsafeMode: true,
+    manualOverride: true
+  });
 
   const handleSave = () => {
     toast({
@@ -23,7 +55,6 @@ export const MLConfigPanel = () => {
   };
 
   const handleReset = () => {
-    setConfig(defaultMLConfig);
     toast({
       title: "Configurações Restauradas",
       description: "As configurações foram restauradas para os valores padrão.",

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { 
   Brain,
@@ -406,18 +405,13 @@ const Settings = () => {
                 <div className="space-y-2">
                   <h4 className="font-medium">Retenção de Dados</h4>
                   <div className="space-y-2">
-                    <Label htmlFor="retention" className="block mb-1">Manter dados por</Label>
-                    <Select defaultValue="2y">
-                      <SelectTrigger id="retention" className="w-full max-w-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="2y">2 anos (padrão)</SelectItem>
-                        <SelectItem value="1y">1 ano</SelectItem>
-                        <SelectItem value="5y">5 anos</SelectItem>
-                        <SelectItem value="always">Sempre</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="retention">Manter dados por</Label>
+                    <select className="w-full max-w-xs p-2 border rounded-md bg-background">
+                      <option>2 anos (padrão)</option>
+                      <option>1 ano</option>
+                      <option>5 anos</option>
+                      <option>Sempre</option>
+                    </select>
                   </div>
                 </div>
               </div>

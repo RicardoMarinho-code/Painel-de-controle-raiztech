@@ -38,7 +38,7 @@ All colors MUST be HSL.
     --success: 140 65% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 45 90% 55%;
-    --warning-foreground: 45 90% 10%; /* Texto escuro para melhor contraste */
+    --warning-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
@@ -73,46 +73,53 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark agricultural theme */
+    --background: 150 25% 8%;
+    --foreground: 120 15% 95%;
 
+    --card: 150 20% 10%;
+    --card-foreground: 120 15% 95%;
 
+    --popover: 150 20% 10%;
+    --popover-foreground: 120 15% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    /* Primary: Bright agricultural green for dark mode */
+    --primary: 142 65% 55%;
+    --primary-foreground: 150 25% 8%;
+    --primary-glow: 142 55% 65%;
 
-    /* Cor primária ajustada para manter o verde da marca com texto branco */
-    --primary: 142 70% 45%;
-    --primary-foreground: 0 0% 100%;
+    /* Secondary: Dark earth tones */
+    --secondary: 150 15% 15%;
+    --secondary-foreground: 120 15% 85%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --muted: 150 20% 12%;
+    --muted-foreground: 120 10% 65%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Accent: Softer tech blue for dark mode */
+    --accent: 210 60% 45%;
+    --accent-foreground: 120 15% 95%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* Status colors for dark mode */
+    --success: 140 60% 50%;
+    --success-foreground: 150 25% 8%;
+    --warning: 45 85% 60%;
+    --warning-foreground: 150 25% 8%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 120 15% 95%;
 
-    /* Cores de status ajustadas para melhor visibilidade */
-    --success: 140 65% 45%;
-    --success-foreground: 0 0% 100%;
-    --warning: 45 90% 55%;
-    --warning-foreground: 45 90% 10%; /* Texto escuro para melhor contraste */
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --border: 150 15% 18%;
+    --input: 150 15% 15%;
+    --ring: 142 65% 55%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar colors for dark mode */
+    --sidebar-background: 150 25% 6%;
+    --sidebar-foreground: 120 15% 90%;
+    --sidebar-primary: 142 65% 55%;
+    --sidebar-primary-foreground: 150 25% 8%;
+    --sidebar-accent: 150 20% 12%;
+    --sidebar-accent-foreground: 120 15% 85%;
+    --sidebar-border: 150 15% 15%;
+    --sidebar-ring: 142 65% 55%;
   }
 }
 
