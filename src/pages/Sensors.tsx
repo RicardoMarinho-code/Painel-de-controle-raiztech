@@ -303,6 +303,16 @@ const Sensors = () => {
                     <p className="text-sm text-muted-foreground">Eficiência Global</p>
                   </div>
                 </div>
+                
+                <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <h4 className="font-medium text-primary mb-2">🧠 Status do Aprendizado</h4>
+                  <div className="text-sm space-y-1">
+                    <div>• Milho: 161 padrões - Comportamento hídrico otimizado</div>
+                    <div>• Soja: 89 padrões - Aprendendo correlações climáticas</div>
+                    <div>• Feijão: 156 padrões - Micro-irrigação para eficiência máxima</div>
+                    <div>• Verduras: 203 padrões - Especialista em cultura sensível</div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>

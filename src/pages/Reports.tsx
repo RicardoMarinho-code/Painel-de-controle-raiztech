@@ -4,8 +4,6 @@ import { DashboardCard } from "@/components/DashboardCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { aiReports, cultureAnalysis, learningEvolutionData } from "@/lib/data";
 import { 
   Brain, 
   Download,
@@ -19,6 +17,80 @@ import {
 } from "lucide-react";
 
 const Reports = () => {
+  const aiReports = [
+    {
+      title: "Padrões de Aprendizado da IA",
+      type: "ai-learning",
+      period: "Última semana",
+      value: "127 novos",
+      change: "+23%",
+      trend: "up",
+      description: "Novos padrões identificados pelo machine learning"
+    },
+    {
+      title: "Eficiência Hídrica Global", 
+      type: "efficiency",
+      period: "Último mês",
+      value: "94.2%",
+      change: "+2.1%",
+      trend: "up",
+      description: "Eficiência média dos 6 irrigadores inteligentes"
+    },
+    {
+      title: "Economia por IA",
+      type: "ai-savings",
+      period: "Março 2024",
+      value: "3.240L",
+      change: "+18.7%",
+      trend: "up",
+      description: "Água economizada pelas decisões inteligentes da IA"
+    },
+    {
+      title: "Precisão das Decisões",
+      type: "accuracy",
+      period: "Safra atual",
+      value: "96.8%",
+      change: "+4.2%",
+      trend: "up", 
+      description: "Acurácia das decisões de irrigação da IA"
+    }
+  ];
+
+  const cultureAnalysis = [
+    {
+      culture: "Milho",
+      irrigators: 2,
+      patternsLearned: 161,
+      efficiency: "94.5%",
+      waterSaved: "460L/semana",
+      aiStatus: "Otimizado"
+    },
+    {
+      culture: "Soja",
+      irrigators: 2,
+      patternsLearned: 89,
+      efficiency: "89.1%",
+      waterSaved: "280L/semana",
+      aiStatus: "Aprendendo"
+    },
+    {
+      culture: "Feijão",
+      irrigators: 1,
+      patternsLearned: 156,
+      efficiency: "92.7%",
+      waterSaved: "420L/semana",
+      aiStatus: "Otimizado"
+    },
+    {
+      culture: "Verduras",
+      irrigators: 1,
+      patternsLearned: 203,
+      efficiency: "94.8%",
+      waterSaved: "380L/semana",
+      aiStatus: "Especialista"
+    }
+  ];
+
   const getTrendIcon = (trend: string) => {
     return trend === "up" ? TrendingUp : TrendingDown;
   };
@@ -31,10 +103,10 @@ const Reports = () => {
     switch (status) {
       case "Otimizado": return "text-success";
       case "Especialista": return "text-primary";
-      case "Aprendendo": return "text-primary";
+      case "Aprendendo": return "text-accent";
       default: return "text-muted-foreground";
     }
-  };  
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -182,64 +254,28 @@ const Reports = () => {
           {/* AI Learning Progress */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-primary">
+              <CardTitle className="flex items-center space-x-2">
                 <Brain className="h-5 w-5" />
-                <span>Evolução do Aprendizado da IA</span>
+                <span>Evolução do Aprendizado</span>
               </CardTitle>
-              <p className="text-sm text-muted-foreground pt-1">
-                Aumento de padrões e eficiência ao longo do tempo.
-              </p>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <ResponsiveContainer width="100%" height={350}>
-                    <LineChart data={learningEvolutionData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                      <YAxis yAxisId="left" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                      <YAxis yAxisId="right" orientation="right" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--background))",
-                          borderColor: "hsl(var(--border))",
-                        }}
-                      />
-                      <Legend formatter={(value, entry) => (
-                          <span style={{ color: entry.color }}>{value}</span>
-                        )} />
-                      <Line yAxisId="left" type="monotone" dataKey="Padrões" stroke="hsl(var(--accent))" strokeWidth={2} name="Padrões Aprendidos" />
-                      <Line yAxisId="right" type="monotone" dataKey="Eficiência (%)" stroke="hsl(var(--success))" strokeWidth={2} name="Eficiência Média" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="space-y-4 p-4 bg-muted/30 rounded-lg flex flex-col justify-center">
-                  <h3 className="font-semibold text-lg">Insights de Evolução</h3>
-                  <p className="text-sm text-muted-foreground">
-                    O sistema de IA demonstra um aprendizado exponencial, resultando em ganhos significativos de eficiência e economia.
-                  </p>
-                  <div className="space-y-4 pt-2">
-                    <div className="flex items-start gap-3">
-                      <Brain className="h-5 w-5 text-accent flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="font-medium">615 Padrões Identificados</p>
-                        <p className="text-xs text-muted-foreground">em 5 meses de operação.</p>
+              <div className="space-y-6">
+                <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg p-8 min-h-[300px] flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <div className="text-4xl">🧠</div>
+                    <div>
+                      <h3 className="text-lg font-medium mb-2">Gráfico de Evolução da IA</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Visualização do aprendizado e melhoria de eficiência ao longo do tempo
+                      </p>
+                      <div className="space-y-2 text-sm">
+                        <div>• 615 padrões identificados em 3 meses</div>
+                        <div>• Eficiência aumentou 12.4% com ML</div>
+                        <div>• Economia de 18.7% em consumo hídrico</div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-3">
-                      <TrendingUp className="h-5 w-5 text-success flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="font-medium text-success">+12.4% de Eficiência</p>
-                        <p className="text-xs text-muted-foreground">comparado ao início do período.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Droplets className="h-5 w-5 text-blue-500 flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="font-medium">+18.7% de Economia Hídrica</p>
-                        <p className="text-xs text-muted-foreground">em consumo de água.</p>
-                      </div>
-                    </div>
+                    <Button variant="outline">Ver Gráfico Interativo</Button>
                   </div>
                 </div>
               </div>
