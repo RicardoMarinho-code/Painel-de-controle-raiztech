@@ -7,13 +7,21 @@ USE AgroTech;
 INSERT INTO Agricultor (nome, CPF, data_nascimento, telefones_de_conato) VALUES
 ('João Silva Santos', '12345678901', '1975-03-15', '(11) 98765-4321, (11) 3456-7890'),
 ('Maria Oliveira Costa', '23456789012', '1980-07-22', '(11) 99876-5432'),
-('Carlos Eduardo Lima', '34567890123', '1970-11-08', '(11) 97654-3210, (11) 3234-5678');
+('Carlos Eduardo Lima', '34567890123', '1970-11-08', '(11) 97654-3210, (11) 3234-5678'),
+('Ana Beatriz Pereira', '45678901234', '1992-01-30', '(19) 98877-6655'),
+('Ricardo Almeida Souza', '56789012345', '1985-06-10', '(19) 97766-5544'),
+('Fernanda Gonçalves', '67890123456', '1995-09-25', '(16) 96655-4433'),
+('Lucas Martins Ferreira', '78901234567', '1988-12-01', '(16) 95544-3322');
 
 -- Inserir propriedades rurais
 INSERT INTO PropriedadeRural (nome, localizacao, area_total, ID_agricultor_fk) VALUES
 ('Fazenda São José', 'Campinas/SP - Rodovia SP-340 Km 15', 125.50, 1),
 ('Sítio Boa Vista', 'Piracicaba/SP - Estrada Municipal 200', 87.25, 2),
-('Fazenda Santa Clara', 'Ribeirão Preto/SP - Via Anhanguera Km 320', 200.75, 3);
+('Fazenda Santa Clara', 'Ribeirão Preto/SP - Via Anhanguera Km 320', 200.75, 3),
+('Chácara das Flores', 'Holambra/SP - Estrada HBR-040', 45.60, 4),
+('Sítio Água Limpa', 'Itu/SP - Estrada do Jacu', 60.00, 5),
+('Fazenda Sol Nascente', 'Bebedouro/SP - Rodovia BR-364', 350.20, 6),
+('Estância do Vale', 'Franca/SP - Rodovia Cândido Portinari', 180.90, 7);
 
 -- Inserir zonas de irrigação
 INSERT INTO Zona (nome, hectares, eficiencia, economia, ID_propriedade_fk) VALUES
@@ -22,7 +30,11 @@ INSERT INTO Zona (nome, hectares, eficiencia, economia, ID_propriedade_fk) VALUE
 ('Zona Leste - Feijão', 18.75, 96.5, 890.00, 2),
 ('Zona Oeste - Verduras', 12.30, 89.3, 650.00, 2),
 ('Zona Central - Cana', 45.80, 92.7, 2100.00, 3),
-('Zona Nordeste - Café', 22.15, 95.1, 1320.00, 3);
+('Zona Nordeste - Café', 22.15, 95.1, 1320.00, 3),
+('Zona Flores - Rosas', 15.00, 98.1, 950.00, 4),
+('Zona Pomar - Laranja', 20.50, 93.5, 1100.00, 5),
+('Zona Grãos - Amendoim', 150.00, 90.5, 4500.00, 6),
+('Zona Pastagem - Brachiaria', 100.00, 88.0, 3200.00, 7);
 
 -- Inserir irrigadores
 INSERT INTO Irrigador (nome, eficiencia_hidrica, economia, bateria, status_, ID_zona_fk) VALUES
@@ -31,7 +43,11 @@ INSERT INTO Irrigador (nome, eficiencia_hidrica, economia, bateria, status_, ID_
 ('Irrigador Inteligente C3', 96.5, 890.00, 92.7, 'Ativo', 3),
 ('Irrigador Inteligente D4', 89.3, 650.00, 76.3, 'Ocioso', 4),
 ('Irrigador Inteligente E5', 92.7, 2100.00, 88.9, 'Ativo', 5),
-('Irrigador Inteligente F6', 95.1, 1320.00, 15.2, 'Manutenção', 6);
+('Irrigador Inteligente F6', 95.1, 1320.00, 15.2, 'Manutenção', 6),
+('Irrigador Inteligente G7', 98.1, 950.00, 99.0, 'Ativo', 7),
+('Irrigador Inteligente H8', 93.5, 1100.00, 91.4, 'Ativo', 8),
+('Irrigador Inteligente I9', 90.5, 4500.00, 82.1, 'Ocioso', 9),
+('Irrigador Inteligente J10', 88.0, 3200.00, 89.5, 'Ativo', 10);
 
 -- Inserir sensores
 INSERT INTO Sensor (fabricante, tipo, ID_PropriedadeRural_fk) VALUES
@@ -46,7 +62,11 @@ INSERT INTO Sensor (fabricante, tipo, ID_PropriedadeRural_fk) VALUES
 ('HydroSensor', 'Reservatorio', 2),
 ('SensorTech', 'Umidade', 3),
 ('AgroSense', 'pH', 3),
-('SensorTech', 'LuzSolar', 3);
+('SensorTech', 'LuzSolar', 3),
+('SensorTech', 'Umidade', 4),
+('AgroSense', 'Temperatura', 5),
+('SensorTech', 'Umidade', 6),
+('HydroSensor', 'Reservatorio', 7);
 
 -- Inserir medições recentes (últimas 24 horas)
 INSERT INTO Medicao (data_hora, valor_medicao, ID_sensor_fk, ID_propriedade_fk) VALUES
@@ -73,8 +93,13 @@ INSERT INTO Medicao (data_hora, valor_medicao, ID_sensor_fk, ID_propriedade_fk) 
 (NOW() - INTERVAL 5 HOUR, 6.9, 2, 1),
 (NOW() - INTERVAL 10 HOUR, 69.8, 1, 1),
 (NOW() - INTERVAL 10 HOUR, 7.0, 2, 1),
-(NOW() - INTERVAL 15 HOUR, 71.5, 6, 2),
-(NOW() - INTERVAL 15 HOUR, 7.1, 7, 2);
+(NOW() - INTERVAL 15 HOUR, 71.5, 6, 2), -- Medição de umidade para a propriedade 2
+
+-- Novas medições
+(NOW() - INTERVAL 45 MINUTE, 75.0, 13, 4), -- Umidade
+(NOW() - INTERVAL 1 HOUR, 28.5, 14, 5),   -- Temperatura
+(NOW() - INTERVAL 2 HOUR, 62.5, 15, 6),   -- Umidade
+(NOW() - INTERVAL 3 HOUR, 90.0, 16, 7);
 
 -- Inserir setores
 INSERT INTO Setor (nome, cultura, umidade_atual, duracao_irrigacao, ultima_irrigacao, proxima_irrigacao, ID_propriedade_fk) VALUES
@@ -82,13 +107,21 @@ INSERT INTO Setor (nome, cultura, umidade_atual, duracao_irrigacao, ultima_irrig
 ('Setor B - Soja', 'Soja', 72.1, 30, NOW() - INTERVAL 4 HOUR, NOW() + INTERVAL 20 HOUR, 1),
 ('Setor C - Feijão', 'Feijão', 75.3, 25, NOW() - INTERVAL 8 HOUR, NOW() + INTERVAL 16 HOUR, 2),
 ('Setor D - Verduras', 'Alface', 78.2, 20, NOW() - INTERVAL 2 HOUR, NOW() + INTERVAL 22 HOUR, 2),
-('Setor E - Cana', 'Cana-de-açúcar', 65.8, 60, NOW() - INTERVAL 12 HOUR, NOW() + INTERVAL 12 HOUR, 3);
+('Setor E - Cana', 'Cana-de-açúcar', 65.8, 60, NOW() - INTERVAL 12 HOUR, NOW() + INTERVAL 12 HOUR, 3),
+('Setor F - Rosas', 'Rosas Vermelhas', 80.0, 15, NOW() - INTERVAL 3 HOUR, NOW() + INTERVAL 21 HOUR, 4),
+('Setor G - Laranja', 'Laranja Pera', 60.5, 50, NOW() - INTERVAL 10 HOUR, NOW() + INTERVAL 14 HOUR, 5),
+('Setor H - Amendoim', 'Amendoim Runner', 55.0, 70, NOW() - INTERVAL 24 HOUR, NOW() + INTERVAL 24 HOUR, 6),
+('Setor I - Pasto', 'Brachiaria Brizantha', 50.0, 90, NOW() - INTERVAL 36 HOUR, NOW() + INTERVAL 36 HOUR, 7);
 
 -- Inserir reservatórios
 INSERT INTO Reservatorio (capacidade, nivel_atual, ID_propriedade_fk) VALUES
 (10000.00, 7580.00, 1),  -- 75.8% de capacidade
 (8000.00, 6592.00, 2),   -- 82.4% de capacidade
-(15000.00, 10500.00, 3); -- 70% de capacidade
+(15000.00, 10500.00, 3), -- 70% de capacidade
+(5000.00, 4500.00, 4),   -- 90% de capacidade
+(7500.00, 6000.00, 5),   -- 80% de capacidade
+(25000.00, 18750.00, 6), -- 75% de capacidade
+(20000.00, 18000.00, 7); -- 90% de capacidade
 
 -- Inserir decisões da IA
 INSERT INTO DecisaoIA (tipo, zona, descricao, volume_economizado, confianca, data_hora, ID_zona_fk) VALUES
@@ -96,7 +129,11 @@ INSERT INTO DecisaoIA (tipo, zona, descricao, volume_economizado, confianca, dat
 ('Economia', 'Zona Sul', 'Ajuste de pressão baseado na umidade do solo', 280.75, 94.8, NOW() - INTERVAL 1 HOUR, 2),
 ('Prevenção', 'Zona Leste', 'Irrigação antecipada para evitar estresse hídrico', 0.00, 91.3, NOW() - INTERVAL 3 HOUR, 3),
 ('Otimização', 'Zona Central', 'Micro-irrigação por detecção de cultura sensível', 420.30, 97.1, NOW() - INTERVAL 30 MINUTE, 5),
-('Manutenção', 'Zona Nordeste', 'Irrigador em manutenção preventiva', 0.00, 100.0, NOW() - INTERVAL 4 HOUR, 6);
+('Manutenção', 'Zona Nordeste', 'Irrigador em manutenção preventiva', 0.00, 100.0, NOW() - INTERVAL 4 HOUR, 6),
+('Otimização', 'Zona Flores', 'Gotejamento preciso para evitar fungos nas pétalas', 150.00, 99.2, NOW() - INTERVAL 1 HOUR, 7),
+('Economia', 'Zona Pomar', 'Pausa na irrigação, umidade do solo ideal', 220.00, 92.5, NOW() - INTERVAL 5 HOUR, 8),
+('Alerta', 'Zona Grãos', 'Nível de umidade baixo, irrigação de emergência programada', -500.00, 98.0, NOW() - INTERVAL 15 MINUTE, 9),
+('Otimização', 'Zona Pastagem', 'Irrigação por aspersão em ciclo longo para raízes profundas', 800.00, 90.0, NOW() - INTERVAL 8 HOUR, 10);
 
 -- Inserir culturas
 INSERT INTO Cultura (nome, padroes_ml, eficiencia, economia, statusIA, ID_setor_fk) VALUES
@@ -104,19 +141,31 @@ INSERT INTO Cultura (nome, padroes_ml, eficiencia, economia, statusIA, ID_setor_
 ('Soja Transgênica', 89, 91.8, 1580.00, 'Aprendendo', 2),
 ('Feijão Carioca', 156, 96.5, 890.00, 'Otimizado', 3),
 ('Alface Americana', 203, 89.3, 650.00, 'Especialista', 4),
-('Cana-de-açúcar', 78, 92.7, 2100.00, 'Aprendendo', 5);
+('Cana-de-açúcar', 78, 92.7, 2100.00, 'Aprendendo', 5),
+('Rosas Vermelhas', 250, 98.1, 950.00, 'Especialista', 6),
+('Laranja Pera', 110, 93.5, 1100.00, 'Otimizado', 7),
+('Amendoim Runner', 95, 90.5, 4500.00, 'Aprendendo', 8),
+('Brachiaria Brizantha', 45, 88.0, 3200.00, 'Otimizado', 9);
 
 -- Inserir empreendimentos
 INSERT INTO Empreendimento (nome, finalidade, ID_agricultor_fk) VALUES
 ('Cultivo Sustentável São José', 'Produção de grãos com irrigação inteligente', 1),
 ('Hortifruti Boa Vista', 'Produção de hortaliças orgânicas', 2),
-('Agronegócio Santa Clara', 'Produção em larga escala com IA', 3);
+('Agronegócio Santa Clara', 'Produção em larga escala com IA', 3),
+('Flores de Holambra', 'Cultivo de flores para exportação', 4),
+('Pomar Cítrico de Itu', 'Produção de suco de laranja concentrado', 5),
+('Grãos do Interior', 'Cultivo extensivo de amendoim e soja', 6),
+('Pecuária Leiteira do Vale', 'Produção de leite com pastagem irrigada', 7);
 
 -- Inserir contratos
 INSERT INTO Contrato (data_assinatura, valor, ID_agricultor_fk, ID_empreendimento_fk) VALUES
 ('2024-01-15', 125000.00, 1, 1),
 ('2024-02-20', 87500.00, 2, 2),
-('2024-03-10', 200000.00, 3, 3);
+('2024-03-10', 200000.00, 3, 3),
+('2023-11-05', 75000.00, 4, 4),
+('2024-04-01', 95000.00, 5, 5),
+('2023-09-12', 450000.00, 6, 6),
+('2024-05-18', 180000.00, 7, 7);
 
 -- Verificar se os dados foram inseridos
 SELECT 'Dados inseridos com sucesso!' as Status;
@@ -124,4 +173,3 @@ SELECT COUNT(*) as Total_Agricultores FROM Agricultor;
 SELECT COUNT(*) as Total_Irrigadores FROM Irrigador;
 SELECT COUNT(*) as Total_Sensores FROM Sensor;
 SELECT COUNT(*) as Total_Medicoes FROM Medicao;
-
