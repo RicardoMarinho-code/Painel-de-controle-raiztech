@@ -17,3 +17,9 @@ set eficiencia = 91.6
 where ID_cultura = 4;
 
 select * from Cultura
+
+update Agricultor
+set telefones_de_conato='(61)98427-3883'
+where ID_agricultor= 3;
+
+select * from Agricultor
