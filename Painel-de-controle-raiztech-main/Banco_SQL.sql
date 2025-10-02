@@ -11,6 +11,8 @@ create table Agricultor (
     telefones_de_conato varchar(255) not null
 );
 
+select * from Agricultor;
+
 create table Empreendimento(
 	ID_empreendimento int primary key auto_increment,
     nome varchar(255) not null,
@@ -19,6 +21,8 @@ create table Empreendimento(
 	ID_agricultor_fk int not null,
     foreign key (ID_agricultor_fk) references Agricultor(ID_agricultor)
 );
+
+select * from Empreendimento;
 
 create table Contrato (
 	ID_contrato int primary key auto_increment,
@@ -32,6 +36,8 @@ create table Contrato (
     foreign key (ID_empreendimento_fk) references Empreendimento(ID_empreendimento)
 );
 
+select * from Contrato;
+
 create table PropriedadeRural(
 	ID_propriedade int primary key auto_increment,
     nome varchar(255) not null,
@@ -43,6 +49,8 @@ create table PropriedadeRural(
     foreign key (ID_agricultor_fk) references Agricultor(ID_agricultor)
 );
 
+select * from PropriedadeRural;
+
 create table Sensor (
 	ID_sensor int primary key auto_increment,
 	fabricante varchar(255) not null,
@@ -52,6 +60,8 @@ create table Sensor (
     ID_PropriedadeRural_fk int not null,
     foreign key (ID_PropriedadeRural_fk) references PropriedadeRural(ID_propriedade)
 );
+
+select * from Sensor;
 
 create table Medicao (
 	ID_medicao int primary key auto_increment,
@@ -65,6 +75,8 @@ create table Medicao (
     foreign key (ID_propriedade_fk) references PropriedadeRural(ID_propriedade)
 );
 
+select * from Medicao;
+
 create table Reservatorio(
 	ID_reservatorio int primary key auto_increment,
     #Mudança de float para decimal na "capacidade" e "nivel_atual"
@@ -74,6 +86,8 @@ create table Reservatorio(
     ID_propriedade_fk int not null,
     foreign key (ID_propriedade_fk) references PropriedadeRural(ID_propriedade)
 );
+
+select * from Reservatorio;
 
 create table Zona(
 	ID_zona int primary key auto_increment,
@@ -86,17 +100,22 @@ create table Zona(
     foreign key (ID_propriedade_fk) references PropriedadeRural(ID_propriedade)
 );
 
+select * from Zona;
+
 create table DecisaoIA (
 	ID_decisao int primary key auto_increment,
     tipo varchar(255) not null,
+    zona varchar(255) not null,
     descricao text not null,
     volume_economizado decimal(10,2) not null,
     confianca decimal(5,2) not null,
     data_hora datetime not null,
     
-    ID_zona_fk int,
+    ID_zona_fk int not null,
     foreign key (ID_zona_fk) references Zona(ID_zona)
 );
+
+select * from DecisaoIA;
 
 create table Setor(
 	ID_setor int primary key auto_increment,
@@ -111,6 +130,8 @@ create table Setor(
     foreign key (ID_propriedade_fk) references PropriedadeRural(ID_propriedade)
 );
 
+select * from Setor;
+
 create table Irrigador(
 	ID_irrigador int primary key auto_increment,
 	nome varchar(255) not null,
@@ -123,6 +144,8 @@ create table Irrigador(
     foreign key (ID_zona_fk) references Zona(ID_zona)
 );
 
+select * from Irrigador;
+
 create table Cultura(
 	ID_cultura int primary key auto_increment,
     nome varchar(255) not null,
@@ -134,3 +157,5 @@ create table Cultura(
     ID_setor_fk int not null,
     foreign key (ID_setor_fk) references Setor(ID_setor)
 );
+
+select * from Cultura;
