@@ -47,7 +47,6 @@ class MySQLConnection:
             print(f"Erro ao executar query: {e}")
             return None
 
-    def execute_update(self, query, params=None):
     def execute_update(self, query, params=None, return_rowcount=False):
         """Executa queries INSERT, UPDATE, DELETE"""
         try:
@@ -65,4 +64,3 @@ class MySQLConnection:
 
 # Instância global da conexão
 mysql_db = MySQLConnection()
-
