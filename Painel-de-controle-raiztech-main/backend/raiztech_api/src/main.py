@@ -11,6 +11,7 @@ from flask_cors import CORS
 from src.routes.agricultor import agricultor_bp
 from src.routes.sensores import sensores_bp
 from src.routes.irrigacao import irrigacao_bp
+from src.routes.history import history_bp
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
@@ -25,6 +26,7 @@ CORS(app)
 app.register_blueprint(agricultor_bp, url_prefix='/api')
 app.register_blueprint(sensores_bp, url_prefix='/api')
 app.register_blueprint(irrigacao_bp, url_prefix='/api')
+app.register_blueprint(history_bp, url_prefix='/api')
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

@@ -3,12 +3,15 @@ from src.database.mysql_config import mysql_db
 
 agricultor_bp = Blueprint('agricultor', __name__)
 
+@agricultor_bp.before_request
+def ensure_db_connection():
+    """Garante que o banco de dados esteja conectado antes de cada requisição."""
+    if not mysql_db.connection or not mysql_db.connection.is_connected():
+        mysql_db.connect()
+
 @agricultor_bp.route('/agricultores', methods=['GET'])
 def get_agricultores():
     """Busca todos os agricultores"""
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
-    
     query = "SELECT * FROM Agricultor"
     result = mysql_db.execute_query(query)
     
@@ -20,9 +23,6 @@ def get_agricultores():
 @agricultor_bp.route('/agricultores/<int:id>', methods=['GET'])
 def get_agricultor(id):
     """Busca um agricultor específico"""
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
-    
     query = "SELECT * FROM Agricultor WHERE ID_agricultor = %s"
     result = mysql_db.execute_query(query, (id,))
     
@@ -39,9 +39,6 @@ def create_agricultor():
     if not all(key in data for key in ['nome', 'CPF', 'data_nascimento', 'telefones_de_conato']):
         return jsonify({"error": "Dados obrigatórios faltando"}), 400
     
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
-    
     query = """
         INSERT INTO Agricultor (nome, CPF, data_nascimento, telefones_de_conato) 
         VALUES (%s, %s, %s, %s)
@@ -57,9 +54,6 @@ def create_agricultor():
 def update_agricultor(id):
     """Atualiza um agricultor existente"""
     data = request.get_json()
-    
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
     
     # Verifica se o agricultor existe
     check_query = "SELECT ID_agricultor FROM Agricultor WHERE ID_agricultor = %s"
@@ -89,9 +83,6 @@ def update_agricultor(id):
 @agricultor_bp.route('/agricultores/<int:id>', methods=['DELETE'])
 def delete_agricultor(id):
     """Remove um agricultor"""
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
-    
     # Verifica se o agricultor existe
     check_query = "SELECT ID_agricultor FROM Agricultor WHERE ID_agricultor = %s"
     if not mysql_db.execute_query(check_query, (id,)):
@@ -103,4 +94,3 @@ def delete_agricultor(id):
         return jsonify({"message": "Agricultor removido com sucesso"}), 200
     else:
         return jsonify({"error": "Erro ao remover agricultor"}), 500
-

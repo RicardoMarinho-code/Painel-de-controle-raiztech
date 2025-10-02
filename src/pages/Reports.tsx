@@ -250,38 +250,6 @@ const Reports = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* AI Learning Progress */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Brain className="h-5 w-5" />
-                <span>Evolução do Aprendizado</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg p-8 min-h-[300px] flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="text-4xl">🧠</div>
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Gráfico de Evolução da IA</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Visualização do aprendizado e melhoria de eficiência ao longo do tempo
-                      </p>
-                      <div className="space-y-2 text-sm">
-                        <div>• 615 padrões identificados em 3 meses</div>
-                        <div>• Eficiência aumentou 12.4% com ML</div>
-                        <div>• Economia de 18.7% em consumo hídrico</div>
-                      </div>
-                    </div>
-                    <Button variant="outline">Ver Gráfico Interativo</Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Quick AI Reports */}
           <Card>
             <CardHeader>

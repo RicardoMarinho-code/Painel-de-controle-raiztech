@@ -303,7 +303,6 @@ const Sensors = () => {
                     <p className="text-sm text-muted-foreground">Eficiência Global</p>
                   </div>
                 </div>
-                
                 <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
                   <h4 className="font-medium text-primary mb-2">🧠 Status do Aprendizado</h4>
                   <div className="text-sm space-y-1">

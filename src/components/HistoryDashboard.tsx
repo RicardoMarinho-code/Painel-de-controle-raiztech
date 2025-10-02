@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from "recharts";
-import { Calendar, TrendingUp, Droplets, Thermometer, Sun, Zap, Database, CloudRain, TestTube, Activity } from "lucide-react";
+import { Calendar, TrendingUp, Droplets, Thermometer, Sun, Zap, Database, CloudRain, TestTube, Activity, Loader2 } from "lucide-react";
 
 // Dados de produtividade histórica (em meses)
 const productivityData = [
@@ -21,77 +21,6 @@ const productivityData = [
   { period: "Mês 10", traditional: 100, withAI: 184, increase: 84 },
   { period: "Mês 11", traditional: 100, withAI: 189, increase: 89 },
   { period: "Mês 12", traditional: 100, withAI: 195, increase: 95 }
-];
-
-// Dados do fluxo de decisão IA (baseado na descrição do sócio)
-const decisionFlowData = [
-  { 
-    time: "06:00", 
-    waterLevel: 85, 
-    isRaining: false, 
-    soilMoisture: 45, 
-    ph: 6.2, 
-    temperature: 22, 
-    sunIntensity: 15,
-    decision: "Irrigar",
-    duration: 35
-  },
-  { 
-    time: "08:00", 
-    waterLevel: 78, 
-    isRaining: false, 
-    soilMoisture: 62, 
-    ph: 6.4, 
-    temperature: 26, 
-    sunIntensity: 45,
-    decision: "Aguardar",
-    duration: 0
-  },
-  { 
-    time: "12:00", 
-    waterLevel: 75, 
-    isRaining: true, 
-    soilMoisture: 58, 
-    ph: 6.1, 
-    temperature: 24, 
-    sunIntensity: 25,
-    decision: "Pausar - Chuva",
-    duration: 0
-  },
-  { 
-    time: "16:00", 
-    waterLevel: 73, 
-    isRaining: false, 
-    soilMoisture: 72, 
-    ph: 6.3, 
-    temperature: 28, 
-    sunIntensity: 65,
-    decision: "Aguardar",
-    duration: 0
-  },
-  { 
-    time: "18:00", 
-    waterLevel: 70, 
-    isRaining: false, 
-    soilMoisture: 48, 
-    ph: 6.0, 
-    temperature: 26, 
-    sunIntensity: 20,
-    decision: "Irrigar",
-    duration: 28
-  }
-];
-
-// Dados de correlação sol/temperatura/umidade/pH
-const environmentalCorrelation = [
-  { hour: "06", sunIntensity: 10, temperature: 20, soilMoisture: 65, ph: 6.2 },
-  { hour: "08", sunIntensity: 30, temperature: 24, soilMoisture: 58, ph: 6.3 },
-  { hour: "10", sunIntensity: 60, temperature: 28, soilMoisture: 52, ph: 6.1 },
-  { hour: "12", sunIntensity: 85, temperature: 32, soilMoisture: 45, ph: 5.9 },
-  { hour: "14", sunIntensity: 90, temperature: 34, soilMoisture: 42, ph: 5.8 },
-  { hour: "16", sunIntensity: 70, temperature: 31, soilMoisture: 38, ph: 5.9 },
-  { hour: "18", sunIntensity: 25, temperature: 27, soilMoisture: 48, ph: 6.1 },
-  { hour: "20", sunIntensity: 5, temperature: 23, soilMoisture: 55, ph: 6.2 }
 ];
 
 // Histórico de melhorias (baseado no período atual)
@@ -116,6 +45,46 @@ const getImprovements = (selectedPeriod: string) => {
 
 export const HistoryDashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("6months");
+  const [decisionFlowData, setDecisionFlowData] = useState([]);
+  const [environmentalCorrelation, setEnvironmentalCorrelation] = useState([]);
+  const [loadingDecisionFlow, setLoadingDecisionFlow] = useState(true);
+  const [errorDecisionFlow, setErrorDecisionFlow] = useState<string | null>(null);
+  const [loadingEnvironmental, setLoadingEnvironmental] = useState(true);
+  const [errorEnvironmental, setErrorEnvironmental] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDecisionFlow = async () => {
+      try {
+        setLoadingDecisionFlow(true);
+        // A URL base VITE_API_BASE_URL=http://localhost:5000/api deve estar no seu .env
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/history/decision-flow`);
+        if (!response.ok) throw new Error('Falha ao buscar fluxo de decisão da IA');
+        const data = await response.json();
+        setDecisionFlowData(data);
+      } catch (err: any) {
+        setErrorDecisionFlow(err.message);
+      } finally {
+        setLoadingDecisionFlow(false);
+      }
+    };
+
+    const fetchEnvironmentalCorrelation = async () => {
+      try {
+        setLoadingEnvironmental(true);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/history/environmental-correlation`);
+        if (!response.ok) throw new Error('Falha ao buscar correlação ambiental');
+        const data = await response.json();
+        setEnvironmentalCorrelation(data);
+      } catch (err: any) {
+        setErrorEnvironmental(err.message);
+      } finally {
+        setLoadingEnvironmental(false);
+      }
+    };
+
+    fetchDecisionFlow();
+    fetchEnvironmentalCorrelation();
+  }, []);
 
   // Filtra dados baseado no período selecionado
   const getFilteredData = () => {
@@ -225,6 +194,15 @@ export const HistoryDashboard = () => {
               <p className="text-sm text-muted-foreground">
                 Sequência: Nível água → Chuva → Umidade solo → pH/Temperatura/Sol → Decisão → Irrigação
               </p>
+              {loadingDecisionFlow && (
+                <div className="flex justify-center items-center p-4">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  <span className="ml-2 text-muted-foreground">Carregando fluxo de decisão...</span>
+                </div>
+              )}
+              {errorDecisionFlow && (
+                <p className="text-sm text-destructive">Erro: {errorDecisionFlow}</p>
+              </p>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -283,6 +261,15 @@ export const HistoryDashboard = () => {
                 <Sun className="h-5 w-5 text-warning" />
                 Correlação: Sol → Temperatura → Umidade → pH
               </CardTitle>
+              {loadingEnvironmental && (
+                <div className="flex justify-center items-center p-4">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  <span className="ml-2 text-muted-foreground">Carregando correlações ambientais...</span>
+                </div>
+              )}
+              {errorEnvironmental && (
+                <p className="text-sm text-destructive">Erro: {errorEnvironmental}</p>
+              </p>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
