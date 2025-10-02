@@ -23,3 +23,9 @@ set telefones_de_conato='(61)98427-3883'
 where ID_agricultor= 3;
 
 select * from Agricultor
+
+update Irrigador
+set status_ = 'Manutenção'
+where ID_irrigador = 8;
+
+select * from Irrigador
