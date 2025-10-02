@@ -48,12 +48,16 @@ class MySQLConnection:
             return None
 
     def execute_update(self, query, params=None):
+    def execute_update(self, query, params=None, return_rowcount=False):
         """Executa queries INSERT, UPDATE, DELETE"""
         try:
             cursor = self.connection.cursor()
             cursor.execute(query, params)
             self.connection.commit()
+            rowcount = cursor.rowcount
             cursor.close()
+            if return_rowcount:
+                return rowcount
             return True
         except Error as e:
             print(f"Erro ao executar update: {e}")

@@ -3,12 +3,15 @@ from src.database.mysql_config import mysql_db
 
 sensores_bp = Blueprint('sensores', __name__)
 
+@sensores_bp.before_request
+def ensure_db_connection():
+    """Garante que o banco de dados esteja conectado antes de cada requisição."""
+    if not mysql_db.connection or not mysql_db.connection.is_connected():
+        mysql_db.connect()
+
 @sensores_bp.route('/sensores', methods=['GET'])
 def get_sensores():
     """Busca todos os sensores"""
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
-    
     query = """
         SELECT s.*, p.nome as propriedade_nome 
         FROM Sensor s 
@@ -24,9 +27,6 @@ def get_sensores():
 @sensores_bp.route('/sensores/<int:id>/medicoes', methods=['GET'])
 def get_medicoes_sensor(id):
     """Busca medições de um sensor específico"""
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
-    
     # Parâmetros de paginação e filtro
     limit = request.args.get('limit', 50, type=int)
     offset = request.args.get('offset', 0, type=int)
@@ -55,9 +55,6 @@ def create_medicao():
     if not all(key in data for key in required_fields):
         return jsonify({"error": "Dados obrigatórios faltando"}), 400
     
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
-    
     query = """
         INSERT INTO Medicao (data_hora, valor_medicao, ID_sensor_fk, ID_propriedade_fk) 
         VALUES (NOW(), %s, %s, %s)
@@ -72,9 +69,6 @@ def create_medicao():
 @sensores_bp.route('/sensores/tipos/<tipo>/medicoes-recentes', methods=['GET'])
 def get_medicoes_recentes_por_tipo(tipo):
     """Busca medições mais recentes por tipo de sensor"""
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
-    
     query = """
         SELECT m.*, s.fabricante, p.nome as propriedade_nome
         FROM Medicao m
@@ -94,9 +88,6 @@ def get_medicoes_recentes_por_tipo(tipo):
 @sensores_bp.route('/dashboard/sensores-resumo', methods=['GET'])
 def get_sensores_resumo():
     """Retorna resumo dos sensores para dashboard"""
-    if not mysql_db.connection or not mysql_db.connection.is_connected():
-        mysql_db.connect()
-    
     # Conta sensores por tipo
     query_tipos = """
         SELECT tipo, COUNT(*) as quantidade
@@ -125,4 +116,3 @@ def get_sensores_resumo():
         }), 200
     else:
         return jsonify({"error": "Erro ao buscar resumo dos sensores"}), 500
-

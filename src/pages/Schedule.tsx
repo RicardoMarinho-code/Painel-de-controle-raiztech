@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,60 +11,33 @@ import {
   CheckCircle,
   Zap,
   Target,
-  TrendingUp
+  TrendingUp,
+  Loader2
 } from "lucide-react";
 
 const Schedule = () => {
-  const aiDecisions = [
-    {
-      id: 1,
-      irrigator: "Irrigador A1 - Milho",
-      zone: "Zona Norte",
-      decision: "Irrigação reduzida",
-      reason: "IA detectou alta umidade + previsão de chuva",
-      time: "06:30",
-      confidence: "97%",
-      waterSaved: "45L",
-      status: "executed",
-      aiModel: "Otimizado"
-    },
-    {
-      id: 2,
-      irrigator: "Irrigador B2 - Soja", 
-      zone: "Zona Sul",
-      decision: "Aguardar até 22:00",
-      reason: "Correlação temperatura noturna + eficiência hídrica",
-      time: "22:00",
-      confidence: "89%",
-      waterSaved: "28L",
-      status: "scheduled",
-      aiModel: "Aprendendo"
-    },
-    {
-      id: 3,
-      irrigator: "Irrigador C3 - Feijão",
-      zone: "Zona Leste",
-      decision: "Micro-irrigação contínua",
-      reason: "Padrão otimizado para cultura sensível",
-      time: "A cada 2h",
-      confidence: "95%",
-      waterSaved: "62L",
-      status: "active",
-      aiModel: "Otimizado"
-    },
-    {
-      id: 4,
-      irrigator: "Irrigador E5 - Verduras",
-      zone: "Zona Centro",
-      decision: "Irrigação por gotejamento",
-      reason: "Especialização IA para culturas delicadas",
-      time: "14:00",
-      confidence: "98%",
-      waterSaved: "71L",
-      status: "scheduled",
-      aiModel: "Especialista"
-    }
-  ];
+  const [aiDecisions, setAiDecisions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDecisions = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/schedule/ai-decisions`);
+        if (!response.ok) {
+          throw new Error('Falha ao buscar as decisões da IA.');
+        }
+        const data = await response.json();
+        setAiDecisions(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDecisions();
+  }, []);
 
   const aiPatterns = [
     {
@@ -95,6 +69,11 @@ const Schedule = () => {
         return <Badge className="bg-success text-success-foreground">
           <CheckCircle className="h-3 w-3 mr-1" />
           Executada
+        </Badge>;
+      case "warning":
+        return <Badge variant="destructive">
+          <CheckCircle className="h-3 w-3 mr-1" />
+          Alerta
         </Badge>;
       case "active":
         return <Badge className="bg-primary text-primary-foreground">
@@ -186,54 +165,61 @@ const Schedule = () => {
               <span>Decisões Autônomas de Hoje</span>
             </h2>
             
-            {aiDecisions.map((decision) => (
-              <Card key={decision.id}>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <h3 className="text-lg font-medium">{decision.irrigator}</h3>
-                        {getDecisionStatus(decision.status)}
-                        {getAIModelBadge(decision.aiModel)}
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Decisão da IA:</span>
-                          <div className="font-medium text-primary">{decision.decision}</div>
+            {loading && (
+              <div className="flex justify-center items-center p-8">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <span className="ml-2">Carregando decisões...</span>
+              </div>
+            )}
+            {error && <p className="text-destructive text-center">{error}</p>}
+            {!loading && !error && aiDecisions.map((decision: any) => (
+                <Card key={decision.id}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <h3 className="text-lg font-medium">{decision.irrigator}</h3>
+                          {getDecisionStatus(decision.status)}
+                          {getAIModelBadge(decision.aiModel)}
                         </div>
-                        <div>
-                          <span className="text-muted-foreground">Razão:</span>
-                          <div className="font-medium">{decision.reason}</div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Decisão da IA:</span>
+                            <div className="font-medium text-primary">{decision.decision}</div>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Razão:</span>
+                            <div className="font-medium">{decision.reason}</div>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Horário:</span>
+                            <div className="font-medium flex items-center">
+                              <Clock className="h-4 w-4 mr-1" />
+                              {decision.time}
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-muted-foreground">Horário:</span>
-                          <div className="font-medium flex items-center">
-                            <Clock className="h-4 w-4 mr-1" />
-                            {decision.time}
+
+                        <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Confiança IA:</span>
+                            <div className="font-medium text-success">{decision.confidence}</div>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Água Economizada:</span>
+                            <div className="font-medium text-success">{decision.waterSaved}</div>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Zona:</span>
+                            <div className="font-medium">{decision.zone}</div>
                           </div>
                         </div>
                       </div>
-
-                      <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Confiança IA:</span>
-                          <div className="font-medium text-success">{decision.confidence}</div>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Água Economizada:</span>
-                          <div className="font-medium text-success">{decision.waterSaved}</div>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Zona:</span>
-                          <div className="font-medium">{decision.zone}</div>
-                        </div>
-                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
           </div>
 
           {/* AI Learning Patterns */}
@@ -272,40 +258,6 @@ const Schedule = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* AI Configuration */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Brain className="h-5 w-5" />
-                <span>Configuração da IA</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted/30 rounded-lg p-8 min-h-[300px] flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  <div className="text-6xl">🤖</div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">IA Autônoma RaizTech</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Sistema de machine learning totalmente automatizado
-                    </p>
-                    <div className="space-y-2 text-sm max-w-md mx-auto">
-                      <div>• Decisões tomadas a cada 30 segundos</div>
-                      <div>• Análise contínua de 127 variáveis</div>
-                      <div>• Adaptação automática por cultura</div>
-                      <div>• Integração com dados climáticos em tempo real</div>
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline">Ver Configurações Avançadas</Button>
-                    <Button>Treinar Novo Modelo</Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Quick Actions */}
           <Card>
             <CardHeader>

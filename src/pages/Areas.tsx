@@ -267,59 +267,6 @@ const Areas = () => {
               </Card>
             ))}
           </div>
-
-          {/* Farm Coverage Map */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5" />
-                <span>Mapa de Cobertura Inteligente</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg p-8 min-h-[400px]">
-                <div className="text-center space-y-6">
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">Sistema de Cobertura Completa</h3>
-                    <p className="text-muted-foreground mb-6">
-                      6 irrigadores inteligentes com raio de ação otimizado por IA
-                    </p>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-                    {zones.map((zone) => (
-                      <div key={zone.id} className="p-4 rounded-lg bg-background border">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="text-lg">{getCropIcon(zone.crop)}</div>
-                          {zone.aiStatus === "Otimizado" ? (
-                            <CheckCircle className="h-4 w-4 text-success" />
-                          ) : zone.aiStatus === "Manutenção" ? (
-                            <div className="h-4 w-4 rounded-full bg-destructive" />
-                          ) : (
-                            <Brain className="h-4 w-4 text-primary" />
-                          )}
-                        </div>
-                        <div className="text-sm font-medium">{zone.name}</div>
-                        <div className="text-xs text-muted-foreground">{zone.area} hectares</div>
-                        <div className="text-xs text-primary mt-1">{zone.efficiency}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                    <h4 className="font-medium text-primary mb-2">🎯 Cobertura Otimizada</h4>
-                    <div className="text-sm space-y-1">
-                      <div>• Raio efetivo: 1,2-1,5 km por irrigador</div>
-                      <div>• Sobreposição inteligente nas bordas</div>
-                      <div>• Adaptação automática por cultura e terreno</div>
-                      <div>• Redundância para segurança da irrigação</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Quick Actions */}
           <Card>
             <CardHeader>

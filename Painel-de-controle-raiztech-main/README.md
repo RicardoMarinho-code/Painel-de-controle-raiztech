@@ -31,18 +31,30 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
 ### Passo 1: Configuração do Banco de Dados (MySQL)
 
-1. **Crie o banco e as tabelas**:
-    Abra o terminal e execute o comando abaixo para criar o banco de dados `AgroTech` e todas as suas tabelas. Você precisará inserir a senha do seu usuário root do MySQL.
+1.  **Instale o MySQL Server (se necessário)**:
+    Em ambientes de desenvolvimento como GitHub Codespaces, o MySQL pode não vir instalado.
 
     ```bash
-    mysql -u root -p < Banco_SQL.sql
+    sudo apt-get update
+    sudo apt-get install -y mysql-server
     ```
 
-2. **Popule o banco com dados de exemplo**:
-    Para que o painel exiba informações, execute o script a seguir para inserir dados de exemplo.
+2.  **Inicie o Serviço do MySQL (se necessário)**:
+    **Importante**: Este comando precisa ser executado toda vez que você iniciar o ambiente.
 
     ```bash
-    mysql -u root -p AgroTech < backend/raiztech_api/dados_exemplo.sql
+    # O instalador geralmente inicia o serviço, mas se você reiniciar o ambiente, use este comando:
+    sudo service mysql start
+    ```
+
+3.  **Crie e Popule o Banco de Dados**:
+    Agora, com o servidor rodando, execute os scripts para configurar o banco. Após uma nova instalação, o usuário `root` do MySQL pode não ter senha, então apenas pressione Enter se for solicitado.
+
+    ```bash
+    # Cria a estrutura do banco
+    sudo mysql < Banco_SQL.sql
+    # Popula com dados de exemplo
+    sudo mysql AgroTech < backend/raiztech_api/dados_exemplo.sql
     ```
 
 ### Passo 2: Configuração do Backend (Python/Flask)
@@ -57,7 +69,7 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
     ```bash
     # Criar o ambiente
-    python -m venv venv
+    python3 -m venv venv
 
     # Ativar no Windows (PowerShell)
     .\venv\Scripts\activate
@@ -83,7 +95,7 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
     cp .env.example .env
     ```
 
-    Abra o arquivo `.env` e **substitua `sua_senha_secreta_do_mysql`** pela sua senha real do MySQL.
+    Abra o arquivo `.env` e **substitua `sua_senha_secreta_do_mysql`** pela sua senha real do MySQL (ou deixe em branco se não houver senha).
 
     ```env
     MYSQL_HOST=localhost
@@ -97,14 +109,14 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
     Mantenha este terminal aberto.
 
     ```bash
-    python src/main.py
+    python3 src/main.py
     ```
 
     O backend estará rodando em `http://localhost:5000`.
 
 ### Passo 3: Configuração do Frontend (React/Vite)
 
-1. **Abra um novo terminal** e navegue até a pasta raiz do projeto.
+1. **Abra um novo terminal** e navegue até a pasta raiz do projeto (`/workspaces/Painel-de-controle-raiztech/Painel-de-controle-raiztech-main`).
 
 2. **Instale as dependências do Node.js**:
 
@@ -112,7 +124,14 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
     npm install
     ```
 
-3. **Execute o servidor de desenvolvimento**:
+3.  **Configure as variáveis de ambiente do Frontend**:
+    Crie um arquivo chamado `.env` na raiz do projeto (ao lado de `package.json`) e adicione a seguinte linha. Isso dirá ao frontend onde encontrar a API do backend.
+
+    ```env
+    VITE_API_BASE_URL=http://localhost:5000/api
+    ```
+
+4. **Execute o servidor de desenvolvimento**:
     Mantenha este terminal aberto também.
 
     ```bash
