@@ -124,16 +124,16 @@ INSERT INTO Reservatorio (capacidade, nivel_atual, ID_propriedade_fk) VALUES
 (20000.00, 18000.00, 7); -- 90% de capacidade
 
 -- Inserir decisões da IA
-INSERT INTO DecisaoIA (tipo, descricao, volume_economizado, confianca, data_hora, ID_zona_fk) VALUES
-('Otimização', 'Irrigação reduzida devido à previsão de chuva em 6 horas', 340.50, 96.2, NOW() - INTERVAL 2 HOUR, 1),
-('Economia', 'Ajuste de pressão baseado na umidade do solo', 280.75, 94.8, NOW() - INTERVAL 1 HOUR, 2),
-('Prevenção', 'Irrigação antecipada para evitar estresse hídrico', 0.00, 91.3, NOW() - INTERVAL 3 HOUR, 3),
-('Otimização', 'Micro-irrigação por detecção de cultura sensível', 420.30, 97.1, NOW() - INTERVAL 30 MINUTE, 5),
-('Manutenção', 'Irrigador em manutenção preventiva', 0.00, 100.0, NOW() - INTERVAL 4 HOUR, 6),
-('Otimização', 'Gotejamento preciso para evitar fungos nas pétalas', 150.00, 99.2, NOW() - INTERVAL 1 HOUR, 7),
-('Economia', 'Pausa na irrigação, umidade do solo ideal', 220.00, 92.5, NOW() - INTERVAL 5 HOUR, 8),
-('Alerta', 'Nível de umidade baixo, irrigação de emergência programada', -500.00, 98.0, NOW() - INTERVAL 15 MINUTE, 9),
-('Otimização', 'Irrigação por aspersão em ciclo longo para raízes profundas', 800.00, 90.0, NOW() - INTERVAL 8 HOUR, 10);
+INSERT INTO DecisaoIA (tipo, descricao, volume_economizado, confianca, data_hora, ID_zona_fk, zona) VALUES
+('Otimização', 'Irrigação reduzida devido à previsão de chuva em 6 horas', 340.50, 96.2, NOW() - INTERVAL 2 HOUR, 1, 1),
+('Economia', 'Ajuste de pressão baseado na umidade do solo', 280.75, 94.8, NOW() - INTERVAL 1 HOUR, 2, 2),
+('Prevenção', 'Irrigação antecipada para evitar estresse hídrico', 0.00, 91.3, NOW() - INTERVAL 3 HOUR, 3, 3),
+('Otimização', 'Micro-irrigação por detecção de cultura sensível', 420.30, 97.1, NOW() - INTERVAL 30 MINUTE, 5, 5),
+('Manutenção', 'Irrigador em manutenção preventiva', 0.00, 100.0, NOW() - INTERVAL 4 HOUR, 6, 6),
+('Otimização', 'Gotejamento preciso para evitar fungos nas pétalas', 150.00, 99.2, NOW() - INTERVAL 1 HOUR, 7, 7),
+('Economia', 'Pausa na irrigação, umidade do solo ideal', 220.00, 92.5, NOW() - INTERVAL 5 HOUR, 8, 8),
+('Alerta', 'Nível de umidade baixo, irrigação de emergência programada', -500.00, 98.0, NOW() - INTERVAL 15 MINUTE, 9, 9),
+('Otimização', 'Irrigação por aspersão em ciclo longo para raízes profundas', 800.00, 90.0, NOW() - INTERVAL 8 HOUR, 10, 10);
 
 -- Inserir culturas
 INSERT INTO Cultura (nome, padroes_ml, eficiencia, economia, statusIA, ID_setor_fk) VALUES
