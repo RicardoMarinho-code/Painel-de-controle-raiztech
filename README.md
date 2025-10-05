@@ -31,16 +31,29 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
 ### Passo 1: Configuração do Banco de Dados (MySQL)
 
+**Importante**: Antes de executar os comandos, navegue para o diretório principal do projeto.
+**Importante**: Os comandos a seguir devem ser executados a partir do diretório raiz do projeto (`/workspaces/Painel-de-controle-raiztech/`). O projeto está estruturado com o frontend na raiz e o backend/banco de dados na subpasta `Painel-de-controle-raiztech-main`.
+**Abra o Terminal 1.**
+
+Primeiro, navegue para o diretório correto para acessar os scripts SQL:
+
+```bash
+cd Painel-de-controle-raiztech-main
+cd Painel-de-controle-raiztech-main/
+```
+
+Todos os comandos a seguir devem ser executados de dentro deste diretório.
+
 1.  **Instale o MySQL Server (se necessário)**:
     Em ambientes de desenvolvimento como GitHub Codespaces, o MySQL pode não vir instalado.
 
     ```bash
-    sudo apt-get update
-    sudo apt-get install -y mysql-server
+    sudo apt-get update && sudo apt-get install -y mysql-server mysql-client
     ```
 
 2.  **Inicie o Serviço do MySQL (se necessário)**:
     **Importante**: Este comando precisa ser executado toda vez que você iniciar o ambiente.
+    **Importante**: Este comando precisa ser executado toda vez que você iniciar o ambiente de desenvolvimento.
 
     ```bash
     # O instalador geralmente inicia o serviço, mas se você reiniciar o ambiente, use este comando:
@@ -49,23 +62,38 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
 3.  **Crie e Popule o Banco de Dados**:
     Agora, com o servidor rodando, execute os scripts para configurar o banco. Após uma nova instalação, o usuário `root` do MySQL pode não ter senha, então apenas pressione Enter se for solicitado.
+    Execute os scripts para configurar o banco. Após uma nova instalação, o usuário `root` do MySQL pode não ter senha, então apenas pressione Enter se for solicitado.
 
     ```bash
+    # Navegue para a pasta que contém os scripts SQL
+    cd /workspaces/Painel-de-controle-raiztech/Painel-de-controle-raiztech-main/
+
     # Cria a estrutura do banco
     sudo mysql < Banco_SQL.sql
+
     # Popula com dados de exemplo
+    # Popula com dados de exemplo (note o caminho relativo)
     sudo mysql AgroTech < backend/raiztech_api/dados_exemplo.sql
     ```
 
 ### Passo 2: Configuração do Backend (Python/Flask)
 
 1. **Navegue até a pasta do backend**:
+1. **Navegue até a pasta do backend** (a partir do diretório `Painel-de-controle-raiztech-main`):
+**Abra o Terminal 2.**
+
+1.  **Navegue até a pasta do backend**:
 
     ```bash
+    # Se você ainda está em Painel-de-controle-raiztech-main, execute:
     cd backend/raiztech_api
+
+    # Se estiver na raiz, o caminho completo é: cd Painel-de-controle-raiztech-main/backend/raiztech_api
+    cd /workspaces/Painel-de-controle-raiztech/Painel-de-controle-raiztech-main/backend/raiztech_api/
     ```
 
 2. **Crie e ative um ambiente virtual**:
+2.  **Crie e ative um ambiente virtual**:
 
     ```bash
     # Criar o ambiente
@@ -79,12 +107,14 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
     ```
 
 3. **Instale as dependências Python**:
+3.  **Instale as dependências Python**:
 
     ```bash
     pip install -r requirements.txt
     ```
 
 4. **Configure as variáveis de ambiente**:
+4.  **Configure as variáveis de ambiente**:
     Crie uma cópia do arquivo de exemplo `.env.example` e renomeie para `.env`.
 
     ```bash
@@ -106,6 +136,7 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
     ```
 
 5. **Execute o servidor backend**:
+5.  **Execute o servidor backend**:
     Mantenha este terminal aberto.
 
     ```bash
@@ -113,12 +144,22 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
     ```
 
     O backend estará rodando em `http://localhost:5000`.
+    O backend estará rodando em `http://127.0.0.1:5000`.
 
 ### Passo 3: Configuração do Frontend (React/Vite)
 
-1. **Abra um novo terminal** e navegue até a pasta raiz do projeto (`/workspaces/Painel-de-controle-raiztech/Painel-de-controle-raiztech-main`).
+1. **Abra um novo terminal** e navegue de volta para a pasta raiz do projeto (`Painel-de-controle-raiztech-main`).
+1. **Abra um novo terminal** e navegue para a pasta raiz do projeto, onde o `package.json` do frontend está localizado.
+**Abra o Terminal 3.**
+
+1.  **Navegue para a pasta raiz do frontend**:
+
+    ```bash
+    cd /workspaces/Painel-de-controle-raiztech/
+    ```
 
 2. **Instale as dependências do Node.js**:
+2.  **Instale as dependências do Node.js**:
 
     ```bash
     npm install
@@ -126,12 +167,15 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
 3.  **Configure as variáveis de ambiente do Frontend**:
     Crie um arquivo chamado `.env` na raiz do projeto (ao lado de `package.json`) e adicione a seguinte linha. Isso dirá ao frontend onde encontrar a API do backend.
+    Crie um arquivo chamado `.env` neste mesmo diretório (`/workspaces/Painel-de-controle-raiztech/`) e adicione a seguinte linha. Isso dirá ao frontend onde encontrar a API do backend.
+    Crie um arquivo chamado `.env` neste mesmo diretório e adicione a seguinte linha. Isso dirá ao frontend onde encontrar a API do backend.
 
     ```env
     VITE_API_BASE_URL=http://localhost:5000/api
     ```
 
 4. **Execute o servidor de desenvolvimento**:
+4.  **Execute o servidor de desenvolvimento**:
     Mantenha este terminal aberto também.
 
     ```bash
@@ -139,6 +183,8 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
     ```
 
     O frontend estará disponível em **`http://localhost:8080`**. Abra este endereço no seu navegador para ver o painel.
+    O frontend estará disponível em **`http://localhost:8080`** (ou a porta indicada no terminal). Abra este endereço no seu navegador para ver o painel.
+    O frontend estará disponível em **`http://localhost:8080`** (ou a porta indicada no terminal). Abra este endereço no seu navegador.
 
 ---
 
@@ -162,6 +208,7 @@ npm run dev
 #### 2. Erro `AttributeError: 'Flask' object has no attribute 'before_first_request'`
 
 Este erro ocorre em versões mais recentes do Flask. A solução é remover o código obsoleto.
+Este erro ocorre em versões mais recentes do Flask. O projeto já está corrigido, mas caso o erro apareça, a solução é remover o código obsoleto.
 
 - Abra o arquivo `backend/raiztech_api/src/main.py`.
 - Encontre e remova o seguinte bloco de código (geralmente por volta da linha 25):
@@ -170,6 +217,9 @@ Este erro ocorre em versões mais recentes do Flask. A solução é remover o c�
 # @app.before_first_request
 # def initialize_database():
 #     mysql_db.connect()
+@app.before_first_request
+def initialize_database():
+    mysql_db.connect()
 ```
 
 - Salve o arquivo e reinicie o servidor backend.

@@ -1,4 +1,4 @@
-create database AgroTech;
+CREATE DATABASE IF NOT EXISTS AgroTech;
 
 use AgroTech;
 
