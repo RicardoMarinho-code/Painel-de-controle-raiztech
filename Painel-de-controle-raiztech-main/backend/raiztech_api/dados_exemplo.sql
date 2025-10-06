@@ -158,6 +158,7 @@ INSERT INTO Empreendimento (nome, finalidade, ID_agricultor_fk) VALUES
 ('Pecuária Leiteira do Vale', 'Produção de leite com pastagem irrigada', 7);
 
 -- Inserir contratos
+-- (A tabela Contrato não é usada ativamente nos endpoints atuais, mas está aqui para integridade)
 INSERT INTO Contrato (data_assinatura, valor, ID_agricultor_fk, ID_empreendimento_fk) VALUES
 ('2024-01-15', 125000.00, 1, 1),
 ('2024-02-20', 87500.00, 2, 2),
@@ -166,6 +167,45 @@ INSERT INTO Contrato (data_assinatura, valor, ID_agricultor_fk, ID_empreendiment
 ('2024-04-01', 95000.00, 5, 5),
 ('2023-09-12', 450000.00, 6, 6),
 ('2024-05-18', 180000.00, 7, 7);
+
+-- Inserir padrões de aprendizado de exemplo
+INSERT INTO PadroesAprendidos (nome, descricao, culturas_afetadas, ganho_eficiencia, data_aprendizado) VALUES
+('Correlação Clima-Solo', 'IA identifica padrões entre previsão meteorológica e necessidade hídrica, adiando irrigação antes de chuvas.', 'Milho,Soja', 12.5, NOW() - INTERVAL 14 DAY),
+('Otimização Horário-Temperatura', 'Irrigação noturna se mostrou mais eficiente para reduzir evaporação em dias quentes.', 'Soja,Feijão', 8.0, NOW() - INTERVAL 7 DAY),
+('Micro-irrigação Verduras', 'Aplicação de pequenas doses frequentes de água para culturas de raízes curtas como alface.', 'Alface', 18.2, NOW() - INTERVAL 3 DAY);
+
+INSERT INTO Contrato (data_assinatura, valor, ID_agricultor_fk, ID_empreendimento_fk) VALUES
+('2024-01-15', 125000.00, 1, 1),
+('2024-02-20', 87500.00, 2, 2),
+('2024-03-10', 200000.00, 3, 3),
+('2023-11-05', 75000.00, 4, 4),
+('2024-04-01', 95000.00, 5, 5),
+('2023-09-12', 450000.00, 6, 6),
+('2024-05-18', 180000.00, 7, 7);
+
+-- Inserir padrões de aprendizado de exemplo
+INSERT INTO PadroesAprendidos (nome, descricao, culturas_afetadas, ganho_eficiencia, data_aprendizado) VALUES
+('Correlação Clima-Solo', 'IA identifica padrões entre previsão meteorológica e necessidade hídrica, adiando irrigação antes de chuvas.', 'Milho,Soja', 12.5, NOW() - INTERVAL 14 DAY),
+('Otimização Horário-Temperatura', 'Irrigação noturna se mostrou mais eficiente para reduzir evaporação em dias quentes.', 'Soja,Feijão', 8.0, NOW() - INTERVAL 7 DAY),
+('Micro-irrigação Verduras', 'Aplicação de pequenas doses frequentes de água para culturas de raízes curtas como alface.', 'Alface', 18.2, NOW() - INTERVAL 3 DAY);
+
+INSERT INTO Contrato (data_assinatura, valor, ID_agricultor_fk, ID_empreendimento_fk) VALUES
+('2024-01-15', 125000.00, 1, 1),
+('2024-02-20', 87500.00, 2, 2),
+('2024-03-10', 200000.00, 3, 3),
+('2023-11-05', 75000.00, 4, 4),
+('2024-04-01', 95000.00, 5, 5),
+('2023-09-12', 450000.00, 6, 6),
+('2024-05-18', 180000.00, 7, 7);
+
+-- Inserir histórico de produtividade mensal
+INSERT INTO HistoricoProdutividade (mes_ano, produtividade_ia, economia_agua_ia, eficiencia_ph_ia) VALUES
+('2024-01-01', 118, 15, 75),
+('2024-02-01', 125, 22, 80),
+('2024-03-01', 134, 28, 85),
+('2024-04-01', 142, 31, 88),
+('2024-05-01', 147, 34, 92),
+('2024-06-01', 156, 38, 94);
 
 -- Verificar se os dados foram inseridos
 SELECT 'Dados inseridos com sucesso!' as Status;

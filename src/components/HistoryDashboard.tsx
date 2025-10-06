@@ -7,42 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from "recharts";
 import { Calendar, TrendingUp, Droplets, Thermometer, Sun, Zap, Database, CloudRain, TestTube, Activity, Loader2 } from "lucide-react";
 
-// Dados de produtividade histórica (em meses)
-const productivityData = [
-  { period: "Mês 1", traditional: 100, withAI: 118, increase: 18 },
-  { period: "Mês 2", traditional: 100, withAI: 125, increase: 25 },
-  { period: "Mês 3", traditional: 100, withAI: 134, increase: 34 },
-  { period: "Mês 4", traditional: 100, withAI: 142, increase: 42 },
-  { period: "Mês 5", traditional: 100, withAI: 147, increase: 47 },
-  { period: "Mês 6", traditional: 100, withAI: 156, increase: 56 },
-  { period: "Mês 7", traditional: 100, withAI: 164, increase: 64 },
-  { period: "Mês 8", traditional: 100, withAI: 171, increase: 71 },
-  { period: "Mês 9", traditional: 100, withAI: 178, increase: 78 },
-  { period: "Mês 10", traditional: 100, withAI: 184, increase: 84 },
-  { period: "Mês 11", traditional: 100, withAI: 189, increase: 89 },
-  { period: "Mês 12", traditional: 100, withAI: 195, increase: 95 }
-];
-
-// Histórico de melhorias (baseado no período atual)
-const getImprovements = (selectedPeriod: string) => {
-  const baseImprovements = [
-    { metric: "Produtividade", before: "100%", after: "156%", improvement: "+56%", period6: "+56%", period12: "+95%" },
-    { metric: "Economia de Água", before: "0%", after: "34%", improvement: "+34%", period6: "+34%", period12: "+52%" },
-    { metric: "Eficiência pH", before: "70%", after: "94%", improvement: "+24%", period6: "+24%", period12: "+38%" },
-    { metric: "Aproveitamento Solar", before: "N/A", after: "87%", improvement: "Novo", period6: "Novo", period12: "Implementado" },
-    { metric: "Prevenção Chuva", before: "Manual", after: "100%", improvement: "Automático", period6: "Automático", period12: "Otimizado" },
-    { metric: "Controle Umidade", before: "±15%", after: "±3%", improvement: "+400%", period6: "+400%", period12: "+650%" }
-  ];
-
-  return baseImprovements.map(item => ({
-    ...item,
-    improvement: selectedPeriod === "12months" ? item.period12 : item.period6,
-    after: selectedPeriod === "12months" && item.metric === "Produtividade" ? "195%" : 
-           selectedPeriod === "12months" && item.metric === "Economia de Água" ? "52%" :
-           selectedPeriod === "12months" && item.metric === "Eficiência pH" ? "97%" : item.after
-  }));
-};
-
 export const HistoryDashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("6months");
   const [decisionFlowData, setDecisionFlowData] = useState([]);
@@ -51,6 +15,13 @@ export const HistoryDashboard = () => {
   const [errorDecisionFlow, setErrorDecisionFlow] = useState<string | null>(null);
   const [loadingEnvironmental, setLoadingEnvironmental] = useState(true);
   const [errorEnvironmental, setErrorEnvironmental] = useState<string | null>(null);
+  const [dbStats, setDbStats] = useState<any>(null);
+  const [loadingDbStats, setLoadingDbStats] = useState(true);
+  const [errorDbStats, setErrorDbStats] = useState<string | null>(null);
+
+  const [productivityData, setProductivityData] = useState({ chartData: [], improvements: [] });
+  const [loadingProductivity, setLoadingProductivity] = useState(true);
+  const [errorProductivity, setErrorProductivity] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDecisionFlow = async () => {
@@ -82,14 +53,45 @@ export const HistoryDashboard = () => {
       }
     };
 
+    const fetchDbStats = async () => {
+      try {
+        setLoadingDbStats(true);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/history/sensor-database-stats`);
+        if (!response.ok) throw new Error('Falha ao buscar estatísticas do banco de dados');
+        const data = await response.json();
+        setDbStats(data);
+      } catch (err: any) {
+        setErrorDbStats(err.message);
+      } finally {
+        setLoadingDbStats(false);
+      }
+    };
+
+    const fetchProductivityData = async () => {
+      const months = selectedPeriod === "3months" ? 3 : selectedPeriod === "6months" ? 6 : 12;
+      try {
+        setLoadingProductivity(true);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/history/productivity-evolution?months=${months}`);
+        if (!response.ok) throw new Error('Falha ao buscar dados de produtividade');
+        const data = await response.json();
+        setProductivityData(data);
+      } catch (err: any) {
+        setErrorProductivity(err.message);
+      } finally {
+        setLoadingProductivity(false);
+      }
+    };
+
     fetchDecisionFlow();
     fetchEnvironmentalCorrelation();
-  }, []);
+    fetchDbStats();
+    fetchProductivityData();
+  }, [selectedPeriod]);
 
   // Filtra dados baseado no período selecionado
   const getFilteredData = () => {
     const monthsToShow = selectedPeriod === "3months" ? 3 : selectedPeriod === "6months" ? 6 : 12;
-    return productivityData.slice(0, monthsToShow);
+    return productivityData.chartData.slice(0, monthsToShow);
   };
 
   return (
@@ -130,10 +132,19 @@ export const HistoryDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {loadingProductivity && (
+                <div className="flex justify-center items-center h-[400px]">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              )}
+              {errorProductivity && (
+                <p className="text-destructive text-center h-[400px] flex items-center justify-center">{errorProductivity}</p>
+              )}
+              {!loadingProductivity && !errorProductivity && (
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={getFilteredData()}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="period" />
+                  <XAxis dataKey="period" tick={{ fontSize: 12 }} />
                   <YAxis />
                   <Tooltip />
                   <Legend />
@@ -141,17 +152,20 @@ export const HistoryDashboard = () => {
                   <Line type="monotone" dataKey="withAI" stroke="#22c55e" strokeWidth={3} name="Sistema com IA" />
                 </LineChart>
               </ResponsiveContainer>
+              )}
               
+              {!loadingProductivity && getFilteredData().length > 0 && (
               <div className="mt-6 p-4 bg-success/10 rounded-lg border border-success/20">
                 <div className="text-center">
                   <h3 className="text-2xl font-bold text-success">
-                    +{getFilteredData()[getFilteredData().length - 1]?.increase}% de Aumento
+                    +{getFilteredData().slice(-1)[0]?.increase}% de Aumento
                   </h3>
                   <p className="text-success/80">
                     na produtividade em {selectedPeriod === "3months" ? "3" : selectedPeriod === "6months" ? "6" : "12"} meses
                   </p>
                 </div>
               </div>
+              )}
             </CardContent>
           </Card>
 
@@ -162,7 +176,9 @@ export const HistoryDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {getImprovements(selectedPeriod).map((item, index) => (
+                {loadingProductivity && <p>Carregando melhorias...</p>}
+                {errorProductivity && <p className="text-destructive">{errorProductivity}</p>}
+                {!loadingProductivity && productivityData.improvements.map((item: any, index: number) => (
                   <div key={index} className="p-4 border rounded-lg bg-card">
                     <h4 className="font-semibold mb-2">{item.metric}</h4>
                     <div className="flex justify-between text-sm mb-1">
@@ -202,7 +218,7 @@ export const HistoryDashboard = () => {
               )}
               {errorDecisionFlow && (
                 <p className="text-sm text-destructive">Erro: {errorDecisionFlow}</p>
-              </p>
+              )}
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -269,7 +285,7 @@ export const HistoryDashboard = () => {
               )}
               {errorEnvironmental && (
                 <p className="text-sm text-destructive">Erro: {errorEnvironmental}</p>
-              </p>
+              )}
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
@@ -321,65 +337,62 @@ export const HistoryDashboard = () => {
                 <Database className="h-5 w-5 text-primary" />
                 Banco de Dados de Sensores
               </CardTitle>
+              {loadingDbStats && (
+                <div className="flex justify-center items-center p-4">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  <span className="ml-2 text-muted-foreground">Carregando estatísticas...</span>
+                </div>
+              )}
+              {errorDbStats && (
+                <p className="text-sm text-destructive">Erro: {errorDbStats}</p>
+              )}
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-4 border rounded-lg text-center">
-                  <h4 className="font-semibold">Registros Totais</h4>
-                  <p className="text-2xl font-bold text-primary">
-                    {selectedPeriod === "3months" ? "44,671" : selectedPeriod === "6months" ? "89,342" : "178,684"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Últimos {selectedPeriod === "3months" ? "3" : selectedPeriod === "6months" ? "6" : "12"} meses
-                  </p>
+            {dbStats && (
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="p-4 border rounded-lg text-center">
+                    <h4 className="font-semibold">Registros Totais</h4>
+                    <p className="text-2xl font-bold text-primary">
+                      {dbStats.totalRecords.toLocaleString('pt-BR')}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Desde o início
+                    </p>
+                  </div>
+                  <div className="p-4 border rounded-lg text-center">
+                    <h4 className="font-semibold">Medições/Dia</h4>
+                    <p className="text-2xl font-bold text-success">{dbStats.measurementsPerDay.toLocaleString('pt-BR')}</p>
+                    <p className="text-xs text-muted-foreground">Últimas 24 horas</p>
+                  </div>
+                  <div className="p-4 border rounded-lg text-center">
+                    <h4 className="font-semibold">Precisão Sensores</h4>
+                    <p className="text-2xl font-bold text-warning">{dbStats.sensorAccuracy}%</p>
+                    <p className="text-xs text-muted-foreground">Taxa de acerto (estimada)</p>
+                  </div>
+                  <div className="p-4 border rounded-lg text-center">
+                    <h4 className="font-semibold">Armazenamento</h4>
+                    <p className="text-2xl font-bold text-destructive">{dbStats.storageUsed} MB</p>
+                    <p className="text-xs text-muted-foreground">Dados históricos (estimado)</p>
+                  </div>
                 </div>
-                <div className="p-4 border rounded-lg text-center">
-                  <h4 className="font-semibold">Medições/Dia</h4>
-                  <p className="text-2xl font-bold text-success">2,880</p>
-                  <p className="text-xs text-muted-foreground">A cada 30 segundos</p>
-                </div>
-                <div className="p-4 border rounded-lg text-center">
-                  <h4 className="font-semibold">Precisão Sensores</h4>
-                  <p className="text-2xl font-bold text-warning">98.7%</p>
-                  <p className="text-xs text-muted-foreground">Taxa de acerto</p>
-                </div>
-                <div className="p-4 border rounded-lg text-center">
-                  <h4 className="font-semibold">Armazenamento</h4>
-                  <p className="text-2xl font-bold text-destructive">847 MB</p>
-                  <p className="text-xs text-muted-foreground">Dados históricos</p>
-                </div>
-              </div>
 
-              <div className="mt-6 space-y-3">
-                <h4 className="font-semibold">Status dos Sensores</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Nível de Água (4 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Detecção de Chuva (2 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Umidade do Solo (12 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">pH do Solo (4 sensores)</span>
-                    <Badge variant="secondary">Calibrando</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Temperatura (6 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Intensidade Solar (2 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
+                <div className="mt-6 space-y-3">
+                  <h4 className="font-semibold">Status dos Sensores</h4>
+                  <div className="space-y-2">
+                    {dbStats.sensorStatus.map((sensor, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm">{sensor.name}</span>
+                        <Badge variant={sensor.status === '100% Online' ? 'default' : 'secondary'}>{sensor.status}</Badge>
+                      </div>
+                    ))}
+                     <div className="flex items-center justify-between">
+                      <span className="text-sm">Detecção de Chuva (0 sensores)</span>
+                      <Badge variant="outline">Não instalado</Badge>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
+              </CardContent>
+            )}
           </Card>
         </TabsContent>
       </Tabs>

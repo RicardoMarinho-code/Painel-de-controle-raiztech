@@ -182,6 +182,65 @@ def get_ai_performance_summary():
     summary_data['waterSaved'] = summary_data.pop('monthlySavings')
     return jsonify(summary_data), 200
 
+@history_bp.route('/history/ai-reports', methods=['GET'])
+def get_ai_reports():
+    """Busca dados para os cards de relatórios de IA."""
+    query = """
+        SELECT
+            (SELECT SUM(padroes_ml) FROM Cultura) as totalPatterns,
+            (SELECT COUNT(*) FROM DecisaoIA WHERE data_hora >= NOW() - INTERVAL 7 DAY) as newPatternsLastWeek,
+            (SELECT AVG(eficiencia) FROM Cultura) as globalEfficiency,
+            (SELECT SUM(volume_economizado) FROM DecisaoIA WHERE MONTH(data_hora) = MONTH(CURDATE())) as monthlySavings,
+            (SELECT AVG(confianca) FROM DecisaoIA) as decisionAccuracy
+    """
+    result = mysql_db.execute_query(query)
+
+    if result is None or not result:
+        return jsonify({"error": "Erro ao buscar dados para relatórios de IA"}), 500
+
+    stats = result[0]
+
+    reports = [
+        {
+            "title": "Padrões de Aprendizado da IA",
+            "type": "ai-learning",
+            "period": "Última semana",
+            "value": f"{int(stats.get('newPatternsLastWeek') or 0)} novos",
+            "change": "+15%", # Mockado, pois não há histórico para comparar
+            "trend": "up",
+            "description": "Novos padrões identificados pelo machine learning"
+        },
+        {
+            "title": "Eficiência Hídrica Global",
+            "type": "efficiency",
+            "period": "Média geral",
+            "value": f"{round(float(stats.get('globalEfficiency') or 0), 1)}%",
+            "change": "+1.8%", # Mockado
+            "trend": "up",
+            "description": "Eficiência média de todas as culturas com IA"
+        },
+        {
+            "title": "Economia por IA",
+            "type": "ai-savings",
+            "period": "Este mês",
+            "value": f"{int(stats.get('monthlySavings') or 0)}L",
+            "change": "+18.7%", # Mockado
+            "trend": "up",
+            "description": "Água economizada pelas decisões inteligentes da IA"
+        },
+        {
+            "title": "Precisão das Decisões",
+            "type": "accuracy",
+            "period": "Média geral",
+            "value": f"{round(float(stats.get('decisionAccuracy') or 0), 1)}%",
+            "change": "+4.2%", # Mockado
+            "trend": "up",
+            "description": "Acurácia das decisões de irrigação da IA"
+        }
+    ]
+
+    return jsonify(reports), 200
+
 @history_bp.route('/history/culture-analysis', methods=['GET'])
 def get_culture_analysis():
     """Busca dados de análise de IA por cultura."""
@@ -191,12 +250,17 @@ def get_culture_analysis():
         SELECT 
             C.nome AS culture,
             (SELECT COUNT(I.ID_irrigador) FROM Irrigador I JOIN Zona Z ON I.ID_zona_fk = Z.ID_zona WHERE Z.nome LIKE CONCAT('%', C.nome, '%')) as irrigators,
+            COUNT(DISTINCT I.ID_irrigador) as irrigators,
             C.padroes_ml as patternsLearned,
             C.eficiencia as efficiency,
             C.economia as waterSaved, -- Assumindo que a economia na tabela Cultura é por semana
             C.statusIA as aiStatus
         FROM Cultura C
         JOIN Setor S ON C.ID_setor_fk = S.ID_setor
+        JOIN PropriedadeRural P ON S.ID_propriedade_fk = P.ID_propriedade
+        JOIN Zona Z ON P.ID_propriedade = Z.ID_propriedade_fk
+        LEFT JOIN Irrigador I ON Z.ID_zona = I.ID_zona_fk
+        GROUP BY C.ID_cultura, C.nome, C.padroes_ml, C.eficiencia, C.economia, C.statusIA
         ORDER BY C.nome;
     """
     result = mysql_db.execute_query(query)
@@ -228,12 +292,110 @@ def get_schedule_summary_stats():
 @history_bp.route('/schedule/recent-patterns', methods=['GET'])
 def get_recent_patterns():
     """Retorna uma lista de padrões de aprendizado recentes da IA."""
-    # NOTA: O schema atual não possui uma tabela para "Padrões Aprendidos" detalhados.
-    # Esta rota retorna dados mockados estruturados, simulando o que viria do banco.
-    # Para uma implementação real, seria necessária uma nova tabela (ex: PadroesAprendidos).
-    mock_patterns = [
-        {"pattern": "Correlação Clima-Solo", "description": "IA identifica padrões entre previsão meteorológica e necessidade hídrica", "culturesAffected": ["Milho", "Soja"], "efficiency": "+12%", "learned": "há 2 semanas"},
-        {"pattern": "Otimização Horário-Temperatura", "description": "Irrigação noturna mais eficiente para reduzir evaporação", "culturesAffected": ["Soja", "Feijão"], "efficiency": "+8%", "learned": "há 1 semana"},
-        {"pattern": "Micro-irrigação Verduras", "description": "Pequenas doses frequentes para culturas sensíveis", "culturesAffected": ["Verduras"], "efficiency": "+18%", "learned": "há 3 dias"}
+    query = """
+        SELECT 
+            nome as pattern,
+            descricao as description,
+            culturas_afetadas as culturesAffected,
+            ganho_eficiencia as efficiency,
+            data_aprendizado as learned
+        FROM PadroesAprendidos
+        ORDER BY data_aprendizado DESC
+        LIMIT 3;
+    """
+    result = mysql_db.execute_query(query)
+
+    if result is None:
+        return jsonify({"error": "Erro ao buscar padrões de aprendizado"}), 500
+
+    for row in result:
+        row['culturesAffected'] = row['culturesAffected'].split(',')
+        row['efficiency'] = f"+{row['efficiency']}%"
+        row['learned'] = f"há {abs((datetime.now().date() - row['learned']).days)} dias"
+
+    return jsonify(result), 200
+
+@history_bp.route('/history/sensor-database-stats', methods=['GET'])
+def get_sensor_database_stats():
+    """Busca estatísticas do banco de dados de sensores."""
+    query = """
+        SELECT
+            (SELECT COUNT(*) FROM Medicao) as totalRecords,
+            (SELECT COUNT(*) FROM Medicao WHERE data_hora >= NOW() - INTERVAL 24 HOUR) as recordsToday,
+            (SELECT COUNT(*) FROM Sensor WHERE tipo = 'Umidade') as humiditySensors,
+            (SELECT COUNT(*) FROM Sensor WHERE tipo = 'pH') as phSensors,
+            (SELECT COUNT(*) FROM Sensor WHERE tipo = 'Temperatura') as tempSensors,
+            (SELECT COUNT(*) FROM Sensor WHERE tipo = 'LuzSolar') as lightSensors,
+            (SELECT COUNT(*) FROM Sensor WHERE tipo = 'Reservatorio') as reservoirSensors
+    """
+    result = mysql_db.execute_query(query)
+
+    if result is None or not result:
+        return jsonify({"error": "Erro ao buscar estatísticas do banco de dados de sensores"}), 500
+
+    stats = result[0]
+
+    # Calcula medições por dia (aproximado)
+    records_today = int(stats.get('recordsToday') or 0)
+    measurements_per_day = records_today if records_today > 0 else 2880 # Fallback para o valor mockado
+
+    response_data = {
+        "totalRecords": int(stats.get('totalRecords') or 0),
+        "measurementsPerDay": measurements_per_day,
+        "sensorAccuracy": 98.7, # Mockado, pois não há como calcular
+        "storageUsed": 847, # Mockado, pois depende do SGBD
+        "sensorStatus": [
+            {"name": f"Nível de Água ({stats.get('reservoirSensors', 0)} sensores)", "status": "100% Online"},
+            {"name": f"Umidade do Solo ({stats.get('humiditySensors', 0)} sensores)", "status": "100% Online"},
+            {"name": f"pH do Solo ({stats.get('phSensors', 0)} sensores)", "status": "Calibrando"}, # Mockado
+            {"name": f"Temperatura ({stats.get('tempSensors', 0)} sensores)", "status": "100% Online"},
+            {"name": f"Intensidade Solar ({stats.get('lightSensors', 0)} sensores)", "status": "100% Online"}
+        ]
+    }
+    return jsonify(response_data), 200
+
+@history_bp.route('/history/productivity-evolution', methods=['GET'])
+def get_productivity_evolution():
+    """Busca dados da evolução da produtividade e melhorias."""
+    period_months = request.args.get('months', 6, type=int)
+
+    # Query para o gráfico de produtividade
+    query_chart = """
+        SELECT 
+            DATE_FORMAT(mes_ano, '%%b/%%y') as period,
+            100 as traditional,
+            produtividade_ia as withAI,
+            (produtividade_ia - 100) as increase
+        FROM HistoricoProdutividade
+        ORDER BY mes_ano ASC
+        LIMIT %s;
+    """
+    chart_data = mysql_db.execute_query(query_chart, (period_months,))
+
+    # Query para os cards de melhorias (usando o último registro do período)
+    query_improvements = """
+        SELECT 
+            produtividade_ia,
+            economia_agua_ia,
+            eficiencia_ph_ia
+        FROM HistoricoProdutividade
+        ORDER BY mes_ano DESC
+        LIMIT 1;
+    """
+    latest_data = mysql_db.execute_query(query_improvements)
+
+    if chart_data is None or latest_data is None:
+        return jsonify({"error": "Erro ao buscar dados de produtividade"}), 500
+
+    stats = latest_data[0] if latest_data else {}
+    
+    improvements_data = [
+        {"metric": "Produtividade", "before": "100%", "after": f"{stats.get('produtividade_ia', 0)}%", "improvement": f"+{stats.get('produtividade_ia', 0) - 100}%"},
+        {"metric": "Economia de Água", "before": "0%", "after": f"{stats.get('economia_agua_ia', 0)}%", "improvement": f"+{stats.get('economia_agua_ia', 0)}%"},
+        {"metric": "Eficiência pH", "before": "70%", "after": f"{stats.get('eficiencia_ph_ia', 0)}%", "improvement": f"+{stats.get('eficiencia_ph_ia', 0) - 70}%"},
+        {"metric": "Aproveitamento Solar", "before": "N/A", "after": "87%", "improvement": "Novo"}, # Mockado
+        {"metric": "Prevenção Chuva", "before": "Manual", "after": "100%", "improvement": "Automático"}, # Mockado
+        {"metric": "Controle Umidade", "before": "±15%", "after": "±3%", "improvement": "+400%"} # Mockado
     ]
-    return jsonify(mock_patterns), 200
+
+    return jsonify({"chartData": chart_data, "improvements": improvements_data}), 200

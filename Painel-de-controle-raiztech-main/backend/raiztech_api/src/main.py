@@ -26,6 +26,7 @@ CORS(app)
 app.register_blueprint(agricultor_bp, url_prefix='/api')
 app.register_blueprint(sensores_bp, url_prefix='/api')
 app.register_blueprint(irrigacao_bp, url_prefix='/api')
+app.register_blueprint(empreendimento_bp, url_prefix='/api')
 app.register_blueprint(history_bp, url_prefix='/api')
 
 @app.route('/', defaults={'path': ''})

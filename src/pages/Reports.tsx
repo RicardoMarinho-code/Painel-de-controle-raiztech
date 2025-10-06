@@ -26,50 +26,8 @@ const Reports = () => {
     decisionAccuracy: 0,
   });
   const [cultureAnalysis, setCultureAnalysis] = useState([]);
-
-  // URL base da API (deve vir de variáveis de ambiente)
+  const [aiReports, setAiReports] = useState([]);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-
-  // Mock de dados para os cards de relatório, pois não criamos endpoint para eles ainda
-  // para manter o exemplo focado.
-  const aiReports = [
-    {
-      title: "Padrões de Aprendizado da IA",
-      type: "ai-learning",
-      period: "Última semana",
-      value: "127 novos",
-      change: "+23%",
-      trend: "up",
-      description: "Novos padrões identificados pelo machine learning"
-    },
-    {
-      title: "Eficiência Hídrica Global", 
-      type: "efficiency",
-      period: "Último mês",
-      value: "94.2%",
-      change: "+2.1%",
-      trend: "up",
-      description: "Eficiência média dos 6 irrigadores inteligentes"
-    },
-    {
-      title: "Economia por IA",
-      type: "ai-savings",
-      period: "Março 2024",
-      value: "3.240L",
-      change: "+18.7%",
-      trend: "up",
-      description: "Água economizada pelas decisões inteligentes da IA"
-    },
-    {
-      title: "Precisão das Decisões",
-      type: "accuracy",
-      period: "Safra atual",
-      value: "96.8%",
-      change: "+4.2%",
-      trend: "up", 
-      description: "Acurácia das decisões de irrigação da IA"
-    }
-  ];
 
   useEffect(() => {
     // Função para buscar os dados de resumo
@@ -94,8 +52,20 @@ const Reports = () => {
       }
     };
 
+    // Função para buscar os dados dos cards de relatório
+    const fetchAiReports = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/history/ai-reports`);
+        const data = await response.json();
+        setAiReports(data);
+      } catch (error) {
+        console.error("Erro ao buscar relatórios da IA:", error);
+      }
+    };
+
     fetchSummary();
     fetchCultureAnalysis();
+    fetchAiReports();
   }, [API_BASE_URL]);
 
   const getTrendIcon = (trend: string) => {

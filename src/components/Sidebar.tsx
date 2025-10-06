@@ -10,7 +10,9 @@ import {
   MapPin,
   Calendar,
   ChevronLeft,
-  Menu
+  Menu,
+  Users, Building, Beaker
+  Briefcase
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -23,6 +25,10 @@ const menuItems = [
   { title: "Áreas", icon: MapPin, path: "/areas" },
   { title: "Relatórios", icon: BarChart3, path: "/reports" },
   { title: "Agendamentos", icon: Calendar, path: "/schedule" },
+  { title: "Agricultores", icon: Users, path: "/farmers" },
+  { title: "Propriedades", icon: Building, path: "/properties" },
+  { title: "Reservatórios", icon: Beaker, path: "/reservoirs" },
+  { title: "Empreendimentos", icon: Briefcase, path: "/enterprises" },
   { title: "Configurações", icon: Settings, path: "/settings" },
 ];
 
