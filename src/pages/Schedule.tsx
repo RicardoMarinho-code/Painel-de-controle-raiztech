@@ -1,5 +1,5 @@
 import { Header } from "@/components/Header";
-import { useEffect, useState } from "react";
+import { useFetch } from "@/hooks/useFetch";
 import { Sidebar } from "@/components/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,53 +15,39 @@ import {
   Loader2
 } from "lucide-react";
 
+interface AiDecision {
+  id: number;
+  irrigator: string;
+  zone: string;
+  decision: string;
+  reason: string;
+  time: string;
+  confidence: string;
+  waterSaved: string;
+  aiModel: string;
+  status: "executed" | "warning" | "active" | "scheduled" | "pending";
+}
+
+interface AiSummary {
+  learnedPatterns: number;
+  decisionAccuracy: number;
+  waterEfficiency: number;
+  monthlySavings: number;
+}
+
+interface AiPattern {
+  pattern: string;
+  description: string;
+  culturesAffected: string[];
+  efficiency: string;
+  learned: string;
+}
+
 const Schedule = () => {
-  const [aiDecisions, setAiDecisions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchDecisions = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/schedule/ai-decisions`);
-        if (!response.ok) {
-          throw new Error('Falha ao buscar as decisões da IA.');
-        }
-        const data = await response.json();
-        setAiDecisions(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDecisions();
-  }, []);
-
-  const aiPatterns = [
-    {
-      pattern: "Correlação Clima-Solo",
-      description: "IA identifica padrões entre previsão meteorológica e necessidade hídrica",
-      culturesAffected: ["Milho", "Soja"],
-      efficiency: "+12%",
-      learned: "há 2 semanas"
-    },
-    {
-      pattern: "Otimização Horário-Temperatura",
-      description: "Irrigação noturna mais eficiente para reduzir evaporação",
-      culturesAffected: ["Soja", "Feijão"],
-      efficiency: "+8%",
-      learned: "há 1 semana"
-    },
-    {
-      pattern: "Micro-irrigação Verduras",
-      description: "Pequenas doses frequentes para culturas sensíveis",
-      culturesAffected: ["Verduras"],
-      efficiency: "+18%",
-      learned: "há 3 dias"
-    }
-  ];
+  // Busca os dados usando o hook personalizado
+  const { data: aiDecisions, loading, error } = useFetch<AiDecision[]>('/schedule/ai-decisions', []);
+  const { data: summary, loading: loadingSummary } = useFetch<AiSummary>('/schedule/ai-summary-stats', { learnedPatterns: 0, decisionAccuracy: 0, waterEfficiency: 0, monthlySavings: 0 });
+  const { data: aiPatterns } = useFetch<AiPattern[]>('/schedule/recent-patterns', []);
 
   const getDecisionStatus = (status: string) => {
     switch (status) {
@@ -137,24 +123,30 @@ const Schedule = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">615</div>
-                  <p className="text-sm text-muted-foreground">Padrões Aprendidos</p>
+              {loadingSummary ? (
+                <div className="flex justify-center items-center p-4">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-success">96.8%</div>
-                  <p className="text-sm text-muted-foreground">Precisão Decisões</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{summary.learnedPatterns}</div>
+                    <p className="text-sm text-muted-foreground">Padrões Aprendidos</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-success">{summary.decisionAccuracy}%</div>
+                    <p className="text-sm text-muted-foreground">Precisão Decisões</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-accent">{summary.waterEfficiency}%</div>
+                    <p className="text-sm text-muted-foreground">Eficiência Hídrica</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{summary.monthlySavings}L</div>
+                    <p className="text-sm text-muted-foreground">Economia Mensal</p>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-accent">94.2%</div>
-                  <p className="text-sm text-muted-foreground">Eficiência Hídrica</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">3.240L</div>
-                  <p className="text-sm text-muted-foreground">Economia Mensal</p>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
@@ -165,14 +157,14 @@ const Schedule = () => {
               <span>Decisões Autônomas de Hoje</span>
             </h2>
             
-            {loading && (
+            {loading ? (
               <div className="flex justify-center items-center p-8">
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 <span className="ml-2">Carregando decisões...</span>
               </div>
             )}
             {error && <p className="text-destructive text-center">{error}</p>}
-            {!loading && !error && aiDecisions.map((decision: any) => (
+            {!loading && !error && aiDecisions.map((decision: AiDecision) => (
                 <Card key={decision.id}>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
@@ -232,7 +224,7 @@ const Schedule = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {aiPatterns.map((pattern, index) => (
+                {aiPatterns.map((pattern: AiPattern, index) => (
                   <div key={index} className="p-4 rounded-lg border bg-muted/20">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-medium text-primary">{pattern.pattern}</h3>

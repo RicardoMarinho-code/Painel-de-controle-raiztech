@@ -207,3 +207,165 @@ def get_ai_summary():
         }), 200
     else:
         return jsonify({"error": "Erro ao buscar resumo da IA"}), 500
+
+@irrigacao_bp.route('/dashboard/farm-stats', methods=['GET'])
+def get_farm_stats():
+    """Retorna estatísticas gerais da fazenda para o dashboard principal."""
+    query = """
+        SELECT
+            (SELECT COUNT(*) FROM Irrigador WHERE status_ = 'Ativo') as activeIrrigators,
+            (SELECT COUNT(*) FROM Irrigador) as totalIrrigators,
+            (SELECT AVG(C.eficiencia) FROM Cultura C) as waterEfficiency,
+            (SELECT COUNT(*) FROM Cultura WHERE statusIA = 'Aprendendo') as learningCultures,
+            (SELECT SUM(Z.area) FROM Zona Z) as totalCoverage
+    """
+    result = mysql_db.execute_query(query)
+
+    if result is None or not result:
+        return jsonify({"error": "Erro ao buscar estatísticas da fazenda"}), 500
+
+    stats = result[0]
+    
+    response_data = {
+        "activeIrrigators": {
+            "value": int(stats.get('activeIrrigators') or 0),
+            "unit": f"/{int(stats.get('totalIrrigators') or 0)}"
+        },
+        "waterEfficiency": {
+            "value": round(float(stats.get('waterEfficiency') or 0), 1),
+            "unit": "%"
+        },
+        "learningCultures": {
+            "value": int(stats.get('learningCultures') or 0),
+            "unit": " culturas"
+        },
+        "totalCoverage": {
+            "value": round(float(stats.get('totalCoverage') or 0), 1),
+            "unit": " hectares"
+        }
+    }
+
+    return jsonify(response_data), 200
+
+@irrigacao_bp.route('/dashboard/irrigators-summary', methods=['GET'])
+def get_irrigators_summary():
+    """Busca um resumo dos irrigadores para o dashboard."""
+    query = """
+        SELECT 
+            I.ID_irrigador as id,
+            CONCAT('Irrigador ', I.nome) as name,
+            S.cultura as culture,
+            Z.nome as zone,
+            C.statusIA as aiStatus,
+            C.eficiencia as efficiency
+        FROM Irrigador I
+        JOIN Zona Z ON I.ID_zona_fk = Z.ID_zona
+        LEFT JOIN Setor S ON Z.ID_propriedade_fk = S.ID_propriedade_fk AND Z.nome LIKE CONCAT('%', S.cultura, '%')
+        LEFT JOIN Cultura C ON S.ID_setor = C.ID_setor_fk
+        ORDER BY I.ID_irrigador
+        LIMIT 3;
+    """
+    result = mysql_db.execute_query(query)
+
+    if result is None:
+        return jsonify({"error": "Erro ao buscar resumo dos irrigadores"}), 500
+
+    # Formatação para o frontend
+    for row in result:
+        row['aiStatus'] = row.get('aiStatus') or 'Básico'
+        row['efficiency'] = f"{row.get('efficiency') or 0}%"
+        # Mock de dados não presentes no banco para manter a UI
+        row['lastDecision'] = "Analisando dados..."
+        row['nextAction'] = "Aguardando IA"
+
+    return jsonify(result), 200
+
+@irrigacao_bp.route('/irrigators/summary-stats', methods=['GET'])
+def get_irrigators_summary_stats():
+    """Retorna estatísticas de resumo para a página de Irrigadores."""
+    query = """
+        SELECT
+            (SELECT COUNT(*) FROM Irrigador WHERE status_ = 'Ativo') as activeIrrigators,
+            (SELECT COUNT(*) FROM Irrigador) as totalIrrigators,
+            (SELECT AVG(C.eficiencia) FROM Cultura C JOIN Setor S ON C.ID_setor_fk = S.ID_setor JOIN Zona Z ON S.ID_propriedade_fk = Z.ID_propriedade_fk JOIN Irrigador I ON Z.ID_zona = I.ID_zona_fk WHERE I.status_ = 'Ativo') as averageEfficiency,
+            (SELECT SUM(Z.area) FROM Zona Z JOIN Irrigador I ON Z.ID_zona = I.ID_zona_fk WHERE I.status_ = 'Ativo') as totalCoverage,
+            (SELECT SUM(C.economia) FROM Cultura C JOIN Setor S ON C.ID_setor_fk = S.ID_setor JOIN Zona Z ON S.ID_propriedade_fk = Z.ID_propriedade_fk JOIN Irrigador I ON Z.ID_zona = I.ID_zona_fk WHERE I.status_ = 'Ativo') as weeklySavings,
+            (SELECT AVG(confianca) FROM DecisaoIA) as averageConfidence
+    """
+    result = mysql_db.execute_query(query)
+
+    if result is None or not result:
+        return jsonify({"error": "Erro ao buscar estatísticas dos irrigadores"}), 500
+
+    stats = result[0]
+
+    response_data = {
+        "activeIrrigators": int(stats.get('activeIrrigators') or 0),
+        "totalIrrigators": int(stats.get('totalIrrigators') or 0),
+        "averageEfficiency": round(float(stats.get('averageEfficiency') or 0), 1),
+        "totalCoverage": round(float(stats.get('totalCoverage') or 0), 1),
+        "weeklySavings": int(stats.get('weeklySavings') or 0),
+        "averageConfidence": round(float(stats.get('averageConfidence') or 0), 1)
+    }
+
+    return jsonify(response_data), 200
+
+@irrigacao_bp.route('/irrigators/details', methods=['GET'])
+def get_irrigators_details():
+    """Busca detalhes de todos os irrigadores para a página de Sensores."""
+    query = """
+        SELECT 
+            I.ID_irrigador as id,
+            CONCAT('Irrigador Inteligente ', I.nome) as name,
+            Z.nome as zone,
+            S.cultura as culture,
+            I.status_ as status,
+            C.statusIA as aiStatus,
+            C.eficiencia as efficiency,
+            Z.area as coverage,
+            C.padroes_ml as patternsLearned,
+            C.economia as waterSaved,
+            (SELECT valor_medicao FROM Medicao M JOIN Sensor SN ON M.ID_sensor_fk = SN.ID_sensor WHERE SN.tipo = 'Umidade' AND M.ID_zona_fk = I.ID_zona_fk ORDER BY M.data_hora DESC LIMIT 1) as soilMoisture
+        FROM Irrigador I
+        JOIN Zona Z ON I.ID_zona_fk = Z.ID_zona
+        LEFT JOIN Setor S ON Z.ID_propriedade_fk = S.ID_propriedade_fk AND Z.nome LIKE CONCAT('%', S.cultura, '%')
+        LEFT JOIN Cultura C ON S.ID_setor = C.ID_setor_fk
+        ORDER BY I.ID_irrigador;
+    """
+    result = mysql_db.execute_query(query)
+
+    if result is None:
+        return jsonify({"error": "Erro ao buscar detalhes dos irrigadores"}), 500
+
+    # Formatação e adição de dados mockados para manter a UI
+    for row in result:
+        # Mapeia o status do irrigador para o status da IA exibido
+        if row['status'] == 'Manutenção':
+            row['aiStatus'] = 'Manutenção'
+            row['efficiency'] = 0
+            row['soilMoisture'] = 'N/A'
+        else:
+            row['aiStatus'] = row.get('aiStatus') or 'Básico'
+            row['efficiency'] = row.get('efficiency') or 0
+            row['soilMoisture'] = f"{int(row.get('soilMoisture') or 60)}%"
+
+        row['efficiency'] = f"{row['efficiency']}%"
+        row['coverage'] = f"{row['coverage']} hectares"
+        row['patternsLearned'] = int(row.get('patternsLearned') or 0)
+        row['waterSaved'] = f"{int(row.get('waterSaved') or 0)}L esta semana"
+
+        # Mock de dados não existentes no banco
+        row['battery'] = f"{100 - row['id'] * 5}%" if row['status'] != 'Manutenção' else "15%"
+        row['connectivity'] = "Excelente" if row['id'] % 2 != 0 else "Boa"
+        if row['status'] == 'Manutenção':
+            row['connectivity'] = "Sem sinal"
+        
+        # Mock de decisão baseado no status
+        decisions = {
+            "Otimizado": "Irrigação otimizada",
+            "Aprendendo": "Aguardou previsão de chuva",
+            "Manutenção": "Aguardando manutenção"
+        }
+        row['lastDecision'] = decisions.get(row['aiStatus'], "Analisando dados")
+
+    return jsonify(result), 200
