@@ -157,7 +157,7 @@ const Schedule = () => {
               <span>Decisões Autônomas de Hoje</span>
             </h2>
             
-            {loading ? (
+            {loading && (
               <div className="flex justify-center items-center p-8">
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 <span className="ml-2">Carregando decisões...</span>
