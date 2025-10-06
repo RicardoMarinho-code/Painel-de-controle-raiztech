@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardCard } from "@/components/DashboardCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,20 @@ import {
 } from "lucide-react";
 
 const Reports = () => {
+  // Estados para armazenar os dados do backend
+  const [summary, setSummary] = useState({
+    learnedPatterns: 0,
+    averageEfficiency: 0,
+    waterSaved: 0,
+    decisionAccuracy: 0,
+  });
+  const [cultureAnalysis, setCultureAnalysis] = useState([]);
+
+  // URL base da API (deve vir de variáveis de ambiente)
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
+  // Mock de dados para os cards de relatório, pois não criamos endpoint para eles ainda
+  // para manter o exemplo focado.
   const aiReports = [
     {
       title: "Padrões de Aprendizado da IA",
@@ -56,40 +71,32 @@ const Reports = () => {
     }
   ];
 
-  const cultureAnalysis = [
-    {
-      culture: "Milho",
-      irrigators: 2,
-      patternsLearned: 161,
-      efficiency: "94.5%",
-      waterSaved: "460L/semana",
-      aiStatus: "Otimizado"
-    },
-    {
-      culture: "Soja",
-      irrigators: 2,
-      patternsLearned: 89,
-      efficiency: "89.1%",
-      waterSaved: "280L/semana",
-      aiStatus: "Aprendendo"
-    },
-    {
-      culture: "Feijão",
-      irrigators: 1,
-      patternsLearned: 156,
-      efficiency: "92.7%",
-      waterSaved: "420L/semana",
-      aiStatus: "Otimizado"
-    },
-    {
-      culture: "Verduras",
-      irrigators: 1,
-      patternsLearned: 203,
-      efficiency: "94.8%",
-      waterSaved: "380L/semana",
-      aiStatus: "Especialista"
-    }
-  ];
+  useEffect(() => {
+    // Função para buscar os dados de resumo
+    const fetchSummary = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/history/ai-performance-summary`);
+        const data = await response.json();
+        setSummary(data);
+      } catch (error) {
+        console.error("Erro ao buscar resumo de performance da IA:", error);
+      }
+    };
+
+    // Função para buscar os dados de análise por cultura
+    const fetchCultureAnalysis = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/history/culture-analysis`);
+        const data = await response.json();
+        setCultureAnalysis(data);
+      } catch (error) {
+        console.error("Erro ao buscar análise por cultura:", error);
+      }
+    };
+
+    fetchSummary();
+    fetchCultureAnalysis();
+  }, [API_BASE_URL]);
 
   const getTrendIcon = (trend: string) => {
     return trend === "up" ? TrendingUp : TrendingDown;
@@ -137,14 +144,14 @@ const Reports = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <DashboardCard
               title="Padrões Aprendidos"
-              value="615"
+              value={String(summary.learnedPatterns)}
               icon={Brain}
               status="success"
               trend="up"
             />
             <DashboardCard
               title="Eficiência Média"
-              value="94.2"
+              value={String(summary.averageEfficiency)}
               unit="%"
               icon={Target}
               status="success"
@@ -152,7 +159,7 @@ const Reports = () => {
             />
             <DashboardCard
               title="Economia IA"
-              value="3.240"
+              value={String(summary.waterSaved)}
               unit="L/mês"
               icon={Droplets}
               status="success"
@@ -160,7 +167,7 @@ const Reports = () => {
             />
             <DashboardCard
               title="Precisão Decisões"
-              value="96.8"
+              value={String(summary.decisionAccuracy)}
               unit="%"
               icon={Zap}
               status="success"

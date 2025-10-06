@@ -105,7 +105,6 @@ select * from Zona;
 create table DecisaoIA (
 	ID_decisao int primary key auto_increment,
     tipo varchar(255) not null,
-    zona varchar(255) not null,
     descricao text not null,
     volume_economizado decimal(10,2) not null,
     confianca decimal(5,2) not null,

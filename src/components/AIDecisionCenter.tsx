@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useFetch } from "@/hooks/useFetch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,42 +25,20 @@ interface AIDecision {
   waterSaved?: string;
 }
 
-export const AIDecisionCenter = () => {
-  const [summary, setSummary] = useState({
-    decisionsToday: 0,
-    waterSavedToday: 0,
-    averageConfidence: 0,
-  });
-  const [recentDecisions, setRecentDecisions] = useState<AIDecision[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface AiSummaryResponse {
+  summary: {
+    decisionsToday: number;
+    waterSavedToday: number;
+    averageConfidence: number;
+  };
+  recentDecisions: AIDecision[];
+}
 
-  useEffect(() => {
-    const fetchAiSummary = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/dashboard/ai-summary`);
-        if (!response.ok) {
-          throw new Error('Falha ao buscar resumo da IA.');
-        }
-        const data = await response.json();
-        setSummary(data.summary);
-        setRecentDecisions(data.recentDecisions);
-      } catch (err) {
-        console.error("Erro detalhado ao buscar dados:", err); // Loga o erro completo no console do navegador
-        if (err instanceof TypeError && err.message === 'Failed to fetch') {
-          setError("Erro de conexão: Não foi possível conectar ao servidor. Verifique se o backend está rodando e sem erros.");
-        } else if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("Ocorreu um erro desconhecido.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAiSummary();
-  }, []);
+export const AIDecisionCenter = () => {
+  const { data, loading, error } = useFetch<AiSummaryResponse>('/dashboard/ai-summary', {
+    summary: { decisionsToday: 0, waterSavedToday: 0, averageConfidence: 0 },
+    recentDecisions: [],
+  });
 
   const getOutcomeIcon = (outcome: string) => {
     switch (outcome) {
@@ -107,15 +85,15 @@ export const AIDecisionCenter = () => {
         ) : (
           <div className="grid grid-cols-3 gap-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
             <div className="text-center">
-              <div className="text-lg font-bold text-primary">{summary.decisionsToday}</div>
+              <div className="text-lg font-bold text-primary">{data.summary.decisionsToday}</div>
               <div className="text-xs text-muted-foreground">Decisões hoje</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-success">{summary.waterSavedToday}L</div>
+              <div className="text-lg font-bold text-success">{data.summary.waterSavedToday}L</div>
               <div className="text-xs text-muted-foreground">Água economizada</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-accent">{summary.averageConfidence}%</div>
+              <div className="text-lg font-bold text-accent">{data.summary.averageConfidence}%</div>
               <div className="text-xs text-muted-foreground">Precisão média</div>
             </div>
           </div>
@@ -125,7 +103,7 @@ export const AIDecisionCenter = () => {
         <div className="space-y-3">
           <h4 className="font-medium text-sm">Decisões Recentes</h4>
           {loading && <p className="text-xs text-muted-foreground">Carregando...</p>}
-          {!loading && !error && recentDecisions.map((decision) => (
+          {!loading && !error && data.recentDecisions.map((decision) => (
               <div key={decision.id} className="p-3 rounded-lg border bg-muted/20">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
