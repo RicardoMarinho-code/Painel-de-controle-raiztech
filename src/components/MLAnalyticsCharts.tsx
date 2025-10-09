@@ -205,7 +205,7 @@ export const MLAnalyticsCharts = () => {
         </Card>
       </div>
 
-      {/* Status de Aprendizado */}
+      {/*Status de Aprendizado */}
       <Card>
         <CardHeader>
           <CardTitle>Status de Aprendizado dos Modelos</CardTitle>
