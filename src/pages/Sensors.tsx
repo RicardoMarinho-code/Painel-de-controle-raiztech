@@ -299,7 +299,7 @@ const Sensors = () => {
                     <p className="text-sm text-muted-foreground">Água Economizada esta Semana</p>
                   </div>
                   <div className="text-center p-4 bg-muted/30 rounded-lg">
-                    <div className="text-2xl font-bold text-accent">93.4%</div>
+                    <div className="text-2xl font-bold text-success">93.4%</div>
                     <p className="text-sm text-muted-foreground">Eficiência Global</p>
                   </div>
                 </div>

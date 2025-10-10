@@ -106,7 +106,7 @@ const Reports = () => {
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg flex items-center space-x-2">
-                        <Brain className="h-5 w-5 text-primary" />
+                        <Brain className="h-5 w-5 text-sucess" />
                         <span>{report.title}</span>
                       </CardTitle>
                       <Badge variant="outline">{report.period}</Badge>
@@ -220,7 +220,7 @@ const Reports = () => {
                   </p>
                   <div className="space-y-4 pt-2">
                     <div className="flex items-start gap-3">
-                      <Brain className="h-5 w-5 text-accent flex-shrink-0 mt-1" />
+                      <Brain className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
                       <div>
                         <p className="font-medium">615 Padrões Identificados</p>
                         <p className="text-xs text-muted-foreground">em 5 meses de operação.</p>

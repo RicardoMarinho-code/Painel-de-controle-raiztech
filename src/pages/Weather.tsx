@@ -127,17 +127,17 @@ const Weather = () => {
                   <p className="text-sm text-muted-foreground">Umidade</p>
                 </div>
                 <div className="text-center">
-                  <Wind className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                  <Wind className="h-6 w-6 mx-auto mb-2 text-sucess" />
                   <div className="text-xl font-semibold">{currentWeather.windSpeed}</div>
                   <p className="text-sm text-muted-foreground">Vento</p>
                 </div>
                 <div className="text-center">
-                  <Eye className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                  <Eye className="h-6 w-6 mx-auto mb-2 text-primary" />
                   <div className="text-xl font-semibold">{currentWeather.visibility}</div>
                   <p className="text-sm text-muted-foreground">Visibilidade</p>
                 </div>
                 <div className="text-center">
-                  <CloudRain className="h-6 w-6 mx-auto mb-2 text-primary" />
+                  <CloudRain className="h-6 w-6 mx-auto mb-2 text-sucess" />
                   <div className="text-xl font-semibold">{currentWeather.rainChance}</div>
                   <p className="text-sm text-muted-foreground">Chuva</p>
                 </div>
@@ -202,14 +202,6 @@ const Weather = () => {
                     </Button>
                   </div>
                 ))}
-              </div>
-
-              <div className="mt-6 p-4 bg-primary/5 rounded-lg">
-                <h4 className="font-medium text-primary mb-2"><strong> Resumo de Economia </strong></h4>
-                <p className="text-sm text-muted-foreground">
-                  Seguindo as recomendações, você pode economizar aproximadamente <strong>2.000 litros</strong> de água 
-                  esta semana, mantendo a qualidade da irrigação.
-                </p>
               </div>
             </CardContent>
           </Card>

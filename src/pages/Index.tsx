@@ -216,7 +216,7 @@ const Index = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Brain className="h-5 w-5 text-primary" />
+                  <Brain className="h-5 w-5 text-sucess" />
                   <span>Status da Inteligência</span>
                 </CardTitle>
               </CardHeader>

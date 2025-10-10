@@ -154,7 +154,7 @@ const Schedule = () => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="text-center p-4 bg-muted/40 rounded-lg">
                   <div className="text-2xl font-bold text-primary">615</div>
-                  <p className="text-sm text-muted-foreground">Padrões Aprendidos</p>
+                  <p className="text-sm text-primary">Padrões Aprendidos</p>
                 </div>
                 <div className="text-center p-4 bg-muted/40 rounded-lg">
                   <div className="text-2xl font-bold text-success">96.8%</div>
