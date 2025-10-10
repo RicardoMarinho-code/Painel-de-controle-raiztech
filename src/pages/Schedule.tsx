@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -14,57 +15,32 @@ import {
   MoreVertical
 } from "lucide-react";
 
+// Interface para definir o formato dos dados que virão da API
+interface AiDecision {
+  id: number;
+  irrigator: string;
+  zone: string;
+  decision: string;
+  reason: string;
+  time: string;
+  confidence: string;
+  waterSaved: string;
+  status: string;
+  aiModel: string;
+}
+
 const Schedule = () => {
-  const aiDecisions = [
-    {
-      id: 1,
-      irrigator: "Irrigador A1 - Milho",
-      zone: "Zona Norte",
-      decision: "Irrigação reduzida",
-      reason: "IA detectou alta umidade + previsão de chuva",
-      time: "06:30",
-      confidence: "97%",
-      waterSaved: "45L",
-      status: "executed",
-      aiModel: "Otimizado"
-    },
-    {
-      id: 2,
-      irrigator: "Irrigador B2 - Soja", 
-      zone: "Zona Sul",
-      decision: "Aguardar até 22:00",
-      reason: "Correlação temperatura noturna + eficiência hídrica",
-      time: "22:00",
-      confidence: "89%",
-      waterSaved: "28L",
-      status: "scheduled",
-      aiModel: "Aprendendo"
-    },
-    {
-      id: 3,
-      irrigator: "Irrigador C3 - Feijão",
-      zone: "Zona Leste",
-      decision: "Micro-irrigação contínua",
-      reason: "Padrão otimizado para cultura sensível",
-      time: "A cada 2h",
-      confidence: "95%",
-      waterSaved: "62L",
-      status: "active",
-      aiModel: "Otimizado"
-    },
-    {
-      id: 4,
-      irrigator: "Irrigador E5 - Verduras",
-      zone: "Zona Centro",
-      decision: "Irrigação por gotejamento",
-      reason: "Especialização IA para culturas delicadas",
-      time: "14:00",
-      confidence: "98%",
-      waterSaved: "71L",
-      status: "scheduled",
-      aiModel: "Especialista"
-    }
-  ];
+  const [aiDecisions, setAiDecisions] = useState<AiDecision[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/api/decisoes')
+      .then(res => res.json())
+      .then(data => setAiDecisions(data))
+      .catch(() => setError("Não foi possível carregar as decisões da IA."))
+      .finally(() => setLoading(false));
+  }, []); // O array vazio `[]` faz com que o `useEffect` rode apenas uma vez, quando o componente é montado.
 
   const statusConfig: { [key: string]: { icon: JSX.Element; iconBg: string; border: string; text: string; label: string; } } = {
     executed: {
@@ -178,41 +154,49 @@ const Schedule = () => {
               <Zap className="h-5 w-5 text-primary" />
               <span>Decisões Autônomas de Hoje</span>
             </h2>
-            <div className="relative pl-8 space-y-6 border-l-2 border-dashed border-border">
-              {aiDecisions.map((decision) => {
-                const statusInfo = getStatusInfo(decision.status);
-                return (
-                  <div key={decision.id} className="relative">
-                    <div className={`absolute -left-[23px] top-1 flex h-10 w-10 items-center justify-center rounded-full ${statusInfo.iconBg} ring-8 ring-background`}>
-                      {statusInfo.icon}
-                    </div>
-                    <Card className={`ml-6 transition-colors border-l-4 ${statusInfo.border} hover:shadow-md`}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-semibold text-foreground">{decision.irrigator}</h3>
-                              <Badge variant="outline">{decision.zone}</Badge>
-                            </div>
-                            <p className={`font-medium mb-2 ${statusInfo.text} dark:text-foreground`}>{decision.decision}</p>
-                            <p className="text-sm text-muted-foreground">{decision.reason}</p>
-                            <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
-                              <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {decision.time}</span>
-                              <span className="flex items-center gap-1 text-success font-medium"><TrendingUp className="h-3 w-3" /> {decision.confidence} Confiança</span>
-                              <span className="flex items-center gap-1 text-success font-medium"><Zap className="h-3 w-3" /> {decision.waterSaved} economizados</span>
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-end gap-2">
-                            {getAIModelBadge(decision.aiModel)}
-                            <Badge variant="outline" className={`border-current ${statusInfo.text}`}>{statusInfo.label}</Badge>
-                          </div>
+            {loading && <p>Carregando decisões...</p>}
+            {error && <p className="text-destructive">{error}</p>}
+            {!loading && !error && (
+              <div className="relative pl-8 space-y-6 border-l-2 border-dashed border-border">
+                {aiDecisions.length === 0 ? (
+                  <p className="text-muted-foreground">Nenhuma decisão encontrada no banco de dados.</p>
+                ) : (
+                  aiDecisions.map((decision) => {
+                    const statusInfo = getStatusInfo(decision.status);
+                    return (
+                      <div key={decision.id} className="relative">
+                        <div className={`absolute -left-[23px] top-1 flex h-10 w-10 items-center justify-center rounded-full ${statusInfo.iconBg} ring-8 ring-background`}>
+                          {statusInfo.icon}
                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                )
-              })}
-            </div>
+                        <Card className={`ml-6 transition-colors border-l-4 ${statusInfo.border} hover:shadow-md`}>
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h3 className="font-semibold text-foreground">{decision.irrigator}</h3>
+                                  <Badge variant="outline">{decision.zone}</Badge>
+                                </div>
+                                <p className={`font-medium mb-2 ${statusInfo.text} dark:text-foreground`}>{decision.decision}</p>
+                                <p className="text-sm text-muted-foreground">{decision.reason}</p>
+                                <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {decision.time}</span>
+                                  <span className="flex items-center gap-1 text-success font-medium"><TrendingUp className="h-3 w-3" /> {decision.confidence} Confiança</span>
+                                  <span className="flex items-center gap-1 text-success font-medium"><Zap className="h-3 w-3" /> {decision.waterSaved} economizados</span>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                {getAIModelBadge(decision.aiModel)}
+                                <Badge variant="outline" className={`border-current ${statusInfo.text}`}>{statusInfo.label}</Badge>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            )}
           </div>
         </main>
       </div>

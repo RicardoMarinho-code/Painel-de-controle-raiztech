@@ -1,18 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from "recharts";
 import { Calendar, TrendingUp, Droplets, Thermometer, Sun, Zap, Database, CloudRain, TestTube, Activity } from "lucide-react";
+// Dados mocados que serão mantidos por enquanto
 import { 
   productivityData, 
   decisionFlowData, 
-  environmentalCorrelation, 
   getImprovements 
 } from "@/lib/data";
 
+// Tipagens para os dados que virão da API
+interface CorrelationData {
+  hour: number;
+  temperature: number | null;
+  soilMoisture: number | null;
+  sunIntensity: number | null;
+  ph: number | null;
+}
+
+interface SensorStatus {
+  tipo: string;
+  count: number;
+}
+
 export const HistoryDashboard = () => {
+  // Estados para armazenar os dados da API
+  const [environmentalCorrelation, setEnvironmentalCorrelation] = useState<CorrelationData[]>([]);
+  const [totalRecords, setTotalRecords] = useState<string>("0");
+  const [sensorStatus, setSensorStatus] = useState<SensorStatus[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState("6months");
 
   // Filtra dados baseado no período selecionado
@@ -24,6 +42,24 @@ export const HistoryDashboard = () => {
     const monthsToShow = selectedPeriod === "3months" ? 3 : selectedPeriod === "6months" ? 6 : 12;
     return productivityData.slice(0, monthsToShow);
   };
+
+  // useEffect para buscar os dados da API quando o componente montar
+  useEffect(() => {
+    // Busca dados de correlação
+    fetch('http://localhost:3001/api/historico/correlacoes')
+      .then(res => res.json())
+      .then(data => setEnvironmentalCorrelation(data));
+
+    // Busca total de registros
+    fetch('http://localhost:3001/api/historico/registros')
+      .then(res => res.json())
+      .then(data => setTotalRecords(data.total));
+
+    // Busca status dos sensores
+    fetch('http://localhost:3001/api/historico/status-sensores')
+      .then(res => res.json())
+      .then(data => setSensorStatus(data));
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -263,9 +299,7 @@ export const HistoryDashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="p-4 border rounded-lg text-center">
                   <h4 className="font-semibold">Registros Totais</h4>
-                  <p className="text-2xl font-bold text-primary">
-                    {selectedPeriod === "3months" ? "44,671" : selectedPeriod === "6months" ? "89,342" : "178,684"}
-                  </p>
+                  <p className="text-2xl font-bold text-primary">{totalRecords}</p>
                   <p className="text-xs text-muted-foreground">
                     Últimos {selectedPeriod === "3months" ? "3" : selectedPeriod === "6months" ? "6" : "12"} meses
                   </p>
@@ -289,32 +323,16 @@ export const HistoryDashboard = () => {
 
               <div className="mt-6 space-y-3">
                 <h4 className="font-semibold">Status dos Sensores</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Nível de Água (4 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
+                {sensorStatus.length > 0 ? (
+                  <div className="space-y-2">
+                    {sensorStatus.map((sensor) => (
+                      <div key={sensor.tipo} className="flex items-center justify-between">
+                        <span className="text-sm">{sensor.tipo} ({sensor.count} sensores)</span>
+                        <Badge variant="default">100% Online</Badge>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Detecção de Chuva (2 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Umidade do Solo (12 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">pH do Solo (4 sensores)</span>
-                    <Badge variant="secondary">Calibrando</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Temperatura (6 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Intensidade Solar (2 sensores)</span>
-                    <Badge variant="default">100% Online</Badge>
-                  </div>
-                </div>
+                ) : <p className="text-sm text-muted-foreground">Carregando status dos sensores...</p>}
               </div>
             </CardContent>
           </Card>
