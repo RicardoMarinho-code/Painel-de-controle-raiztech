@@ -132,3 +132,117 @@ O fluxo de dados agora é:
         *   Enquanto os dados são carregados, os cards de estatísticas exibem um efeito "pulsante" (skeleton) para melhorar a experiência do usuário.
         *   Após o carregamento, os dados do banco de dados são exibidos dinamicamente, tanto nas estatísticas quanto na lista de decisões recentes.
         *   A interface agora também exibe uma mensagem de "Carregando..." ou de erro, melhorando a experiência do usuário.
+
+---
+
+### 7. `src/pages/Reports.tsx` e Novas Rotas na API
+
+*   **O que é?**
+    É o componente que renderiza a página "Análises de Machine Learning", com os principais KPIs de performance da IA e análise por cultura.
+
+*   **O que foi feito?**
+    Substituí os dados mocados dos cards de estatísticas, da tabela de análise de culturas e do gráfico de evolução por dados reais vindos da API.
+
+*   **Como funciona?**
+    1.  **Novas Rotas na API (`src/pages/index.js`)**:
+        *   **`/api/reports/stats`**: Executa múltiplas consultas para calcular os KPIs principais da página: total de padrões aprendidos, eficiência média dos irrigadores, economia total de água e a precisão (confiança média) das decisões da IA.
+        *   **`/api/reports/culture-analysis`**: Busca dados da tabela `Cultura`, fazendo um `JOIN` para contar quantos irrigadores estão associados a cada cultura e trazendo os dados de performance (padrões, eficiência, economia, status).
+        *   **`/api/reports/learning-evolution`**: Cria um histórico de aprendizado agrupando as decisões da IA por mês, contando o número de padrões e a eficiência média para alimentar o gráfico de evolução.
+
+    2.  **Alterações no `Reports.tsx`**:
+        *   O componente agora utiliza `useState` e `useEffect` para buscar e armazenar os dados dos três novos endpoints.
+        *   Para melhorar a experiência do usuário, um estado de `loading` foi adicionado. Enquanto os dados são carregados, o componente exibe esqueletos de interface (elementos com animação "pulse").
+        *   As requisições para as três rotas são feitas em paralelo usando `Promise.all` para otimizar o tempo de carregamento.
+        *   Após o carregamento, os dados do banco de dados são exibidos dinamicamente nos cards de estatísticas, na tabela de culturas e no gráfico de evolução do aprendizado.
+        *   Os dados mocados (`aiReports`, `cultureAnalysis`, `learningEvolutionData`) foram removidos do código.
+
+---
+
+### 8. `src/pages/Sensors.tsx` e Novas Rotas na API
+
+*   **O que é?**
+    É o componente que renderiza a página "Monitoramento de Irrigadores", mostrando um resumo do desempenho e uma lista detalhada de cada irrigador inteligente.
+
+*   **O que foi feito?**
+    Substituí todos os dados mocados da página, tanto dos cards de estatísticas quanto da grade de irrigadores, por dados reais vindos da API.
+
+*   **Como funciona?**
+    1.  **Novas Rotas na API (`src/pages/index.js`)**:
+        *   **`/api/sensors/stats`**: Executa múltiplas consultas em paralelo para calcular os KPIs da página: total de irrigadores ativos, eficiência média, cobertura total, economia de água na semana e confiança média da IA.
+        *   **`/api/sensors/irrigators`**: Busca a lista completa de irrigadores, fazendo `JOIN` com as tabelas `Zona`, `Setor` e `Cultura` para obter todos os detalhes necessários para cada card (status, cultura, umidade, bateria, última decisão, etc.).
+
+    2.  **Alterações no `Sensors.tsx`**:
+        *   O componente agora utiliza `useState` e `useEffect` para buscar e armazenar os dados dos dois novos endpoints.
+        *   Um estado de `loading` foi adicionado. Enquanto os dados são carregados, a interface exibe esqueletos com animação "pulse", melhorando a experiência do usuário.
+        *   As requisições para as duas rotas são feitas em paralelo usando `Promise.all` para otimizar o tempo de carregamento.
+        *   Após o carregamento, os dados do banco de dados são exibidos dinamicamente nos cards de estatísticas e na grade de irrigadores.
+        *   A lógica para exibir o status da IA (`getAIStatusBadge`) foi aprimorada para lidar com os diferentes status vindos do banco.
+
+    3.  **Limpeza (`src/lib/data.ts`)**:
+        *   O array de dados mocados `irrigators` foi removido do arquivo, pois não é mais utilizado.
+
+---
+
+### 9. `src/pages/Irrigation.tsx` e Novas Rotas na API
+
+*   **O que é?**
+    É o componente que renderiza a página "Sistema de Irrigação", mostrando o status de cada setor, estatísticas gerais e controles.
+
+*   **O que foi feito?**
+    Substituí os dados mocados dos cards de estatísticas e da lista de setores de irrigação por dados reais vindos da API.
+
+*   **Como funciona?**
+    1.  **Novas Rotas na API (`src/pages/index.js`)**:
+        *   **`/api/irrigation/stats`**: Executa múltiplas consultas para calcular os KPIs da página: número de setores ativos, tempo para a próxima irrigação e a eficiência média das zonas.
+        *   **`/api/irrigation/zones`**: Busca a lista de todos os `Setor` do banco de dados. Utiliza lógica SQL com `CASE` e `TIMESTAMPDIFF` para calcular dinamicamente o status atual de cada setor ('active', 'scheduled', 'paused') e os tempos relativos (próxima irrigação, horas desde a última).
+
+    2.  **Alterações no `Irrigation.tsx`**:
+        *   O componente agora utiliza `useState` e `useEffect` para buscar e armazenar os dados dos dois novos endpoints.
+        *   Um estado de `loading` foi adicionado para exibir esqueletos de interface enquanto os dados são carregados, melhorando a UX.
+        *   As requisições são feitas em paralelo com `Promise.all` para otimizar o carregamento.
+        *   Após o carregamento, os dados do banco de dados são formatados e exibidos dinamicamente nos cards e na lista de setores.
+        *   O array de dados mocados `irrigationZones` foi removido do componente.
+
+---
+
+### 10. `src/pages/Areas.tsx` e Novas Rotas na API
+
+*   **O que é?**
+    É o componente que renderiza a página "Zonas de Cobertura", mostrando um resumo do desempenho e uma lista detalhada de cada zona da propriedade.
+
+*   **O que foi feito?**
+    Substituí todos os dados mocados da página, tanto dos cards de estatísticas quanto da grade de zonas, por dados reais vindos da API.
+
+*   **Como funciona?**
+    1.  **Novas Rotas na API (`src/pages/index.js`)**:
+        *   **`/api/areas/stats`**: Executa múltiplas consultas em paralelo para calcular os KPIs da página: total de zonas ativas, cobertura total em hectares, eficiência média e a economia de água na semana.
+        *   **`/api/areas/zones`**: Busca a lista completa de `Zona`, fazendo `LEFT JOIN` com as tabelas `Irrigador`, `Cultura` e `Setor` para obter todos os detalhes necessários para cada card (cultura, status da IA, umidade, padrões aprendidos, etc.). O uso de `LEFT JOIN` garante que mesmo zonas sem um irrigador ou cultura associada sejam exibidas.
+
+    2.  **Alterações no `Areas.tsx`**:
+        *   O componente agora utiliza `useState` e `useEffect` para buscar e armazenar os dados dos dois novos endpoints.
+        *   Um estado de `loading` foi adicionado. Enquanto os dados são carregados, a interface exibe esqueletos com animação "pulse", melhorando a experiência do usuário.
+        *   As requisições para as duas rotas são feitas em paralelo usando `Promise.all` para otimizar o tempo de carregamento.
+        *   Após o carregamento, os dados do banco de dados são exibidos dinamicamente nos cards de estatísticas, na grade de zonas e no mapa de cobertura.
+        *   O array de dados mocados `zones` foi removido do componente.
+
+---
+
+### 11. `src/pages/Weather.tsx` e Novas Rotas na API
+
+*   **O que é?**
+    É o componente que renderiza a página "Inteligência Climática", mostrando as condições atuais e gerando recomendações de irrigação com base nos dados.
+
+*   **O que foi feito?**
+    Substituí os dados mocados das seções "Condições Atuais" e "Recomendações Inteligentes" por dados dinâmicos vindos da API. A seção de previsão de tempo foi mantida com dados estáticos, pois não há uma fonte de dados para isso no banco.
+
+*   **Como funciona?**
+    1.  **Novas Rotas na API (`src/pages/index.js`)**:
+        *   **`/api/weather/current`**: Busca a média das medições de sensores do tipo `Temperatura` e `Umidade` da última hora para exibir as condições climáticas atuais da propriedade.
+        *   **`/api/weather/recommendations`**: Busca todos os `Setor` e aplica uma lógica simples para gerar recomendações. Se a umidade de um setor estiver alta (>75%), recomenda adiar a irrigação. Caso contrário, recomenda continuar normalmente. Isso serve como uma base para uma lógica de IA mais complexa.
+
+    2.  **Alterações no `Weather.tsx`**:
+        *   O componente agora utiliza `useState` e `useEffect` para buscar e armazenar os dados dos dois novos endpoints.
+        *   Um estado de `loading` foi adicionado para exibir um feedback visual enquanto os dados são carregados.
+        *   As requisições são feitas em paralelo com `Promise.all` para otimizar o tempo de carregamento.
+        *   Após o carregamento, os dados do banco de dados são exibidos dinamicamente nos cards de condições atuais e na lista de recomendações.
+        *   Os arrays de dados mocados `currentWeather` e `irrigationRecommendations` foram removidos do componente.

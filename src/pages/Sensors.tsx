@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardCard } from "@/components/DashboardCard";
@@ -18,103 +19,40 @@ import {
   Gauge
 } from "lucide-react";
 
+interface Irrigator {
+  id: number;
+  name: string;
+  zone: string;
+  culture: string;
+  aiStatus: string;
+  efficiency: number;
+  coverage: number;
+  soilMoisture: number;
+  battery: number;
+  lastDecision: string;
+  patternsLearned: number;
+  waterSaved: number;
+  status: string;
+}
+
+interface SensorStats {
+  activeIrrigators: number;
+  totalIrrigators: number;
+  avgEfficiency: number;
+  totalCoverage: number;
+  weeklySavings: number;
+  avgConfidence: number;
+}
+
 const Sensors = () => {
-  const irrigators = [
-    {
-      id: 1,
-      name: "Irrigador Inteligente A1",
-      zone: "Zona Norte",
-      culture: "Milho",
-      aiStatus: "Otimizado",
-      efficiency: "96.2%",
-      coverage: "8.5 hectares",
-      soilMoisture: "68%",
-      battery: "98%",
-      connectivity: "Excelente",
-      lastDecision: "Irrigação otimizada",
-      patternsLearned: 127,
-      waterSaved: "340L esta semana"
-    },
-    {
-      id: 2,
-      name: "Irrigador Inteligente B2", 
-      zone: "Zona Sul",
-      culture: "Soja",
-      aiStatus: "Aprendendo",
-      efficiency: "89.1%",
-      coverage: "7.2 hectares",
-      soilMoisture: "72%",
-      battery: "85%",
-      connectivity: "Boa",
-      lastDecision: "Aguardou previsão de chuva",
-      patternsLearned: 89,
-      waterSaved: "280L esta semana"
-    },
-    {
-      id: 3,
-      name: "Irrigador Inteligente C3",
-      zone: "Zona Leste",
-      culture: "Feijão",
-      aiStatus: "Otimizado",
-      efficiency: "92.7%",
-      coverage: "6.8 hectares",
-      soilMoisture: "75%",
-      battery: "92%",
-      connectivity: "Excelente",
-      lastDecision: "Reduziu irrigação por alta umidade",
-      patternsLearned: 156,
-      waterSaved: "420L esta semana"
-    },
-    {
-      id: 4,
-      name: "Irrigador Inteligente D4",
-      zone: "Zona Oeste",
-      culture: "Milho",
-      aiStatus: "Treinando",
-      efficiency: "87.3%",
-      coverage: "8.1 hectares",
-      soilMoisture: "65%",
-      battery: "76%",
-      connectivity: "Regular",
-      lastDecision: "Primeira semana de aprendizado",
-      patternsLearned: 34,
-      waterSaved: "120L esta semana"
-    },
-    {
-      id: 5,
-      name: "Irrigador Inteligente E5",
-      zone: "Zona Centro",
-      culture: "Verduras",
-      aiStatus: "Otimizado",
-      efficiency: "94.8%",
-      coverage: "5.4 hectares",
-      soilMoisture: "78%",
-      battery: "88%",
-      connectivity: "Excelente",
-      lastDecision: "Micro-irrigação por cultura sensível",
-      patternsLearned: 203,
-      waterSaved: "380L esta semana"
-    },
-    {
-      id: 6,
-      name: "Irrigador Inteligente F6",
-      zone: "Zona Nordeste",
-      culture: "Soja",
-      aiStatus: "Manutenção",
-      efficiency: "0%",
-      coverage: "7.8 hectares",
-      soilMoisture: "N/A",
-      battery: "15%",
-      connectivity: "Sem sinal",
-      lastDecision: "Aguardando manutenção",
-      patternsLearned: 0,
-      waterSaved: "0L esta semana"
-    }
-  ];
+  const [irrigators, setIrrigators] = useState<Irrigator[]>([]);
+  const [stats, setStats] = useState<SensorStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const getAIStatusBadge = (status: string) => {
     switch (status) {
       case "Otimizado":
+      case "Especialista":
         return <Badge className="bg-success text-success-foreground">
           <CheckCircle className="h-3 w-3 mr-1" />
           Otimizado
@@ -128,13 +66,37 @@ const Sensors = () => {
         return <Badge variant="secondary">
           <TrendingUp className="h-3 w-3 mr-1" />
           Treinando
-        </Badge>;
+        </Badge>; // Status hipotético, não presente no schema
       case "Manutenção":
         return <Badge variant="destructive">Manutenção</Badge>;
       default:
-        return <Badge variant="secondary">Offline</Badge>;
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [statsRes, irrigatorsRes] = await Promise.all([
+          fetch('http://localhost:3001/api/sensors/stats'),
+          fetch('http://localhost:3001/api/sensors/irrigators')
+        ]);
+
+        const statsData = await statsRes.json();
+        const irrigatorsData = await irrigatorsRes.json();
+
+        setStats(statsData);
+        setIrrigators(irrigatorsData);
+
+      } catch (error) {
+        console.error("Erro ao buscar dados dos irrigadores:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -146,7 +108,7 @@ const Sensors = () => {
         <main className="flex-1 p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold">Irrigadores Inteligentes</h1>
+              <h1 className="text-3xl font-bold">Monitoramento de Irrigadores</h1>
               <p className="text-muted-foreground">Sistema de Machine Learning embarcado - 6 irrigadores cobrindo 50 hectares</p>
             </div>
             <div className="flex space-x-3">
@@ -163,120 +125,127 @@ const Sensors = () => {
 
           {/* Overview Stats */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            <DashboardCard
-              title="Irrigadores Ativos"
-              value="5"
-              unit="/6"
-              icon={Zap}
-              status="warning"
-              aiControlled={true}
-              confidence={96}
-              lastDecision="1 em manutenção"
-            />
-            <DashboardCard
-              title="Eficiência Média"
-              value="93.4"
-              unit="%"
-              icon={Target}
-              status="success"
-              aiControlled={true}
-              confidence={95}
-              lastDecision="Otimizada por ML"
-            />
-            <DashboardCard
-              title="Cobertura Total"
-              value="43.8"
-              unit=" hectares"
-              icon={MapPin}
-              status="success"
-              aiControlled={true}
-              confidence={100}
-              lastDecision="Monitoramento ativo"
-            />
-            <DashboardCard
-              title="Economia Semanal"
-              value="1.540"
-              unit="L"
-              icon={Droplets}
-              status="success"
-              aiControlled={true}
-              confidence={97}
-              lastDecision="IA preveniu desperdícios"
-            />
-            <DashboardCard
-              title="Confiança da IA"
-              value="94"
-              unit="%"
-              icon={Brain}
-              status="success"
-              aiControlled={true}
-              confidence={94}
-              lastDecision="Análise em tempo real"
-            />
+            {loading || !stats ? (
+              Array(5).fill(0).map((_, index) => <Card key={index} className="h-[170px] animate-pulse bg-muted/50" />)
+            ) : (
+              <>
+                <DashboardCard
+                  title="Irrigadores Ativos"
+                  value={stats.activeIrrigators.toString()}
+                  unit={`/${stats.totalIrrigators}`}
+                  icon={Zap}
+                  status={stats.activeIrrigators < stats.totalIrrigators ? "warning" : "success"}
+                  aiControlled={true}
+                  confidence={99}
+                  lastDecision={`${stats.totalIrrigators - stats.activeIrrigators} em manutenção`}
+                />
+                <DashboardCard
+                  title="Eficiência Média"
+                  value={parseFloat(stats.avgEfficiency.toString()).toFixed(1)}
+                  unit="%"
+                  icon={Target}
+                  status="success"
+                  aiControlled={true}
+                  confidence={95}
+                  lastDecision="Otimizada por ML"
+                />
+                <DashboardCard
+                  title="Cobertura Total"
+                  value={parseFloat(stats.totalCoverage.toString()).toFixed(1)}
+                  unit=" hectares"
+                  icon={MapPin}
+                  status="success"
+                  aiControlled={true}
+                  confidence={100}
+                  lastDecision="Monitoramento ativo"
+                />
+                <DashboardCard
+                  title="Economia Semanal"
+                  value={new Intl.NumberFormat('pt-BR').format(stats.weeklySavings)}
+                  unit="L"
+                  icon={Droplets}
+                  status="success"
+                  aiControlled={true}
+                  confidence={97}
+                  lastDecision="IA preveniu desperdícios"
+                />
+                <DashboardCard
+                  title="Confiança da IA"
+                  value={parseFloat(stats.avgConfidence.toString()).toFixed(1)}
+                  unit="%"
+                  icon={Brain}
+                  status="success"
+                  aiControlled={true}
+                  confidence={94}
+                  lastDecision="Análise em tempo real"
+                />
+              </>
+            )}
           </div>
 
           {/* Irrigators Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {irrigators.map((irrigator) => (
-              <Card key={irrigator.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{irrigator.name}</CardTitle>
-                    {getAIStatusBadge(irrigator.aiStatus)}
-                  </div>
-                  <p className="text-sm text-muted-foreground">{irrigator.zone} • {irrigator.culture}</p>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{irrigator.efficiency}</div>
-                    <p className="text-sm text-muted-foreground">Eficiência Hídrica</p>
-                    <p className="text-xs text-muted-foreground mt-1">{irrigator.coverage}</p>
-                  </div>
+            {loading ? (
+              Array(6).fill(0).map((_, index) => <Card key={index} className="h-[430px] animate-pulse bg-muted/50" />)
+            ) : (
+              irrigators.map((irrigator) => (
+                <Card key={irrigator.id} className={irrigator.status !== 'Ativo' ? 'bg-muted/30 border-dashed' : ''}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">{irrigator.name}</CardTitle>
+                      {getAIStatusBadge(irrigator.aiStatus)}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{irrigator.zone} • {irrigator.culture}</p>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-primary">{irrigator.efficiency}%</div>
+                      <p className="text-sm text-muted-foreground">Eficiência Hídrica</p>
+                      <p className="text-xs text-muted-foreground mt-1">{irrigator.coverage} hectares</p>
+                    </div>
 
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Umidade:</span>
-                      <div className="font-medium">{irrigator.soilMoisture}</div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">Umidade:</span>
+                        <div className="font-medium">{irrigator.soilMoisture}%</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Padrões ML:</span>
+                        <div className="font-medium">{irrigator.patternsLearned}</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Economia:</span>
+                        <div className="font-medium text-success">{irrigator.waterSaved}L</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Bateria:</span>
+                        <div className={`font-medium ${irrigator.battery < 20 ? 'text-destructive' : ''}`}>{irrigator.battery}%</div>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">Padrões ML:</span>
-                      <div className="font-medium">{irrigator.patternsLearned}</div>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Economia:</span>
-                      <div className="font-medium text-success">{irrigator.waterSaved}</div>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Bateria:</span>
-                      <div className="font-medium">{irrigator.battery}</div>
-                    </div>
-                  </div>
 
-                  <div className="text-xs p-2 bg-primary/5 rounded border border-primary/20">
-                    <div className="flex items-center space-x-1 mb-1">
-                      <Brain className="h-3 w-3 text-primary" />
-                      <strong className="text-primary">Última Decisão IA:</strong>
+                    <div className="text-xs p-2 bg-primary/5 rounded border border-primary/20">
+                      <div className="flex items-center space-x-1 mb-1">
+                        <Brain className="h-3 w-3 text-primary" />
+                        <strong className="text-primary">Última Decisão IA:</strong>
+                      </div>
+                      <div className="truncate">{irrigator.lastDecision || "Nenhuma decisão recente"}</div>
                     </div>
-                    <div>{irrigator.lastDecision}</div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      🕒 Há 2 min • Confiança: {irrigator.aiStatus === "Otimizado" ? "96%" : irrigator.aiStatus === "Aprendendo" ? "89%" : "76%"}
-                    </div>
-                  </div>
 
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Brain className="h-4 w-4 mr-1" />
-                      Status IA
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Settings className="h-4 w-4 mr-1" />
-                      Config
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm" className="flex-1">
+                        <Brain className="h-4 w-4 mr-1" />
+                        Status IA
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex-1">
+                        <Settings className="h-4 w-4 mr-1" />
+                        Config
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
 
           {/* AI Learning Overview */}

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardCard } from "@/components/DashboardCard";
@@ -16,45 +17,28 @@ import {
   Zap
 } from "lucide-react";
 
+interface IrrigationZone {
+  id: number;
+  name: string;
+  status: 'active' | 'paused' | 'scheduled';
+  humidity: number;
+  nextIrrigationMinutes: number;
+  lastIrrigationHours: number;
+  duration: number;
+}
+
+interface IrrigationStats {
+  activeSectors: number;
+  totalSectors: number;
+  dailyConsumption: number;
+  nextIrrigationMinutes: number;
+  avgEfficiency: number;
+}
+
 const Irrigation = () => {
-  const irrigationZones = [
-    {
-      id: 1,
-      name: "Setor A - Milho",
-      status: "active",
-      humidity: "68%",
-      nextIrrigation: "em 2h 30min",
-      lastIrrigation: "2h atrás",
-      duration: "45min"
-    },
-    {
-      id: 2,
-      name: "Setor B - Soja", 
-      status: "paused",
-      humidity: "72%",
-      nextIrrigation: "em 45min",
-      lastIrrigation: "4h atrás",
-      duration: "30min"
-    },
-    {
-      id: 3,
-      name: "Setor C - Feijão",
-      status: "scheduled",
-      humidity: "65%", 
-      nextIrrigation: "em 1h 15min",
-      lastIrrigation: "6h atrás",
-      duration: "35min"
-    },
-    {
-      id: 4,
-      name: "Setor D - Verduras",
-      status: "active",
-      humidity: "75%",
-      nextIrrigation: "em 3h",
-      lastIrrigation: "1h atrás", 
-      duration: "20min"
-    }
-  ];
+  const [irrigationZones, setIrrigationZones] = useState<IrrigationZone[]>([]);
+  const [stats, setStats] = useState<IrrigationStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -68,6 +52,38 @@ const Irrigation = () => {
         return <Badge variant="secondary">Inativo</Badge>;
     }
   };
+
+  const formatTime = (minutes: number) => {
+    if (minutes < 0) return "calculando...";
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    if (h > 0) return `em ${h}h ${m}min`;
+    return `em ${m}min`;
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [statsRes, zonesRes] = await Promise.all([
+          fetch('http://localhost:3001/api/irrigation/stats'),
+          fetch('http://localhost:3001/api/irrigation/zones')
+        ]);
+
+        const statsData = await statsRes.json();
+        const zonesData = await zonesRes.json();
+
+        setStats(statsData);
+        setIrrigationZones(zonesData);
+
+      } catch (error) {
+        console.error("Erro ao buscar dados de irrigação:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,68 +112,78 @@ const Irrigation = () => {
 
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <DashboardCard
-              title="Setores Ativos"
-              value="2"
-              unit="/4"
-              icon={Droplets}
-              status="success"
-            />
-            <DashboardCard
-              title="Consumo Hoje"
-              value="2.450"
-              unit="L"
-              icon={Droplets}
-              status="normal"
-            />
-            <DashboardCard
-              title="Próxima Irrigação"
-              value="45"
-              unit="min"
-              icon={Clock}
-              status="warning"
-            />
-            <DashboardCard
-              title="Eficiência"
-              value="94"
-              unit="%"
-              icon={Zap}
-              status="success"
-            />
+            {loading || !stats ? (
+              Array(4).fill(0).map((_, index) => <Card key={index} className="h-[126px] animate-pulse bg-muted/50" />)
+            ) : (
+              <>
+                <DashboardCard
+                  title="Setores Ativos"
+                  value={stats.activeSectors.toString()}
+                  unit={`/${stats.totalSectors}`}
+                  icon={Droplets}
+                  status="success"
+                />
+                <DashboardCard
+                  title="Consumo Hoje"
+                  value={new Intl.NumberFormat('pt-BR').format(stats.dailyConsumption)}
+                  unit="L"
+                  icon={Droplets}
+                  status="normal"
+                />
+                <DashboardCard
+                  title="Próxima Irrigação"
+                  value={stats.nextIrrigationMinutes.toString()}
+                  unit="min"
+                  icon={Clock}
+                  status="warning"
+                />
+                <DashboardCard
+                  title="Eficiência"
+                  value={parseFloat(stats.avgEfficiency.toString()).toFixed(1)}
+                  unit="%"
+                  icon={Zap}
+                  status="success"
+                />
+              </>
+            )}
           </div>
 
           {/* Irrigation Zones */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {irrigationZones.map((zone) => (
-              <Card key={zone.id} className="p-0">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center space-x-2">
-                      <MapPin className="h-5 w-5 text-primary" />
-                      <span>{zone.name}</span>
-                    </CardTitle>
-                    {getStatusBadge(zone.status)}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Umidade:</span>
-                      <div className="font-medium">{zone.humidity}</div>
+            {loading ? (
+              Array(4).fill(0).map((_, index) => <Card key={index} className="h-[218px] animate-pulse bg-muted/50" />)
+            ) : (
+              irrigationZones.map((zone) => (
+                <Card key={zone.id} className="p-0">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center space-x-2">
+                        <MapPin className="h-5 w-5 text-primary" />
+                        <span>{zone.name}</span>
+                      </CardTitle>
+                      {getStatusBadge(zone.status)}
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">Duração:</span>
-                      <div className="font-medium">{zone.duration}</div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">Umidade:</span>
+                        <div className="font-medium">{zone.humidity}%</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Duração:</span>
+                        <div className="font-medium">{zone.duration}min</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Última:</span>
+                        <div className="font-medium">{zone.lastIrrigationHours}h atrás</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Próxima:</span>
+                        <div className="font-medium">{formatTime(zone.nextIrrigationMinutes)}</div>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">Última:</span>
-                      <div className="font-medium">{zone.lastIrrigation}</div>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Próxima:</span>
-                      <div className="font-medium">{zone.nextIrrigation}</div>
-                    </div>
-                  </div>
+                  </CardContent>
 
                   <div className="flex items-center justify-between pt-2 border-t">
                     <div className="flex items-center space-x-2">
@@ -180,10 +206,9 @@ const Irrigation = () => {
                       </Button>
                     </div>
                   </div>
-                </CardContent>
               </Card>
-            ))}
-          </div>
+            )))}
+          </div>          
 
           {/* Quick Actions */}
           <Card>
