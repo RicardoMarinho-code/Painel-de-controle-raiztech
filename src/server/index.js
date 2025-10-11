@@ -1,6 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const pool = require('./db'); // Importa nosso pool de conexões
+import dotenv from 'dotenv';
+// Carrega as variáveis de ambiente do arquivo .env ANTES de tudo.
+dotenv.config();
+
+import express from 'express';
+import cors from 'cors';
+import pool from './db.js';
 
 const app = express();
 const port = 3001; // Porta que a API vai rodar
@@ -8,10 +12,7 @@ const port = 3001; // Porta que a API vai rodar
 app.use(cors()); // Permite que o frontend (em outra porta) acesse a API
 app.use(express.json()); // Permite que a API entenda JSON
 
-/**
- * Rota para buscar as decisões da IA.
- * Vamos fazer um JOIN para pegar informações de outras tabelas.
- */
+//Rota para buscar as decisões da IA.
 app.get('/api/decisoes', async (req, res) => {
   try {
     const [rows] = await pool.query(`
