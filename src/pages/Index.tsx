@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardCard } from "@/components/DashboardCard";
@@ -23,92 +24,64 @@ import {
 } from "lucide-react";
 import farmHero from "@/assets/farm-hero.jpg";
 
-const Index = () => {
-  const farmStats = [
-    {
-      title: "Irrigadores Ativos",
-      value: "6",
-      unit: "/6",
-      icon: Droplets,
-      status: "success" as const,
-      trend: "stable" as const,
-      aiControlled: true,
-      confidence: 98,
-      lastDecision: "Todos otimizados pela IA"
-    },
-    {
-      title: "Eficiência Hídrica",
-      value: "94.2",
-      unit: "%",
-      icon: Target,
-      status: "success" as const,
-      trend: "up" as const,
-      aiControlled: true,
-      confidence: 95,
-      lastDecision: "+12% com otimização ML"
-    },
-    {
-      title: "IA em Aprendizado",
-      value: "3",
-      unit: " culturas",
-      icon: Brain,
-      status: "normal" as const,
-      trend: "up" as const,
-      aiControlled: true,
-      confidence: 89,
-      lastDecision: "615 padrões identificados"
-    },
-    {
-      title: "Cobertura da Fazenda",
-      value: "50",
-      unit: " hectares",
-      icon: MapPin,
-      status: "success" as const,
-      trend: "stable" as const,
-      aiControlled: true,
-      confidence: 100,
-      lastDecision: "Monitoramento 24/7"
-    }
-  ];
+interface FarmStat {
+  title: string;
+  value: string;
+  unit: string;
+  icon: React.ElementType;
+  status: "success" | "warning" | "normal";
+  aiControlled: boolean;
+  confidence: number;
+  lastDecision: string;
+}
 
-  const irrigators = [
-    {
-      id: 1,
-      name: "Irrigador A - Milho",
-      culture: "Milho",
-      zone: "Zona Norte",
-      aiStatus: "Otimizado",
-      efficiency: "96%",
-      lastDecision: "Irrigou 35min - 45L",
-      nextAction: "Analisando clima",
-      soilMoisture: "68%",
-      coverage: "8.5 hectares"
-    },
-    {
-      id: 2,
-      name: "Irrigador B - Soja",
-      culture: "Soja", 
-      zone: "Zona Sul",
-      aiStatus: "Aprendendo",
-      efficiency: "89%",
-      lastDecision: "Aguardou chuva",
-      nextAction: "Irrigação programada 2h",
-      soilMoisture: "72%",
-      coverage: "7.2 hectares"
-    },
-    {
-      id: 3,
-      name: "Irrigador C - Feijão",
-      culture: "Feijão",
-      zone: "Zona Leste", 
-      aiStatus: "Otimizado",
-      efficiency: "92%",
-      lastDecision: "Reduziu irrigação",
-      nextAction: "Standby - Chuva prevista",
-      soilMoisture: "75%",
-      coverage: "6.8 hectares"
-    }
-  ];
+interface IrrigatorStatus {
+  id: number;
+  name: string;
+  culture: string;
+  zone: string;
+  aiStatus: string;
+  efficiency: string;
+  lastDecision: string;
+  nextAction: string;
+  soilMoisture: string;
+  coverage: string;
+}
+
+const Index = () => {
+  const [farmStats, setFarmStats] = useState<FarmStat[]>([]);
+  const [irrigators, setIrrigators] = useState<IrrigatorStatus[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsRes, irrigatorsRes] = await Promise.all([
+          fetch('http://localhost:3001/api/dashboard/stats'),
+          fetch('http://localhost:3001/api/dashboard/irrigators-status')
+        ]);
+        const statsData = await statsRes.json();
+        const irrigatorsData = await irrigatorsRes.json();
+
+        // Mapeia os dados da API para o formato esperado pelos cards
+        const mappedStats: FarmStat[] = [
+          { title: "Irrigadores Ativos", value: statsData.irrigators.active, unit: `/${statsData.irrigators.total}`, icon: Droplets, status: "success", aiControlled: true, confidence: 98, lastDecision: "Todos otimizados pela IA" },
+          { title: "Eficiência Hídrica", value: parseFloat(statsData.efficiency).toFixed(1), unit: "%", icon: Target, status: "success", aiControlled: true, confidence: 95, lastDecision: "+12% com otimização ML" },
+          { title: "IA em Aprendizado", value: statsData.learningCultures, unit: " culturas", icon: Brain, status: "normal", aiControlled: true, confidence: 89, lastDecision: "615 padrões identificados" },
+          { title: "Cobertura da Fazenda", value: parseFloat(statsData.coverage).toFixed(1), unit: " hectares", icon: MapPin, status: "success", aiControlled: true, confidence: 100, lastDecision: "Monitoramento 24/7" }
+        ];
+
+        setFarmStats(mappedStats);
+        setIrrigators(irrigatorsData);
+      } catch (error) {
+        console.error("Erro ao buscar dados do dashboard:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -142,7 +115,7 @@ const Index = () => {
 
           {/* Farm Intelligence Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {farmStats.map((stat, index) => (
+            {loading ? Array(4).fill(0).map((_, index) => <Card key={index} className="h-[170px] animate-pulse bg-muted/50" />) : farmStats.map((stat, index) => (
               <DashboardCard key={index} {...stat} />
             ))}
           </div>
@@ -162,46 +135,50 @@ const Index = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {irrigators.map((irrigator) => (
-                  <div key={irrigator.id} className="p-4 rounded-lg bg-muted/50 border">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h3 className="font-medium">{irrigator.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {irrigator.zone} • {irrigator.coverage}
-                        </p>
+                {loading ? (
+                  <p className="text-sm text-muted-foreground">Carregando status dos irrigadores...</p>
+                ) : (
+                  irrigators.map((irrigator) => (
+                    <div key={irrigator.id} className="p-4 rounded-lg bg-muted/50 border">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <h3 className="font-medium">{irrigator.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {irrigator.zone} • {irrigator.coverage}
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Badge 
+                            variant={irrigator.aiStatus === "Otimizado" ? "default" : "secondary"}
+                            className={irrigator.aiStatus === "Otimizado" ? "bg-success text-success-foreground" : ""}
+                          >
+                            {irrigator.aiStatus === "Otimizado" ? (
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                            ) : (
+                              <Brain className="h-3 w-3 mr-1" />
+                            )}
+                            {irrigator.aiStatus}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            <Target className="h-3 w-3 mr-1" />
+                            {irrigator.efficiency}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge 
-                          variant={irrigator.aiStatus === "Otimizado" ? "default" : "secondary"}
-                          className={irrigator.aiStatus === "Otimizado" ? "bg-success text-success-foreground" : ""}
-                        >
-                          {irrigator.aiStatus === "Otimizado" ? (
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                          ) : (
-                            <Brain className="h-3 w-3 mr-1" />
-                          )}
-                          {irrigator.aiStatus}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          <Target className="h-3 w-3 mr-1" />
-                          {irrigator.efficiency}
-                        </Badge>
+                      
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Última Decisão:</span>
+                          <div className="font-medium truncate">{irrigator.lastDecision || "N/A"}</div>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Próxima Ação:</span>
+                          <div className="font-medium">{irrigator.nextAction}</div>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Última Decisão:</span>
-                        <div className="font-medium">{irrigator.lastDecision}</div>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Próxima Ação:</span>
-                        <div className="font-medium">{irrigator.nextAction}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
                 
                 <div className="mt-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
                   <div className="flex items-center space-x-2 text-primary">
@@ -216,7 +193,7 @@ const Index = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Brain className="h-5 w-5 text-primary" />
+                  <Brain className="h-5 w-5 text-sucess" />
                   <span>Status da Inteligência</span>
                 </CardTitle>
               </CardHeader>

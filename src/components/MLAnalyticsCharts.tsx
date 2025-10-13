@@ -205,28 +205,7 @@ export const MLAnalyticsCharts = () => {
         </Card>
       </div>
 
-      {/* Precisão das Predições */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Precisão das Predições por Categoria - Último Mês</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={predictionAccuracy}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Area type="monotone" dataKey="weather" stackId="1" stroke="#0ea5e9" fill="#0ea5e9" fillOpacity={0.3} name="Meteorológicas" />
-              <Area type="monotone" dataKey="soil" stackId="2" stroke="#22c55e" fill="#22c55e" fillOpacity={0.3} name="Solo" />
-              <Area type="monotone" dataKey="irrigation" stackId="3" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.3} name="Irrigação" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Status de Aprendizado */}
+      {/*Status de Aprendizado */}
       <Card>
         <CardHeader>
           <CardTitle>Status de Aprendizado dos Modelos</CardTitle>

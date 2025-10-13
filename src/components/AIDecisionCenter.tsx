@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,12 @@ interface AIDecision {
   reasoning: string;
   outcome: "success" | "pending" | "warning";
   waterSaved?: string;
+}
+
+interface Stats {
+  totalDecisions: number;
+  totalWaterSaved: number;
+  averageConfidence: number;
 }
 
 const outcomeConfig = {
@@ -77,46 +84,29 @@ const DecisionItem = ({ decision }: { decision: AIDecision }) => {
 };
 
 export const AIDecisionCenter = () => {
-  const recentDecisions: AIDecision[] = [
-    {
-      id: "1",
-      timestamp: "13:24",
-      zone: "Zona Norte",
-      decision: "Irrigação pausada",
-      confidence: 96,
-      reasoning: "Chuva detectada em 45min",
-      outcome: "success",
-      waterSaved: "85L"
-    },
-    {
-      id: "2", 
-      timestamp: "12:15",
-      zone: "Zona Sul",
-      decision: "Micro-irrigação ativada",
-      confidence: 89,
-      reasoning: "pH baixo + temperatura alta",
-      outcome: "success",
-      waterSaved: "120L"
-    },
-    {
-      id: "3",
-      timestamp: "11:30",
-      zone: "Zona Leste",
-      decision: "Irrigação noturna programada",
-      confidence: 92,
-      reasoning: "Otimização por evaporação",
-      outcome: "pending"
-    },
-    {
-      id: "4",
-      timestamp: "10:45",
-      zone: "Zona Centro", 
-      decision: "Alerta de pH crítico",
-      confidence: 98,
-      reasoning: "Valor fora do padrão aprendido",
-      outcome: "warning"
-    }
-  ];
+  const [recentDecisions, setRecentDecisions] = useState<AIDecision[]>([]);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/decisoes/centro');
+        if (!response.ok) {
+          throw new Error('Falha ao buscar dados');
+        }
+        const data = await response.json();
+        setRecentDecisions(data.recentDecisions || []);
+        setStats(data.stats || null);
+      } catch (error) {
+        console.error("Erro no AIDecisionCenter:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   //last 3 decisions
   const decisionsToShow = 3;
@@ -139,15 +129,15 @@ export const AIDecisionCenter = () => {
         {/* AI Status */}
         <div className="grid grid-cols-3 gap-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
           <div className="text-center">
-            <div className="text-lg font-bold text-primary dark:text-foreground">847</div>
+            <div className="text-lg font-bold text-primary dark:text-foreground">{loading ? '...' : stats?.totalDecisions || 0}</div>
             <div className="text-xs text-muted-foreground">Decisões hoje</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-bold text-success">1.240L</div>
+            <div className="text-lg font-bold text-success">{loading ? '...' : Math.round(stats?.totalWaterSaved || 0)}L</div>
             <div className="text-xs text-muted-foreground">Água economizada</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-bold text-accent dark:text-foreground">93%</div>
+            <div className="text-lg font-bold text-accent dark:text-foreground">{loading ? '...' : Math.round(stats?.averageConfidence || 0)}%</div>
             <div className="text-xs text-muted-foreground">Precisão média</div>
           </div>
         </div>
@@ -155,7 +145,9 @@ export const AIDecisionCenter = () => {
         {/* Recent Decisions */}
         <div className="space-y-3">
           <h4 className="font-medium text-sm">Decisões Recentes</h4>
-          {recentDecisions.length > 0 ? (
+          {loading ? (
+            <p className="text-sm text-muted-foreground">Carregando decisões...</p>
+          ) : recentDecisions.length > 0 ? (
             <Dialog>
               <div className="space-y-4">
                 {recentDecisions.slice(0, decisionsToShow).map((decision) => (

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardCard } from "@/components/DashboardCard";
@@ -15,55 +16,35 @@ import {
   Calendar
 } from "lucide-react";
 
+interface CurrentWeather {
+  temperature: string;
+  humidity: string;
+  windSpeed: string;
+  condition: string;
+  rainChance: string;
+}
+
+interface Recommendation {
+  sector: string;
+  recommendation: string;
+  reason: string;
+  action: string;
+  savings: string | null;
+}
+
 const Weather = () => {
-  const currentWeather = {
-    temperature: "25°C",
-    humidity: "68%",
-    windSpeed: "12 km/h",
-    visibility: "10 km",
-    condition: "Parcialmente nublado",
-    rainChance: "30%"
-  };
+  const [currentWeather, setCurrentWeather] = useState<CurrentWeather | null>(null);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const forecast = [
     { day: "Hoje", temp: "25°C", icon: "☁️", rain: "30%", condition: "Nublado" },
     { day: "Amanhã", temp: "27°C", icon: "🌤️", rain: "10%", condition: "Sol e nuvens" },
     { day: "Quarta", temp: "23°C", icon: "🌧️", rain: "80%", condition: "Chuva" },
     { day: "Quinta", temp: "26°C", icon: "☀️", rain: "5%", condition: "Ensolarado" },
-    { day: "Sexta", temp: "24°C", icon: "⛈️", rain: "70%", condition: "Tempestade" },
-    { day: "Sábado", temp: "28°C", icon: "☀️", rain: "0%", condition: "Ensolarado" },
-    { day: "Domingo", temp: "29°C", icon: "🌤️", rain: "15%", condition: "Sol e nuvens" }
-  ];
-
-  const irrigationRecommendations = [
-    {
-      sector: "Setor A - Milho",
-      recommendation: "Irrigar normalmente",
-      reason: "Sem previsão de chuva significativa",
-      action: "continue",
-      savings: null
-    },
-    {
-      sector: "Setor B - Soja", 
-      recommendation: "Adiar irrigação",
-      reason: "Chuva prevista para quarta-feira (80%)",
-      action: "delay",
-      savings: "~1.200L"
-    },
-    {
-      sector: "Setor C - Feijão",
-      recommendation: "Irrigar hoje",
-      reason: "Umidade baixa + sol forte amanhã",
-      action: "irrigate",
-      savings: null
-    },
-    {
-      sector: "Setor D - Verduras",
-      recommendation: "Reduzir irrigação",
-      reason: "Alta umidade atual + tempestade sexta",
-      action: "reduce",
-      savings: "~800L"
-    }
+    { day: "Sexta", temp: "28°C", icon: "☀️", rain: "0%", condition: "Ensolarado" },
+    { day: "Sábado", temp: "27°C", icon: "🌤️", rain: "10%", condition: "Parcialmente nublado" },
+    { day: "Domingo", temp: "24°C", icon: "🌧️", rain: "60%", condition: "Chuva forte" }
   ];
 
   const getRecommendationBadge = (action: string) => {
@@ -80,6 +61,29 @@ const Weather = () => {
         return <Badge variant="secondary">Analisar</Badge>;
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [weatherRes, recommendationsRes] = await Promise.all([
+          fetch('http://localhost:3001/api/weather/current'),
+          fetch('http://localhost:3001/api/weather/recommendations')
+        ]);
+
+        const weatherData = await weatherRes.json();
+        const recommendationsData = await recommendationsRes.json();
+
+        setCurrentWeather(weatherData);
+        setRecommendations(recommendationsData);
+      } catch (error) {
+        console.error("Erro ao buscar dados climáticos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -115,38 +119,42 @@ const Weather = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl mb-2">🌤️</div>
-                  <div className="text-2xl font-bold">{currentWeather.temperature}</div>
-                  <p className="text-sm text-muted-foreground">{currentWeather.condition}</p>
+              {loading || !currentWeather ? (
+                <div className="h-[88px] animate-pulse bg-muted/50 rounded-lg" />
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">🌤️</div>
+                    <div className="text-2xl font-bold">{currentWeather.temperature}</div>
+                    <p className="text-sm text-muted-foreground">{currentWeather.condition}</p>
+                  </div>
+                  <div className="text-center">
+                    <Droplets className="h-6 w-6 mx-auto mb-2 text-primary" />
+                    <div className="text-xl font-semibold">{currentWeather.humidity}</div>
+                    <p className="text-sm text-muted-foreground">Umidade</p>
+                  </div>
+                  <div className="text-center">
+                    <Wind className="h-6 w-6 mx-auto mb-2 text-success" />
+                    <div className="text-xl font-semibold">{currentWeather.windSpeed}</div>
+                    <p className="text-sm text-muted-foreground">Vento</p>
+                  </div>
+                  <div className="text-center">
+                    <Eye className="h-6 w-6 mx-auto mb-2 text-primary" />
+                    <div className="text-xl font-semibold">10 km</div>
+                    <p className="text-sm text-muted-foreground">Visibilidade</p>
+                  </div>
+                  <div className="text-center">
+                    <CloudRain className="h-6 w-6 mx-auto mb-2 text-success" />
+                    <div className="text-xl font-semibold">{currentWeather.rainChance}</div>
+                    <p className="text-sm text-muted-foreground">Chuva</p>
+                  </div>
+                  <div className="text-center">
+                    <Sun className="h-6 w-6 mx-auto mb-2 text-warning" />
+                    <div className="text-xl font-semibold">UV 6</div>
+                    <p className="text-sm text-muted-foreground">Índice UV</p>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <Droplets className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <div className="text-xl font-semibold">{currentWeather.humidity}</div>
-                  <p className="text-sm text-muted-foreground">Umidade</p>
-                </div>
-                <div className="text-center">
-                  <Wind className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-                  <div className="text-xl font-semibold">{currentWeather.windSpeed}</div>
-                  <p className="text-sm text-muted-foreground">Vento</p>
-                </div>
-                <div className="text-center">
-                  <Eye className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-                  <div className="text-xl font-semibold">{currentWeather.visibility}</div>
-                  <p className="text-sm text-muted-foreground">Visibilidade</p>
-                </div>
-                <div className="text-center">
-                  <CloudRain className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <div className="text-xl font-semibold">{currentWeather.rainChance}</div>
-                  <p className="text-sm text-muted-foreground">Chuva</p>
-                </div>
-                <div className="text-center">
-                  <Sun className="h-6 w-6 mx-auto mb-2 text-warning" />
-                  <div className="text-xl font-semibold">UV 6</div>
-                  <p className="text-sm text-muted-foreground">Índice UV</p>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
@@ -156,7 +164,7 @@ const Weather = () => {
               <CardTitle>Previsão para 7 Dias</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {forecast.map((day, index) => (
                   <div key={index} className="text-center p-4 rounded-lg bg-muted/30">
                     <div className="text-sm font-medium mb-2">{day.day}</div>
@@ -182,35 +190,29 @@ const Weather = () => {
               </p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {irrigationRecommendations.map((rec, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 rounded-lg border">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="font-medium">{rec.sector}</h3>
-                        {getRecommendationBadge(rec.action)}
+              {loading ? <p className="text-center text-muted-foreground">Gerando recomendações...</p> : (
+                <div className="space-y-4">
+                  {recommendations.map((rec, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 rounded-lg border">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="font-medium">{rec.sector}</h3>
+                          {getRecommendationBadge(rec.action)}
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          <strong>{rec.recommendation}</strong> - {rec.reason}
+                        </p>
+                        {rec.savings && (
+                          <p className="text-sm text-success">Economia estimada: {rec.savings}</p>
+                        )}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-1">
-                        <strong>{rec.recommendation}</strong> - {rec.reason}
-                      </p>
-                      {rec.savings && (
-                        <p className="text-sm text-success">Economia estimada: {rec.savings}</p>
-                      )}
+                      <Button variant="outline" size="sm">
+                        Aplicar
+                      </Button>
                     </div>
-                    <Button variant="outline" size="sm">
-                      Aplicar
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 p-4 bg-primary/5 rounded-lg">
-                <h4 className="font-medium text-primary mb-2"><strong> Resumo de Economia </strong></h4>
-                <p className="text-sm text-muted-foreground">
-                  Seguindo as recomendações, você pode economizar aproximadamente <strong>2.000 litros</strong> de água 
-                  esta semana, mantendo a qualidade da irrigação.
-                </p>
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 

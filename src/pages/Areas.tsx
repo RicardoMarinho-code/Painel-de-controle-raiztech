@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardCard } from "@/components/DashboardCard";
@@ -18,97 +19,37 @@ import {
   HelpCircle
 } from "lucide-react";
 
+interface Zone {
+  id: number;
+  name: string;
+  crop: string;
+  area: number;
+  irrigator: string;
+  aiStatus: string;
+  efficiency: number;
+  soilMoisture: number;
+  patternsLearned: number;
+  waterSaved: number;
+  status: string;
+}
+
+interface AreaStats {
+  activeZones: number;
+  totalZones: number;
+  totalCoverage: number;
+  avgEfficiency: number;
+  weeklySavings: number;
+}
+
 const Areas = () => {
-  const zones = [
-    {
-      id: 1,
-      name: "Zona Norte",
-      crop: "Milho",
-      area: "8.5",
-      irrigator: "Irrigador A1",
-      aiStatus: "Otimizado",
-      efficiency: "96.2%",
-      coverage: "Completa",
-      soilMoisture: "68%",
-      patternsLearned: 127,
-      waterSaved: "340L/semana",
-      status: "excellent"
-    },
-    {
-      id: 2,
-      name: "Zona Sul", 
-      crop: "Soja",
-      area: "7.2",
-      irrigator: "Irrigador B2",
-      aiStatus: "Aprendendo",
-      efficiency: "89.1%",
-      coverage: "Completa",
-      soilMoisture: "72%",
-      patternsLearned: 89,
-      waterSaved: "280L/semana",
-      status: "healthy"
-    },
-    {
-      id: 3,
-      name: "Zona Leste",
-      crop: "Feijão",
-      area: "6.8",
-      irrigator: "Irrigador C3",
-      aiStatus: "Otimizado",
-      efficiency: "92.7%",
-      coverage: "Completa",
-      soilMoisture: "75%",
-      patternsLearned: 156,
-      waterSaved: "420L/semana",
-      status: "excellent"
-    },
-    {
-      id: 4,
-      name: "Zona Oeste",
-      crop: "Milho",
-      area: "8.1",
-      irrigator: "Irrigador D4",
-      aiStatus: "Treinando",
-      efficiency: "87.3%",
-      coverage: "Parcial",
-      soilMoisture: "65%",
-      patternsLearned: 34,
-      waterSaved: "120L/semana",
-      status: "attention"
-    },
-    {
-      id: 5,
-      name: "Zona Centro",
-      crop: "Verduras",
-      area: "5.4",
-      irrigator: "Irrigador E5",
-      aiStatus: "Otimizado",
-      efficiency: "94.8%",
-      coverage: "Completa",
-      soilMoisture: "78%",
-      patternsLearned: 203,
-      waterSaved: "380L/semana",
-      status: "excellent"
-    },
-    {
-      id: 6,
-      name: "Zona Nordeste",
-      crop: "Soja",
-      area: "7.8",
-      irrigator: "Irrigador F6",
-      aiStatus: "Manutenção",
-      efficiency: "0%",
-      coverage: "Sem cobertura",
-      soilMoisture: "N/A",
-      patternsLearned: 0,
-      waterSaved: "0L/semana",
-      status: "critical"
-    }
-  ];
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [stats, setStats] = useState<AreaStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const getAIStatusBadge = (status: string) => {
     switch (status) {
       case "Otimizado":
+      case "Especialista":
         return <Badge className="bg-success text-success-foreground">
           <CheckCircle className="h-3 w-3 mr-1" />
           Otimizado
@@ -119,11 +60,11 @@ const Areas = () => {
           Aprendendo
         </Badge>;
       case "Treinando":
-        return <Badge variant="secondary">Treinando</Badge>;
+        return <Badge variant="secondary">Treinando</Badge>; // Status hipotético
       case "Manutenção":
         return <Badge variant="destructive">Manutenção</Badge>;
       default:
-        return <Badge variant="secondary">Offline</Badge>;
+        return <Badge variant="secondary">{status || 'Indefinido'}</Badge>;
     }
   };
 
@@ -136,7 +77,7 @@ const Areas = () => {
       case "Sem cobertura":
         return <Badge variant="destructive">Sem Cobertura</Badge>;
       default:
-        return <Badge variant="secondary">-</Badge>;
+        return <Badge className="bg-success text-success-foreground">Completa</Badge>;
     }
   };
 
@@ -145,6 +86,7 @@ const Areas = () => {
     switch (status) {
       case "Otimizado":
         return <CheckCircle {...props} className={`${props.className} text-success`} />;
+      case "Especialista":
       case "Aprendendo":
         return <Brain {...props} className={`${props.className} text-primary animate-pulse`} />;
       case "Treinando":
@@ -155,6 +97,29 @@ const Areas = () => {
         return <HelpCircle {...props} className={`${props.className} text-muted-foreground`} />;
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [statsRes, zonesRes] = await Promise.all([
+          fetch('http://localhost:3001/api/areas/stats'),
+          fetch('http://localhost:3001/api/areas/zones')
+        ]);
+
+        const statsData = await statsRes.json();
+        const zonesData = await zonesRes.json();
+
+        setStats(statsData);
+        setZones(zonesData);
+      } catch (error) {
+        console.error("Erro ao buscar dados das zonas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const ProgressCircle = ({ percentage }: { percentage: number }) => {
     const radius = 52;
@@ -227,47 +192,56 @@ const Areas = () => {
 
           {/* Overview Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <DashboardCard
-              title="Zonas Ativas"
-              value="5"
-              unit="/6"
-              icon={MapPin}
-              status="warning"
-            />
-            <DashboardCard
-              title="Cobertura Total"
-              value="43.8"
-              unit=" hectares"
-              icon={Target}
-              status="success"
-            />
-            <DashboardCard
-              title="Eficiência Média"
-              value="93.4"
-              unit="%"
-              icon={Zap}
-              status="success"
-            />
-            <DashboardCard
-              title="Economia Semanal"
-              value="1.540"
-              unit="L"
-              icon={Droplets}
-              status="success"
-            />
+            {loading || !stats ? (
+              Array(4).fill(0).map((_, index) => <Card key={index} className="h-[126px] animate-pulse bg-muted/50" />)
+            ) : (
+              <>
+                <DashboardCard
+                  title="Zonas Ativas"
+                  value={stats.activeZones.toString()}
+                  unit={`/${stats.totalZones}`}
+                  icon={MapPin}
+                  status={stats.activeZones < stats.totalZones ? "warning" : "success"}
+                />
+                <DashboardCard
+                  title="Cobertura Total"
+                  value={parseFloat(stats.totalCoverage.toString()).toFixed(1)}
+                  unit=" hectares"
+                  icon={Target}
+                  status="success"
+                />
+                <DashboardCard
+                  title="Eficiência Média"
+                  value={parseFloat(stats.avgEfficiency.toString()).toFixed(1)}
+                  unit="%"
+                  icon={Zap}
+                  status="success"
+                />
+                <DashboardCard
+                  title="Economia Semanal"
+                  value={new Intl.NumberFormat('pt-BR').format(stats.weeklySavings)}
+                  unit="L"
+                  icon={Droplets}
+                  status="success"
+                />
+              </>
+            )}
           </div>
 
           {/* Zones Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {zones.map((zone) => (
-              <Card key={zone.id} className="relative">
+            {loading ? (
+              Array(6).fill(0).map((_, index) => <Card key={index} className="h-[380px] animate-pulse bg-muted/50" />)
+            ) : (
+              zones.map((zone) => (
+              <Card key={zone.id} className={`relative ${zone.status !== 'Ativo' ? 'bg-muted/30 border-dashed' : ''}`}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <Sprout className="h-8 w-8 text-primary" />
                       <div>
                         <CardTitle className="text-lg">{zone.name}</CardTitle>
-                        <p className="text-sm text-muted-foreground">{zone.crop} • {zone.area} ha</p>
+                        <p className="text-sm text-muted-foreground">{zone.crop || 'Sem cultura'} • {zone.area} ha</p>
                       </div>
                     </div>
                     {getAIStatusBadge(zone.aiStatus)}
@@ -276,7 +250,7 @@ const Areas = () => {
                 
                 <CardContent className="space-y-4">
                   <div className="text-center p-3 bg-muted/30 rounded-lg">
-                    <div className="text-xl font-bold text-primary">{zone.efficiency}</div>
+                    <div className="text-xl font-bold text-primary">{zone.efficiency}%</div>
                     <p className="text-sm text-muted-foreground">Eficiência Hídrica</p>
                   </div>
 
@@ -291,18 +265,18 @@ const Areas = () => {
                     </div>
                     <div>
                       <span className="text-muted-foreground">Umidade:</span>
-                      <div className="font-medium">{zone.soilMoisture}</div>
+                      <div className="font-medium">{zone.soilMoisture}%</div>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Economia:</span>
-                      <div className="font-medium text-success">{zone.waterSaved}</div>
+                      <div className="font-medium text-success">{zone.waterSaved}L</div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Cobertura:</span>
-                      {getCoverageStatus(zone.coverage)}
+                      {getCoverageStatus(zone.status === 'Ativo' ? 'Completa' : 'Sem cobertura')}
                     </div>
                   </div>
 
@@ -318,8 +292,8 @@ const Areas = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            )))}
+          </div>          
 
           {/* Farm Coverage Map */}
           <Card>
@@ -334,26 +308,28 @@ const Areas = () => {
             </CardHeader>
             <CardContent>
               <div className="p-4 sm:p-6 bg-muted/30 rounded-xl">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {zones.map((zone) => {
-                    const efficiencyValue = parseFloat(zone.efficiency) || 0;
-                    return (
-                      <div key={zone.id} className="p-4 rounded-xl bg-background border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 ease-in-out">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <p className="font-bold text-foreground">{zone.name}</p>
-                            <p className="text-xs text-muted-foreground">{zone.crop}</p>
+                {loading ? <p className="text-center text-muted-foreground">Carregando mapa de cobertura...</p> : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {zones.map((zone) => {
+                      const efficiencyValue = parseFloat(zone.efficiency.toString()) || 0;
+                      return (
+                        <div key={zone.id} className={`p-4 rounded-xl bg-background border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 ease-in-out ${zone.status !== 'Ativo' ? 'opacity-50' : ''}`}>
+                          <div className="flex items-start justify-between mb-4">
+                            <div>
+                              <p className="font-bold text-foreground">{zone.name}</p>
+                              <p className="text-xs text-muted-foreground">{zone.crop || 'Sem cultura'}</p>
+                            </div>
+                            {getZoneStatusIcon(zone.aiStatus)}
                           </div>
-                          {getZoneStatusIcon(zone.aiStatus)}
+                          <div className="flex flex-col items-center justify-center gap-2">
+                            <ProgressCircle percentage={efficiencyValue} />
+                            <div className="text-sm font-medium text-muted-foreground">{zone.area} ha</div>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-center justify-center gap-2">
-                          <ProgressCircle percentage={efficiencyValue} />
-                          <div className="text-sm font-medium text-muted-foreground">{zone.area} ha</div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
