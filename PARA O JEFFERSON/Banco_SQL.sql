@@ -168,3 +168,16 @@ create table Usuario_pertence_grupo (
 
 alter table Agricultor add column ID_Usuario_fk int not null unique;
 alter table Agricultor add constraint fk_Agricultor_Usuarios foreign key (ID_Usuario_fk) references Usuarios(ID_usuario);
+alter table Contrato modify ID_contrato varchar(20) primary key;
+
+-- Log de Auditoria de Contratos
+-- Função: Grava um registro em uma tabela de log toda vez que um novo contrato é inserido.
+-- Isso é crucial para auditoria e rastreabilidade de acordos financeiros.
+
+CREATE TABLE Log_Contratos (
+    ID_log INT PRIMARY KEY AUTO_INCREMENT,
+    ID_contrato_afetado INT,
+    data_acao DATETIME,
+    acao_realizada VARCHAR(50),
+    valor_contrato FLOAT
+);
