@@ -178,6 +178,9 @@ INSERT INTO Contrato (data_assinatura, valor, ID_agricultor_fk, ID_empreendiment
 ('2023-09-12', 450000.00, 6, 6),
 ('2024-05-18', 180000.00, 7, 7);
 
+-- Para Vinicius: coloque mais dados nos inserts abaixo!!!
+-- Tambem é preciso criar um insert para a tabela "Log_contratos".
+
 -- Inserir os dados específicos do ADM e Funcionário.
 INSERT INTO Adm (nivel_permissao, id_usuario_fk) VALUES
 (1, 8); -- 'Admin Geral' (usuário ID 8) com permissão máxima.
@@ -206,6 +209,14 @@ INSERT INTO Usuario_pertence_grupo (id_usuario_fk, id_grupo_fk) VALUES
 -- Associar o Funcionário (ID 9) ao grupo 'Funcionarios' (assumindo que seu ID é 2)
 (9, 2);
 
+-- ================================================================= --
+--           Coloque um insert para a tabela "Log_Contratos"
+--                 Essa tabela referencia os triggers!
+--                   Tem um arquivo chamado Triggers
+-- ================================================================= --
+
+-- Vinicius, coloque mais selets count para as tabelas que faltam.
+
 -- Verificar se os dados foram inseridos
 SELECT 'Dados inseridos com sucesso!' as Status;
 SELECT COUNT(*) as Total_Agricultores FROM Agricultor;
@@ -214,3 +225,5 @@ SELECT COUNT(*) as Total_Irrigadores FROM Irrigador;
 SELECT COUNT(*) as Total_Sensores FROM Sensor;
 SELECT COUNT(*) as Total_Medicoes FROM Medicao;
 SELECT COUNT(*) as Total_Contratos FROM Contrato;
+
+-- Apos terminar, exclua todos os comentarios que deixei para voce.
