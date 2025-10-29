@@ -1,14 +1,19 @@
-create database AgroTech;
+create database if not exists AgroTech;
 
 use AgroTech;
 
+create table Usuarios (
+    ID_Usuario int primary key auto_increment,
+    nome varchar(255) not null,
+    senha varchar(255) not null,
+    email varchar(255) unique not null,
+    telefone varchar(15) not null
+);
+
 create table Agricultor (
 	ID_agricultor int primary key auto_increment,
-    nome varchar(255) not null,
-    #Adição do CPF que estava no documento
     CPF varchar(11) unique not null,
-    data_nascimento date not null,
-    telefones_de_conato varchar(255) not null
+    data_nascimento date not null
 );
 
 create table Empreendimento(
@@ -25,7 +30,6 @@ create table Contrato (
     data_assinatura date not null,
     valor float not null,
     
-    #Adicionei mais uma chave estrangeira para fazer ligação com o "Empreendimento"
     ID_agricultor_fk int not null,
     ID_empreendimento_fk int not null,
     foreign key (ID_agricultor_fk) references Agricultor(ID_agricultor),
@@ -36,7 +40,6 @@ create table PropriedadeRural(
 	ID_propriedade int primary key auto_increment,
     nome varchar(255) not null,
     localizacao varchar(255) not null,
-    #Mudança de float para decimal na "area_total"
     area_total decimal(10,5) not null,
     
     ID_agricultor_fk int not null,
@@ -135,3 +138,33 @@ create table Cultura(
     ID_setor_fk int not null,
     foreign key (ID_setor_fk) references Setor(ID_setor)
 );
+
+create table Funcionarios (
+    ID_Funcionario int primary key auto_increment,
+    cargo varchar(100),
+    ID_Usuario_fk int not null unique,
+    constraint fk_Funcionarios_Usuarios foreign key (ID_Usuario_fk) references Usuarios(ID_Usuario)
+);
+
+create table ADM (
+    ID_ADM int primary key auto_increment,
+    nivel_permissao int,
+    ID_Usuario_fk int not null unique,
+    constraint fk_ADM_Usuarios foreign key (ID_Usuario_fk) references Usuarios(ID_Usuario)
+);
+
+create table Grupo_Usuarios (
+    ID_Grupo int primary key auto_increment,
+    nome_grupo varchar(50) unique not null
+);
+
+create table Usuario_pertence_grupo (
+    ID_Usuario_fk int not null,
+    ID_Grupo_fk int not null,
+    primary key (ID_Usuario_fk, ID_Grupo_fk),
+    foreign key (ID_Usuario_fk) references Usuarios(ID_Usuario),
+    foreign key (ID_Grupo_fk) references Grupo_Usuarios(ID_Grupo)
+);
+
+alter table Agricultor add column ID_Usuario_fk int not null unique;
+alter table Agricultor add constraint fk_Agricultor_Usuarios foreign key (ID_Usuario_fk) references Usuarios(ID_usuario);
