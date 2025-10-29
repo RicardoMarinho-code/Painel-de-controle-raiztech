@@ -3,16 +3,30 @@
 
 USE AgroTech;
 
+INSERT INTO Usuarios (nome, email, senha, telefone) VALUES 
+-- Agricultores (IDs 1 a 7)
+('Maria Oliveira Costa', 'maria.costa@email.com', 'hash_senha_1', '(11) 99876-5432'),
+('Carlos Eduardo Lima', 'carlos.lima@email.com', 'hash_senha_2', '(11) 97654-3210'),
+('Ana Beatriz Pereira', 'ana.pereira@email.com', 'hash_senha_3', '(19) 98877-6655'),
+('Ricardo Almeida Souza', 'ricardo.souza@email.com', 'hash_senha_4', '(19) 97766-5544'),
+('Fernanda Gonçalves', 'fernanda.g@email.com', 'hash_senha_5', '(16) 96655-4433'),
+('Lucas Martins Ferreira', 'lucas.ferreira@email.com', 'hash_senha_6', '(16) 95544-3322'),
+('João da Silva', 'joao.silva@email.com', 'hash_senha_7', '(18) 91234-5678'),
+-- Usuário Administrador (ID 8)
+('Admin Geral', 'admin@agrotech.com', 'hash_senha_admin', '(61) 99999-0001'),
+-- Usuário Funcionário (ID 9)
+('Carlos Suporte', 'suporte@agrotech.com', 'hash_senha_func', '(61) 99999-0002');
+
 -- Inserir agricultores de exemplo
 -- OBS: Adicionado um 7º agricultor para manter a consistência dos dados de exemplo.
-INSERT INTO Agricultor (nome, CPF, data_nascimento, telefones_de_conato) VALUES 
-('Maria Oliveira Costa', '23456789012', '1980-07-22', '(11) 99876-5432'),
-('Carlos Eduardo Lima', '34567890123', '1970-11-08', '(11) 97654-3210, (11) 3234-5678'),
-('Ana Beatriz Pereira', '45678901234', '1992-01-30', '(19) 98877-6655'),
-('Ricardo Almeida Souza', '56789012345', '1985-06-10', '(19) 97766-5544'),
-('Fernanda Gonçalves', '67890123456', '1995-09-25', '(16) 96655-4433'),
-('Lucas Martins Ferreira', '78901234567', '1988-12-01', '(16) 95544-3322'),
-('João da Silva', '89012345678', '1982-03-15', '(18) 91234-5678');
+INSERT INTO Agricultor (CPF, data_nascimento, id_usuario_fk) VALUES 
+('23456789012', '1980-07-22', 1), -- Maria Oliveira Costa
+('34567890123', '1970-11-08', 2), -- Carlos Eduardo Lima
+('45678901234', '1992-01-30', 3), -- Ana Beatriz Pereira
+('56789012345', '1985-06-10', 4), -- Ricardo Almeida Souza
+('67890123456', '1995-09-25', 5), -- Fernanda Gonçalves
+('78901234567', '1988-12-01', 6), -- Lucas Martins Ferreira
+('89012345678', '1982-03-15', 7);  -- João da Silva
 
 -- Inserir empreendimentos
 INSERT INTO Empreendimento (nome, finalidade, ID_agricultor_fk) VALUES
@@ -163,6 +177,34 @@ INSERT INTO Contrato (data_assinatura, valor, ID_agricultor_fk, ID_empreendiment
 ('2024-04-01', 95000.00, 5, 5),
 ('2023-09-12', 450000.00, 6, 6),
 ('2024-05-18', 180000.00, 7, 7);
+
+-- Inserir os dados específicos do ADM e Funcionário.
+INSERT INTO Adm (nivel_permissao, id_usuario_fk) VALUES
+(1, 8); -- 'Admin Geral' (usuário ID 8) com permissão máxima.
+
+INSERT INTO Funcionarios (cargo, id_usuario_fk) VALUES
+('Suporte Técnico', 9); -- 'Carlos Suporte' (usuário ID 9) com o cargo de suporte.
+
+-- Definir os grupos de usuários.
+INSERT IGNORE INTO Grupo_usuarios (nome_grupo) VALUES
+('Administradores'),
+('Funcionarios'),
+('Agricultores');
+
+-- Associar cada usuário ao seu respectivo grupo.
+INSERT INTO Usuario_pertence_grupo (id_usuario_fk, id_grupo_fk) VALUES
+-- Associar todos os agricultores (IDs 1 a 7) ao grupo 'Agricultores' (assumindo que seu ID é 3)
+(1, 3),
+(2, 3),
+(3, 3),
+(4, 3),
+(5, 3),
+(6, 3),
+(7, 3),
+-- Associar o ADM (ID 8) ao grupo 'Administradores' (assumindo que seu ID é 1)
+(8, 1),
+-- Associar o Funcionário (ID 9) ao grupo 'Funcionarios' (assumindo que seu ID é 2)
+(9, 2);
 
 -- Verificar se os dados foram inseridos
 SELECT 'Dados inseridos com sucesso!' as Status;
