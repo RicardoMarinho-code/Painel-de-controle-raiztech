@@ -3,36 +3,31 @@
 
 USE AgroTech;
 -- usuarios 
-INSERT INTO Usuarios (nome, email, senha, telefone) VALUES 
--- Agricultores (IDs 1 a 7)
-('Maria Oliveira Costa', 'maria.costa@email.com', 'hash_senha_1', '(11) 99876-5432'),
-('Carlos Eduardo Lima', 'carlos.lima@email.com', 'hash_senha_2', '(11) 97654-3210'),
-('Ana Beatriz Pereira', 'ana.pereira@email.com', 'hash_senha_3', '(19) 98877-6655'),
-('Ricardo Almeida Souza', 'ricardo.souza@email.com', 'hash_senha_4', '(19) 97766-5544'),
-('Fernanda Gonçalves', 'fernanda.g@email.com', 'hash_senha_5', '(16) 96655-4433'),
-('Lucas Martins Ferreira', 'lucas.ferreira@email.com', 'hash_senha_6', '(16) 95544-3322'),
-('João da Silva', 'joao.silva@email.com', 'hash_senha_7', '(18) 91234-5678'),
--- Usuário Administrador (ID 8,10,11)
-('Admin Geral', 'admin@agrotech.com', 'hash_senha_admin', '(61) 99999-0001'),
--- Usuário Funcionário (ID 9)
-('Carlos Suporte', 'suporte@agrotech.com', 'hash_senha_func', '(61) 99999-0002'),
-('João Cleber adm', 'jcadm@agrotech.com', 'hash_senha_jcadm', '(61) 99999-0846'),
-('Vitor Nunes', 'vitor@agrotech.com', 'hash_senha_vitor', '(61) 99349-0735'),
-('Alice Marinho', 'alice@agrotech.com', 'hash_senha_alice', '(61) 99999-0230');
-('Gustavo Lima', 'gustavo@agrotech.com', 'hash_senha_gustavo', ('61) 97499-0283');
+INSERT INTO Usuarios (ID_Usuario, nome, email, senha, telefone) VALUES
+('USR001', 'Maria Oliveira Costa', 'maria.costa@email.com', 'hash_senha_1', '(11) 99876-5432'),
+('USR002', 'Carlos Eduardo Lima', 'carlos.lima@email.com', 'hash_senha_2', '(11) 97654-3210'),
+('USR003', 'Ana Beatriz Pereira', 'ana.pereira@email.com', 'hash_senha_3', '(19) 98877-6655'),
+('USR004', 'Ricardo Almeida Souza', 'ricardo.souza@email.com', 'hash_senha_4', '(19) 97766-5544'),
+('USR005', 'Fernanda Gonçalves', 'fernanda.g@email.com', 'hash_senha_5', '(16) 96655-4433'),
+('USR006', 'Lucas Martins Ferreira', 'lucas.ferreira@email.com', 'hash_senha_6', '(16) 95544-3322'),
+('USR007', 'João da Silva', 'joao.silva@email.com', 'hash_senha_7', '(18) 91234-5678'),
+('ADM001', 'Admin Geral', 'admin@agrotech.com', 'hash_senha_admin', '(61) 99999-0001'),
+('FUN001', 'Carlos Suporte', 'suporte@agrotech.com', 'hash_senha_func', '(61) 99999-0002'),
+('ADM002', 'João Cleber adm', 'jcadm@agrotech.com', 'hash_senha_jcadm', '(61) 99999-0846'),
+('ADM003', 'Vitor Nunes', 'vitor@agrotech.com', 'hash_senha_vitor', '(61) 99349-0735'),
+('FUN002', 'Alice Marinho', 'alice@agrotech.com', 'hash_senha_alice', '(61) 99999-0230'),
+('FUN003', 'Gustavo Lima', 'gustavo@agrotech.com', 'hash_senha_gustavo', '(61) 97499-0283');
 
 
 
--- Inserir agricultores de exemplo
--- OBS: Adicionado um 7º agricultor para manter a consistência dos dados de exemplo.
-INSERT INTO Agricultor (CPF, data_nascimento, id_usuario_fk) VALUES 
-('23456789012', '1980-07-22', 1), -- Maria Oliveira Costa
-('34567890123', '1970-11-08', 2), -- Carlos Eduardo Lima
-('45678901234', '1992-01-30', 3), -- Ana Beatriz Pereira
-('56789012345', '1985-06-10', 4), -- Ricardo Almeida Souza
-('67890123456', '1995-09-25', 5), -- Fernanda Gonçalves
-('78901234567', '1988-12-01', 6), -- Lucas Martins Ferreira
-('89012345678', '1982-03-15', 7);  -- João da Silva
+INSERT INTO Agricultor (CPF, data_nascimento, id_usuario_fk) VALUES
+('23456789012', '1980-07-22', 'USR001'),
+('34567890123', '1970-11-08', 'USR002'),
+('45678901234', '1992-01-30', 'USR003'),
+('56789012345', '1985-06-10', 'USR004'),
+('67890123456', '1995-09-25', 'USR005'),
+('78901234567', '1988-12-01', 'USR006'),
+('89012345678', '1982-03-15', 'USR007');
 
 -- Inserir empreendimentos
 INSERT INTO Empreendimento (nome, finalidade, ID_agricultor_fk) VALUES
@@ -175,34 +170,35 @@ INSERT INTO Cultura (nome, padroes_ml, eficiencia, economia, statusIA, ID_setor_
 ('Brachiaria Brizantha', 45, 88.0, 3200.00, 'Otimizado', 9);
 
 -- Inserir contratos
-INSERT INTO Contrato (data_assinatura, valor, ID_agricultor_fk, ID_empreendimento_fk) VALUES
-('2024-01-15', 125000.00, 1, 1),
-('2024-02-20', 87500.00, 2, 2),
-('2024-03-10', 200000.00, 3, 3),
-('2023-11-05', 75000.00, 4, 4),
-('2024-04-01', 95000.00, 5, 5),
-('2023-09-12', 450000.00, 6, 6),
-('2024-05-18', 180000.00, 7, 7);
+INSERT INTO Contrato (ID_contrato, data_assinatura, valor, ID_agricultor_fk, ID_empreendimento_fk) VALUES
+(fn_Gerar_ID_Contrato(), '2024-01-15', 125000.00, 1, 1),
+(fn_Gerar_ID_Contrato(), '2024-02-20', 87500.00, 2, 2),
+(fn_Gerar_ID_Contrato(), '2024-03-10', 200000.00, 3, 3),
+(fn_Gerar_ID_Contrato(), '2023-11-05', 75000.00, 4, 4),
+(fn_Gerar_ID_Contrato(), '2024-04-01', 95000.00, 5, 5),
+(fn_Gerar_ID_Contrato(), '2023-09-12', 450000.00, 6, 6),
+(fn_Gerar_ID_Contrato(), '2024-05-18', 180000.00, 7, 7);
 
--- Para Vinicius: coloque mais dados nos inserts abaixo!!!
--- Tambem é preciso criar um insert para a tabela "Log_contratos".
-
--- Inserir os dados específicos do ADM e Funcionário.
 INSERT INTO Adm (nivel_permissao, id_usuario_fk) VALUES
-(1, 8),
-(1,10),
-(1,11);
+(1, 'ADM001'),
+(1, 'ADM002'),
+(1, 'ADM003');
 
 INSERT INTO Funcionarios (cargo, id_usuario_fk) VALUES
-('Suporte Técnico', 9),
-('agricultor', 12),
-('faxineiro',13),
-('engrenheiro',14);
+('Suporte Técnico', 'FUN001'),
+('Engenheira Agrônoma', 'FUN002'),
+('Analista de Dados', 'FUN003');
+
 -- Definir os grupos de usuários.
 INSERT IGNORE INTO Grupo_usuarios (nome_grupo) VALUES
 ('Administradores'),
 ('Funcionarios'),
 ('Agricultores');
+
+INSERT INTO Usuario_pertence_grupo (id_usuario_fk, id_grupo_fk) VALUES
+('USR001', 3), ('USR002', 3), ('USR003', 3), ('USR004', 3), ('USR005', 3), ('USR006', 3), ('USR007', 3),
+('ADM001', 1), ('ADM002', 1), ('ADM003', 1),
+('FUN001', 2), ('FUN002', 2), ('FUN003', 2);
 
 -- Associar cada usuário ao seu respectivo grupo.
 INSERT INTO Usuario_pertence_grupo (id_usuario_fk, id_grupo_fk) VALUES

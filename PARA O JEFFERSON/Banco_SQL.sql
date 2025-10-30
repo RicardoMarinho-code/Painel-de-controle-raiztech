@@ -3,7 +3,7 @@ create database if not exists AgroTech;
 use AgroTech;
 
 create table Usuarios (
-    ID_Usuario int primary key auto_increment,
+    ID_Usuario varchar(30) primary key,
     nome varchar(255) not null,
     senha varchar(255) not null,
     email varchar(255) unique not null,
@@ -14,6 +14,9 @@ create table Agricultor (
 	ID_agricultor int primary key auto_increment,
     CPF varchar(11) unique not null,
     data_nascimento date not null
+
+    ID_Usuario_fk VARCHAR(30) NOT NULL UNIQUE,
+    CONSTRAINT fk_Agricultor_Usuarios FOREIGN KEY (ID_Usuario_fk) REFERENCES Usuarios(ID_Usuario)
 );
 
 create table Empreendimento(
@@ -26,7 +29,7 @@ create table Empreendimento(
 );
 
 create table Contrato (
-	ID_contrato int primary key auto_increment,
+	ID_contrato varchar(30) primary key,
     data_assinatura date not null,
     valor float not null,
     
@@ -166,18 +169,14 @@ create table Usuario_pertence_grupo (
     foreign key (ID_Grupo_fk) references Grupo_Usuarios(ID_Grupo)
 );
 
-alter table Agricultor add column ID_Usuario_fk int not null unique;
-alter table Agricultor add constraint fk_Agricultor_Usuarios foreign key (ID_Usuario_fk) references Usuarios(ID_usuario);
-alter table Contrato modify ID_contrato varchar(20) primary key;
-
--- Log de Auditoria de Contratos
--- Função: Grava um registro em uma tabela de log toda vez que um novo contrato é inserido.
--- Isso é crucial para auditoria e rastreabilidade de acordos financeiros.
 
 CREATE TABLE Log_Contratos (
     ID_log INT PRIMARY KEY AUTO_INCREMENT,
-    ID_contrato_afetado INT,
+    ID_contrato_afetado varchar(20),
     data_acao DATETIME,
     acao_realizada VARCHAR(50),
     valor_contrato FLOAT
 );
+
+
+

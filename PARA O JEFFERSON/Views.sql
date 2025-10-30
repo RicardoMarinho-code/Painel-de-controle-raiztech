@@ -1,6 +1,6 @@
 use AgroTech;
 
--- View 1: Visão Geral do Agricultor
+-- Visão Geral do Agricultor
 -- Justificativa: Simplifica a obtenção de informações combinadas do agricultor, seu usuário e
 -- seu principal empreendimento, evitando a necessidade de escrever um JOIN complexo toda vez.
 -- Útil para telas de perfil de usuário.
@@ -17,7 +17,7 @@ JOIN Agricultor a ON u.ID_Usuario = a.ID_Usuario_fk
 LEFT JOIN Empreendimento e ON a.ID_agricultor = e.ID_agricultor_fk;
 
 
--- View 2: Dashboard de Sensores
+-- Dashboard de Sensores
 -- Justificativa: Fornece um resumo do estado atual de todos os sensores, mostrando a última
 -- medição registrada para cada um. Essencial para um painel de controle em tempo real.
 CREATE VIEW vw_Status_Atual_Sensores AS

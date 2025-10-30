@@ -1,62 +1,75 @@
 use AgroTech;
 
--- Procedure 1: Cadastrar Novo Agricultor
--- Explicação: Encapsula toda a lógica para criar um novo agricultor em uma única chamada.
--- Isso garante que as inserções nas tabelas 'Usuarios' e 'Agricultor' ocorram de forma
--- atômica (ou tudo funciona, ou nada funciona), mantendo a consistência do banco.
 DELIMITER $$
-create procedure sp_Cadastrar_Agricultor(
-    in p_nome varchar(255),
-    in p_senha varchar(255),
-    in p_email varchar(255),
-    in p_telefone varchar(15),
-    in p_cpf varchar(11),
-    in p_data_nascimento DATE
-)
-begin
-   declare v_id_usuario int;
-    -- Inicia uma transação
-    start transaction;
-    -- Insere na tabela de usuários
-    insert into Usuarios (nome, senha, email, telefone)
-    values (p_nome, p_senha, p_email, p_telefone);
-    -- Pega o ID do usuário recém-criado
-    set v_id_usuario = LAST_INSERT_ID();
-    -- Insere na tabela de agricultores usando o ID do usuário
-    insert into Agricultor (CPF, data_nascimento, ID_Usuario_fk)
-    values (p_cpf, p_data_nascimento, v_id_usuario);
-    -- Se tudo deu certo, confirma a transação
-    commit;
-end$$
+CREATE FUNCTION `FN_GERAR_ID_USUARIO`()
+RETURNS VARCHAR(30)
+DETERMINISTIC
+BEGIN
+    DECLARE novo_id VARCHAR(30);
+    DECLARE prefixo VARCHAR(4) DEFAULT 'USR_';
+    DECLARE data_atual VARCHAR(8);
+    DECLARE parte_aleatoria VARCHAR(6);
+    DECLARE id_existe INT DEFAULT 1;
+
+    WHILE id_existe > 0 DO
+        SET data_atual = DATE_FORMAT(NOW(), '%Y%m%d');
+        SET parte_aleatoria = SUBSTRING(MD5(RAND()), 1, 6);
+        SET novo_id = CONCAT(prefixo, data_atual, '_', UPPER(parte_aleatoria));
+
+        -- CORREÇÃO: O nome da coluna foi corrigido para ID_Usuario
+        SELECT COUNT(*) INTO id_existe FROM Usuarios WHERE ID_Usuario = novo_id;
+    END WHILE;
+
+    RETURN novo_id;
+END $$
 DELIMITER ;
 
-
--- Function 2: Gerar ID de Contrato (atende ao requisito 7 também)
--- Explicação: Cria um ID de contrato personalizado e não sequencial, como 'CON-2025-1001',
--- o que é mais significativo e seguro do que um simples AUTO_INCREMENT para dados críticos.
 DELIMITER $$
-create function fn_Gerar_ID_Contrato()
-returns varchar(20)
+CREATE FUNCTION `fn_Gerar_ID_Contrato`()
+RETURNS VARCHAR(20)
 DETERMINISTIC
-begin
-    declare v_ano int;
-    declare v_ultimo_id int;
-    declare v_novo_id_sequencial int;
-    declare v_novo_id_contrato varchar(20);
+BEGIN
+    DECLARE v_ano INT;
+    DECLARE v_ultimo_id INT;
+    DECLARE v_novo_id_sequencial INT;
+    DECLARE v_novo_id_contrato VARCHAR(20);
 
-    set v_ano = year(curdate());
-    -- Encontra o último ID do ano corrente (ex: CON-2025-1005 -> extrai 1005)
-    -- NOTA: Esta implementação é simplificada. Uma versão de produção usaria uma tabela de sequências.
+    SET v_ano = YEAR(CURDATE());
+    
     SELECT IFNULL(MAX(CONVERT(SUBSTRING(ID_contrato, 10), UNSIGNED INTEGER)), 1000)
     INTO v_ultimo_id
     FROM Contrato WHERE SUBSTRING(ID_contrato, 5, 4) = v_ano;
 
-    set v_novo_id_sequencial = v_ultimo_id + 1;
-    set v_novo_id_contrato = CONCAT('CON-', v_ano, '-', v_novo_id_sequencial);
+    SET v_novo_id_sequencial = v_ultimo_id + 1;
+    SET v_novo_id_contrato = CONCAT('CON-', v_ano, '-', v_novo_id_sequencial);
 
     RETURN v_novo_id_contrato;
 END$$
 DELIMITER ;
 
--- Para usar a função, você precisaria alterar a tabela Contrato para usar VARCHAR no ID
--- ALTER TABLE Contrato MODIFY ID_contrato VARCHAR(20) PRIMARY KEY;
+DELIMITER $$
+CREATE PROCEDURE sp_Cadastrar_Agricultor(
+    IN p_nome VARCHAR(255),
+    IN p_senha VARCHAR(255),
+    IN p_email VARCHAR(255),
+    IN p_telefone VARCHAR(15),
+    IN p_cpf VARCHAR(11),
+    IN p_data_nascimento DATE
+)
+BEGIN
+    DECLARE v_id_usuario VARCHAR(30);
+    
+    START TRANSACTION;
+    
+    -- Gera e insere na tabela de usuários
+    SET v_id_usuario = FN_GERAR_ID_USUARIO();
+    INSERT INTO Usuarios (ID_Usuario, nome, senha, email, telefone)
+    VALUES (v_id_usuario, p_nome, p_senha, p_email, p_telefone);
+    
+    -- Insere na tabela de agricultores usando o ID gerado
+    INSERT INTO Agricultor (CPF, data_nascimento, ID_Usuario_fk)
+    VALUES (p_cpf, p_data_nascimento, v_id_usuario);
+    
+    COMMIT;
+END$$
+DELIMITER ;
