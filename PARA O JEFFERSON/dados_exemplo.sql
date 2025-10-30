@@ -2,7 +2,7 @@
 -- Execute este script após criar o banco com o script de DDL.
 
 USE AgroTech;
-
+-- usuarios 
 INSERT INTO Usuarios (nome, email, senha, telefone) VALUES 
 -- Agricultores (IDs 1 a 7)
 ('Maria Oliveira Costa', 'maria.costa@email.com', 'hash_senha_1', '(11) 99876-5432'),
@@ -12,10 +12,16 @@ INSERT INTO Usuarios (nome, email, senha, telefone) VALUES
 ('Fernanda Gonçalves', 'fernanda.g@email.com', 'hash_senha_5', '(16) 96655-4433'),
 ('Lucas Martins Ferreira', 'lucas.ferreira@email.com', 'hash_senha_6', '(16) 95544-3322'),
 ('João da Silva', 'joao.silva@email.com', 'hash_senha_7', '(18) 91234-5678'),
--- Usuário Administrador (ID 8)
+-- Usuário Administrador (ID 8,10,11)
 ('Admin Geral', 'admin@agrotech.com', 'hash_senha_admin', '(61) 99999-0001'),
 -- Usuário Funcionário (ID 9)
-('Carlos Suporte', 'suporte@agrotech.com', 'hash_senha_func', '(61) 99999-0002');
+('Carlos Suporte', 'suporte@agrotech.com', 'hash_senha_func', '(61) 99999-0002'),
+('João Cleber adm', 'jcadm@agrotech.com', 'hash_senha_jcadm', '(61) 99999-0846'),
+('Vitor Nunes', 'vitor@agrotech.com', 'hash_senha_vitor', '(61) 99349-0735'),
+('Alice Marinho', 'alice@agrotech.com', 'hash_senha_alice', '(61) 99999-0230');
+('Gustavo Lima', 'gustavo@agrotech.com', 'hash_senha_gustavo', ('61) 97499-0283');
+
+
 
 -- Inserir agricultores de exemplo
 -- OBS: Adicionado um 7º agricultor para manter a consistência dos dados de exemplo.
@@ -183,11 +189,15 @@ INSERT INTO Contrato (data_assinatura, valor, ID_agricultor_fk, ID_empreendiment
 
 -- Inserir os dados específicos do ADM e Funcionário.
 INSERT INTO Adm (nivel_permissao, id_usuario_fk) VALUES
-(1, 8); -- 'Admin Geral' (usuário ID 8) com permissão máxima.
+(1, 8),
+(1,10),
+(1,11);
 
 INSERT INTO Funcionarios (cargo, id_usuario_fk) VALUES
-('Suporte Técnico', 9); -- 'Carlos Suporte' (usuário ID 9) com o cargo de suporte.
-
+('Suporte Técnico', 9),
+('agricultor', 12),
+('faxineiro',13),
+('engrenheiro',14);
 -- Definir os grupos de usuários.
 INSERT IGNORE INTO Grupo_usuarios (nome_grupo) VALUES
 ('Administradores'),
@@ -196,7 +206,6 @@ INSERT IGNORE INTO Grupo_usuarios (nome_grupo) VALUES
 
 -- Associar cada usuário ao seu respectivo grupo.
 INSERT INTO Usuario_pertence_grupo (id_usuario_fk, id_grupo_fk) VALUES
--- Associar todos os agricultores (IDs 1 a 7) ao grupo 'Agricultores' (assumindo que seu ID é 3)
 (1, 3),
 (2, 3),
 (3, 3),
@@ -204,26 +213,72 @@ INSERT INTO Usuario_pertence_grupo (id_usuario_fk, id_grupo_fk) VALUES
 (5, 3),
 (6, 3),
 (7, 3),
--- Associar o ADM (ID 8) ao grupo 'Administradores' (assumindo que seu ID é 1)
 (8, 1),
--- Associar o Funcionário (ID 9) ao grupo 'Funcionarios' (assumindo que seu ID é 2)
-(9, 2);
+(9, 2),
+(12, 2),
+(13, 2),
+(14, 2);
 
--- ================================================================= --
---           Coloque um insert para a tabela "Log_Contratos"
---                 Essa tabela referencia os triggers!
---                   Tem um arquivo chamado Triggers
--- ================================================================= --
+-- Inserir logs de contratos (pelo menos 4 registros)
+-- Log inicial do contrato de 15/01/2024 (Agricultor 1, Empreendimento 1, valor 125000.00)
+INSERT INTO Log_Contratos (ID_contrato_afetado, data_acao, acao_realizada, valor_contrato)
+SELECT c.ID_contrato, NOW(), 'SEMENTE_INICIAL', c.valor
+FROM Contrato c
+WHERE c.data_assinatura = '2024-01-15'
+  AND c.ID_agricultor_fk = 1
+  AND c.ID_empreendimento_fk = 1
+  AND c.valor = 125000.00
+LIMIT 1;
 
--- Vinicius, coloque mais selets count para as tabelas que faltam.
+-- Log inicial do contrato de 20/02/2024 (Agricultor 2, Empreendimento 2, valor 87500.00)
+INSERT INTO Log_Contratos (ID_contrato_afetado, data_acao, acao_realizada, valor_contrato)
+SELECT c.ID_contrato, NOW(), 'SEMENTE_INICIAL', c.valor
+FROM Contrato c
+WHERE c.data_assinatura = '2024-02-20'
+  AND c.ID_agricultor_fk = 2
+  AND c.ID_empreendimento_fk = 2
+  AND c.valor = 87500.00
+LIMIT 1;
 
--- Verificar se os dados foram inseridos
-SELECT 'Dados inseridos com sucesso!' as Status;
-SELECT COUNT(*) as Total_Agricultores FROM Agricultor;
-SELECT COUNT(*) as Total_Propriedades FROM PropriedadeRural;
-SELECT COUNT(*) as Total_Irrigadores FROM Irrigador;
-SELECT COUNT(*) as Total_Sensores FROM Sensor;
-SELECT COUNT(*) as Total_Medicoes FROM Medicao;
-SELECT COUNT(*) as Total_Contratos FROM Contrato;
+-- Log inicial do contrato de 10/03/2024 (Agricultor 3, Empreendimento 3, valor 200000.00)
+INSERT INTO Log_Contratos (ID_contrato_afetado, data_acao, acao_realizada, valor_contrato)
+SELECT c.ID_contrato, NOW(), 'SEMENTE_INICIAL', c.valor
+FROM Contrato c
+WHERE c.data_assinatura = '2024-03-10'
+  AND c.ID_agricultor_fk = 3
+  AND c.ID_empreendimento_fk = 3
+  AND c.valor = 200000.00
+LIMIT 1;
 
--- Apos terminar, exclua todos os comentarios que deixei para voce.
+-- Log inicial do contrato de 05/11/2023 (Agricultor 4, Empreendimento 4, valor 75000.00)
+INSERT INTO Log_Contratos (ID_contrato_afetado, data_acao, acao_realizada, valor_contrato)
+SELECT c.ID_contrato, NOW(), 'SEMENTE_INICIAL', c.valor
+FROM Contrato c
+WHERE c.data_assinatura = '2023-11-05'
+  AND c.ID_agricultor_fk = 4
+  AND c.ID_empreendimento_fk = 4
+  AND c.valor = 75000.00
+LIMIT 1;
+
+-- Consulta de verificação final
+SELECT 'Dados inseridos com sucesso!' AS Status;
+
+-- Contagens de verificação
+SELECT COUNT(*) AS Total_Usuarios FROM Usuarios;
+SELECT COUNT(*) AS Total_Agricultores FROM Agricultor;
+SELECT COUNT(*) AS Total_Empreendimentos FROM Empreendimento;
+SELECT COUNT(*) AS Total_Propriedades FROM PropriedadeRural;
+SELECT COUNT(*) AS Total_Zonas FROM Zona;
+SELECT COUNT(*) AS Total_Irrigadores FROM Irrigador;
+SELECT COUNT(*) AS Total_Sensores FROM Sensor;
+SELECT COUNT(*) AS Total_Medicoes FROM Medicao;
+SELECT COUNT(*) AS Total_Setores FROM Setor;
+SELECT COUNT(*) AS Total_Reservatorios FROM Reservatorio;
+SELECT COUNT(*) AS Total_DecisoesIA FROM DecisaoIA;
+SELECT COUNT(*) AS Total_Culturas FROM Cultura;
+SELECT COUNT(*) AS Total_Contratos FROM Contrato;
+SELECT COUNT(*) AS Total_Adms FROM Adm;
+SELECT COUNT(*) AS Total_Funcionarios FROM Funcionarios;
+SELECT COUNT(*) AS Total_Grupos FROM Grupo_usuarios;
+SELECT COUNT(*) AS Total_UsuarioPertenceGrupo FROM Usuario_pertence_grupo;
+SELECT COUNT(*) AS Total_LogContratos FROM Log_Contratos;
