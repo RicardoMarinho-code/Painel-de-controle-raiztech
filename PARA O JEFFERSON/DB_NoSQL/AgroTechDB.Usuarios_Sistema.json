@@ -1,0 +1,84 @@
+[{
+  "_id": "USR_20251101_STAFF",
+  "nome": "Carlos Suporte",
+  "email": "suporte@agrotech.com",
+  "senha": "hash_senha_func",
+  "telefone": "(61) 99999-0002",
+  "grupos": [
+    "Funcionario"
+  ],
+  "perfil": {
+    "tipo": "Funcionario",
+    "cargo": "Suporte Técnico"
+  }
+},
+{
+  "_id": "USR_20251101_ADMIN",
+  "nome": "Admin Geral",
+  "email": "admin@agrotech.com",
+  "senha": "hash_senha_admin",
+  "telefone": "(61) 99999-0001",
+  "grupos": [
+    "Administrador"
+  ],
+  "perfil": {
+    "tipo": "ADM",
+    "nivel_permissao": 1
+  }
+},
+{
+  "_id": "ADM002",
+  "nome": "João Cleber adm",
+  "email": "jcadm@agrotech.com",
+  "senha": "hash_senha_jcadm",
+  "telefone": "(61) 99999-0846",
+  "grupos": [
+    "Administrador"
+  ],
+  "perfil": {
+    "tipo": "ADM",
+    "nivel_permissao": 1
+  }
+},
+{
+  "_id": "ADM003",
+  "nome": "Vitor Nunes",
+  "email": "vitor@agrotech.com",
+  "senha": "hash_senha_vitor",
+  "telefone": "(61) 99349-0735",
+  "grupos": [
+    "Administrador"
+  ],
+  "perfil": {
+    "tipo": "ADM",
+    "nivel_permissao": 1
+  }
+},
+{
+  "_id": "FUN002",
+  "nome": "Alice Marinho",
+  "email": "alice@agrotech.com",
+  "senha": "hash_senha_alice",
+  "telefone": "(61) 99999-0230",
+  "grupos": [
+    "Funcionario"
+  ],
+  "perfil": {
+    "tipo": "Funcionario",
+    "cargo": "Engenheira Agrônoma"
+  }
+},
+{
+  "_id": "FUN003",
+  "nome": "Gustavo Lima",
+  "email": "gustavo@agrotech.com",
+  "senha": "hash_senha_gustavo",
+  "telefone": "(61) 97499-0283",
+  "grupos": [
+    "Funcionario"
+  ],
+  "perfil": {
+    "tipo": "Funcionario",
+    "cargo": "Analista de Dados"
+  }
+}]
