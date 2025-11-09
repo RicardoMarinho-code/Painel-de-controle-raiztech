@@ -145,37 +145,49 @@ create table Cultura(
 create table Funcionarios (
     ID_Funcionario int primary key auto_increment,
     cargo varchar(100),
-    ID_Usuario_fk int not null unique,
+    ID_Usuario_fk varchar(30) not null unique,
     constraint fk_Funcionarios_Usuarios foreign key (ID_Usuario_fk) references Usuarios(ID_Usuario)
 );
 
 create table ADM (
     ID_ADM int primary key auto_increment,
     nivel_permissao int,
-    ID_Usuario_fk int not null unique,
+    ID_Usuario_fk varchar(30) not null unique,
     constraint fk_ADM_Usuarios foreign key (ID_Usuario_fk) references Usuarios(ID_Usuario)
 );
 
-create table Grupo_Usuarios (
-    ID_Grupo int primary key auto_increment,
-    nome_grupo varchar(50) unique not null
+create table Roles (
+    role_id int AUTO_INCREMENT primary key,
+    nome_role varchar(50) not null unique comment 'Ex: Admin, Agricultor, Funcionario'
 );
 
-create table Usuario_pertence_grupo (
-    ID_Usuario_fk int not null,
-    ID_Grupo_fk int not null,
-    primary key (ID_Usuario_fk, ID_Grupo_fk),
+create table Permissoes (
+    permissao_id int AUTO_INCREMENT primary key,
+    nome_permissao varchar(100) not null unique comment 'Ex: PODE_VER_FINANCEIRO, PODE_EDITAR_USUARIOS, PODE_VER_SENSORES'
+);
+
+create table Usuario_Roles (
+    ID_Usuario_fk varchar(30) not null,
+    role_id int not null,
+    primary key (ID_Usuario_fk, role_id),
     foreign key (ID_Usuario_fk) references Usuarios(ID_Usuario),
-    foreign key (ID_Grupo_fk) references Grupo_Usuarios(ID_Grupo)
+    foreign key (role_id) references Roles(role_id)
 );
 
+create table Role_Permissoes (
+    role_id int not null,
+    permissao_id int not null,
+    PRIMARY key (role_id, permissao_id),
+    foreign key (role_id) references Roles(role_id),
+    foreign key (permissao_id) references Permissoes(permissao_id)
+);
 
-CREATE TABLE Log_Contratos (
-    ID_log INT PRIMARY KEY AUTO_INCREMENT,
+create table Log_Contratos (
+    ID_log int primary key auto_increment,
     ID_contrato_afetado varchar(20),
-    data_acao DATETIME,
-    acao_realizada VARCHAR(50),
-    valor_contrato FLOAT
+    data_acao datetime,
+    acao_realizada varchar(50),
+    valor_contrato float
 );
 
 
