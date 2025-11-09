@@ -28,7 +28,7 @@ SELECT EXISTS (
     JOIN Role_Permissoes rp ON ur.role_id = rp.role_id
     JOIN Permissoes p ON rp.permissao_id = p.permissao_id
     WHERE 
-        ur.ID_Usuario_fk = 'USR001' -- Usuário logado
+        ur.ID_Usuario_fk = 'RZT001' -- Usuário logado
         AND p.nome_permissao = 'PODE_VER_RELATORIOS_IA'
 ) AS tem_permissao;
 

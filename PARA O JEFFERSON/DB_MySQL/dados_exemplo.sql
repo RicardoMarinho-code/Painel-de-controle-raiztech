@@ -4,13 +4,13 @@
 USE AgroTech;
 -- usuarios 
 INSERT INTO Usuarios (ID_Usuario, nome, email, senha, telefone) VALUES
-('USR001', 'Maria Oliveira Costa', 'maria.costa@email.com', 'hash_senha_1', '(11) 99876-5432'),
-('USR002', 'Carlos Eduardo Lima', 'carlos.lima@email.com', 'hash_senha_2', '(11) 97654-3210'),
-('USR003', 'Ana Beatriz Pereira', 'ana.pereira@email.com', 'hash_senha_3', '(19) 98877-6655'),
-('USR004', 'Ricardo Almeida Souza', 'ricardo.souza@email.com', 'hash_senha_4', '(19) 97766-5544'),
-('USR005', 'Fernanda Gonçalves', 'fernanda.g@email.com', 'hash_senha_5', '(16) 96655-4433'),
-('USR006', 'Lucas Martins Ferreira', 'lucas.ferreira@email.com', 'hash_senha_6', '(16) 95544-3322'),
-('USR007', 'João da Silva', 'joao.silva@email.com', 'hash_senha_7', '(18) 91234-5678'),
+('RTZ20050201AM9H31', 'Maria Oliveira Costa', 'maria.costa@email.com', 'hash_senha_1', '(11) 99876-5432'),
+('RTZ20050201AM9H32', 'Carlos Eduardo Lima', 'carlos.lima@email.com', 'hash_senha_2', '(11) 97654-3210'),
+('RTZ20050201AM9H33', 'Ana Beatriz Pereira', 'ana.pereira@email.com', 'hash_senha_3', '(19) 98877-6655'),
+('RTZ20050201AM9H34', 'Ricardo Almeida Souza', 'ricardo.souza@email.com', 'hash_senha_4', '(19) 97766-5544'),
+('RTZ20050201AM9H35', 'Fernanda Gonçalves', 'fernanda.g@email.com', 'hash_senha_5', '(16) 96655-4433'),
+('RTZ20050201AM9H36', 'Lucas Martins Ferreira', 'lucas.ferreira@email.com', 'hash_senha_6', '(16) 95544-3322'),
+('RTZ20050201AM9H37', 'João da Silva', 'joao.silva@email.com', 'hash_senha_7', '(18) 91234-5678'),
 ('ADM001', 'Admin Geral', 'admin@agrotech.com', 'hash_senha_admin', '(61) 99999-0001'),
 ('FUN001', 'Carlos Suporte', 'suporte@agrotech.com', 'hash_senha_func', '(61) 99999-0002'),
 ('ADM002', 'João Cleber adm', 'jcadm@agrotech.com', 'hash_senha_jcadm', '(61) 99999-0846'),
@@ -21,13 +21,13 @@ INSERT INTO Usuarios (ID_Usuario, nome, email, senha, telefone) VALUES
 
 
 INSERT INTO Agricultor (CPF, data_nascimento, id_usuario_fk) VALUES
-('23456789012', '1980-07-22', 'USR001'),
-('34567890123', '1970-11-08', 'USR002'),
-('45678901234', '1992-01-30', 'USR003'),
-('56789012345', '1985-06-10', 'USR004'),
-('67890123456', '1995-09-25', 'USR005'),
-('78901234567', '1988-12-01', 'USR006'),
-('89012345678', '1982-03-15', 'USR007');
+('23456789012', '1980-07-22', 'RTZ20050201AM9H31'),
+('34567890123', '1970-11-08', 'RTZ20050201AM9H32'),
+('45678901234', '1992-01-30', 'RTZ20050201AM9H33'),
+('56789012345', '1985-06-10', 'RTZ20050201AM9H34'),
+('67890123456', '1995-09-25', 'RTZ20050201AM9H35'),
+('78901234567', '1988-12-01', 'RTZ20050201AM9H36'),
+('89012345678', '1982-03-15', 'RTZ20050201AM9H37');
 
 -- Inserir empreendimentos
 INSERT INTO Empreendimento (nome, finalidade, ID_agricultor_fk) VALUES
@@ -225,13 +225,13 @@ VALUES
     ((SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TAREFAS'));
 
 INSERT INTO Usuario_Roles (ID_Usuario_fk, role_id) VALUES
-('USR001', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('USR002', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('USR003', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('USR004', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('USR005', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('USR006', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('USR007', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'));
+('RTZ20050201AM9H31', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('RTZ20050201AM9H32', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('RTZ20050201AM9H33', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('RTZ20050201AM9H34', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('RTZ20050201AM9H35', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('RTZ20050201AM9H36', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('RTZ20050201AM9H37', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'));
 
 -- Ligando Admins
 INSERT INTO Usuario_Roles (ID_Usuario_fk, role_id) VALUES
