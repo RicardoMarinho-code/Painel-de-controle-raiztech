@@ -1,510 +1,611 @@
-[{
-  "_id": "USR_20251031_MARIA",
-  "nome": "Maria Oliveira Costa",
-  "email": "maria.costa@email.com",
-  "senha": "hash_senha_1",
-  "telefone": "(11) 99876-5432",
-  "grupos": [
-    "Agricultor"
-  ],
-  "perfil_agricultor": {
-    "cpf": "23456789012",
-    "data_nascimento": "1980-07-22"
-  },
-  "empreendimento": {
-    "nome": "Cultivo Sustentável São José",
-    "finalidade": "Produção de grãos com irrigação inteligente"
-  },
-  "propriedades": [
-    {
-      "propriedade_id": 1,
-      "nome": "Fazenda São José",
-      "localizacao": "Campinas/SP",
-      "area_total": 125.5
-    }
-  ],
-  "contratos": [
-    {
-      "contrato_id": "CON-2024-1001",
-      "data_assinatura": "2024-01-15",
-      "valor": 125000
-    }
-  ]
-},
-{
-  "_id": "USR002",
-  "nome": "Carlos Eduardo Lima",
-  "email": "carlos.lima@email.com",
-  "senha": "hash_senha_2",
-  "telefone": "(11) 97654-3210",
-  "grupos": [
-    "Agricultor"
-  ],
-  "perfil_agricultor": {
-    "cpf": "34567890123",
-    "data_nascimento": "1970-11-08"
-  },
-  "empreendimento": {
-    "nome": "Hortifruti Boa Vista",
-    "finalidade": "Produção de hortaliças orgânicas"
-  },
-  "propriedades": [
-    {
-      "propriedade_id": 2,
-      "nome": "Sítio Boa Vista",
-      "localizacao": "Piracicaba/SP - Estrada Municipal 200",
-      "area_total": 87.25,
-      "zonas": [
-        {
-          "zona_id": 3,
-          "nome": "Zona Leste - Feijão",
-          "hectares": 18.75,
-          "eficiencia": 96.5,
-          "economia": 890,
-          "irrigadores": [
-            {
-              "irrigador_id": 3,
-              "nome": "Irrigador Inteligente C3",
-              "eficiencia_hidrica": 96.5,
-              "economia": 890,
-              "bateria": 92.7,
-              "status_": "Ativo"
-            }
-          ]
-        },
-        {
-          "zona_id": 4,
-          "nome": "Zona Oeste - Verduras",
-          "hectares": 12.3,
-          "eficiencia": 89.3,
-          "economia": 650,
-          "irrigadores": [
-            {
-              "irrigador_id": 4,
-              "nome": "Irrigador Inteligente D4",
-              "eficiencia_hidrica": 89.3,
-              "economia": 650,
-              "bateria": 76.3,
-              "status_": "Ocioso"
-            }
-          ]
-        }
-      ],
-      "setores": [
-        {
-          "setor_id": 3,
-          "nome": "Setor C - Feijão",
-          "umidade_atual": 75.3,
-          "cultura_associada": {
-            "cultura_id": 3,
-            "nome": "Feijão Carioca",
-            "padroes_ml": 156,
-            "statusIA": "Otimizado"
+[
+  {
+    "_id": "USR001",
+    "nome": "Maria Oliveira Costa",
+    "email": "maria.costa@email.com",
+    "senha": "hash_senha_1",
+    "telefone": "(11) 99876-5432",
+    "grupos": [
+      "Agricultor"
+    ],
+    "perfil_agricultor": {
+      "cpf": "23456789012",
+      "data_nascimento": "1980-07-22"
+    },
+    "empreendimentos": [
+      {
+        "nome": "Cultivo Sustentável São José",
+        "finalidade": "Produção de grãos com irrigação inteligente"
+      }
+    ],
+    "propriedades": [
+      {
+        "propriedade_id": 1,
+        "nome": "Fazenda São José",
+        "localizacao": "Campinas/SP - Rodovia SP-340 Km 15",
+        "area_total": 125.5,
+        "zonas": [
+          {
+            "zona_id": 1,
+            "nome": "Zona Norte - Milho",
+            "hectares": 25.5,
+            "eficiencia": 94.2,
+            "economia": 1250,
+            "irrigadores": [
+              {
+                "irrigador_id": 1,
+                "nome": "Irrigador Inteligente A1",
+                "eficiencia_hidrica": 94.2,
+                "economia": 1250,
+                "bateria": 98.5,
+                "status_": "Ativo"
+              }
+            ]
+          },
+          {
+            "zona_id": 2,
+            "nome": "Zona Sul - Soja",
+            "hectares": 30.25,
+            "eficiencia": 91.8,
+            "economia": 1580,
+            "irrigadores": [
+              {
+                "irrigador_id": 2,
+                "nome": "Irrigador Inteligente B2",
+                "eficiencia_hidrica": 91.8,
+                "economia": 1580,
+                "bateria": 85.2,
+                "status_": "Ativo"
+              }
+            ]
           }
-        },
-        {
-          "setor_id": 4,
-          "nome": "Setor D - Verduras",
-          "umidade_atual": 78.2,
-          "cultura_associada": {
-            "cultura_id": 4,
-            "nome": "Alface Americana",
-            "padroes_ml": 203,
-            "statusIA": "Especialista"
+        ],
+        "setores": [
+          {
+            "setor_id": 1,
+            "nome": "Setor A - Milho",
+            "umidade_atual": 68.5,
+            "culturas": [
+              {
+                "cultura_id": 1,
+                "nome": "Milho Híbrido",
+                "padroes_ml": 127,
+                "statusIA": "Otimizado"
+              }
+            ]
+          },
+          {
+            "setor_id": 2,
+            "nome": "Setor B - Soja",
+            "umidade_atual": 72.1,
+            "culturas": [
+              {
+                "cultura_id": 2,
+                "nome": "Soja Transgênica",
+                "padroes_ml": 89,
+                "statusIA": "Aprendendo"
+              }
+            ]
           }
-        }
-      ],
-      "reservatorios": [
-        {
-          "reservatorio_id": 2,
-          "capacidade": 8000,
-          "nivel_atual": 6592
-        }
-      ]
-    }
-  ],
-  "contratos": [
-    {
-      "contrato_id": "CON-2024-1002",
-      "data_assinatura": "2024-02-20",
-      "valor": 87500
-    }
-  ]
-},
-{
-  "_id": "USR003",
-  "nome": "Ana Beatriz Pereira",
-  "email": "ana.pereira@email.com",
-  "senha": "hash_senha_3",
-  "telefone": "(19) 98877-6655",
-  "grupos": [
-    "Agricultor"
-  ],
-  "perfil_agricultor": {
-    "cpf": "45678901234",
-    "data_nascimento": "1992-01-30"
-  },
-  "empreendimento": {
-    "nome": "Agronegócio Santa Clara",
-    "finalidade": "Produção em larga escala com IA"
-  },
-  "propriedades": [
-    {
-      "propriedade_id": 3,
-      "nome": "Fazenda Santa Clara",
-      "localizacao": "Ribeirão Preto/SP - Via Anhanguera Km 320",
-      "area_total": 200.75,
-      "zonas": [
-        {
-          "zona_id": 5,
-          "nome": "Zona Central - Cana",
-          "hectares": 45.8,
-          "eficiencia": 92.7,
-          "economia": 2100,
-          "irrigadores": [
-            {
-              "irrigador_id": 5,
-              "nome": "Irrigador Inteligente E5",
-              "eficiencia_hidrica": 92.7,
-              "economia": 2100,
-              "bateria": 88.9,
-              "status_": "Ativo"
-            }
-          ]
-        },
-        {
-          "zona_id": 6,
-          "nome": "Zona Nordeste - Café",
-          "hectares": 22.15,
-          "eficiencia": 95.1,
-          "economia": 1320,
-          "irrigadores": [
-            {
-              "irrigador_id": 6,
-              "nome": "Irrigador Inteligente F6",
-              "eficiencia_hidrica": 95.1,
-              "economia": 1320,
-              "bateria": 15.2,
-              "status_": "Manutenção"
-            }
-          ]
-        }
-      ],
-      "setores": [
-        {
-          "setor_id": 5,
-          "nome": "Setor E - Cana",
-          "umidade_atual": 65.8,
-          "cultura_associada": {
-            "cultura_id": 5,
-            "nome": "Cana-de-açúcar",
-            "padroes_ml": 78,
-            "statusIA": "Aprendendo"
+        ],
+        "reservatorios": [
+          {
+            "reservatorio_id": 1,
+            "capacidade": 10000,
+            "nivel_atual": 7580
           }
-        }
-      ],
-      "reservatorios": [
-        {
-          "reservatorio_id": 3,
-          "capacidade": 15000,
-          "nivel_atual": 10500
-        }
-      ]
-    }
-  ],
-  "contratos": [
-    {
-      "contrato_id": "CON-2024-1003",
-      "data_assinatura": "2024-03-10",
-      "valor": 200000
-    }
-  ]
-},
-{
-  "_id": "USR004",
-  "nome": "Ricardo Almeida Souza",
-  "email": "ricardo.souza@email.com",
-  "senha": "hash_senha_4",
-  "telefone": "(19) 97766-5544",
-  "grupos": [
-    "Agricultor"
-  ],
-  "perfil_agricultor": {
-    "cpf": "56789012345",
-    "data_nascimento": "1985-06-10"
+        ]
+      }
+    ],
+    "contratos": [
+      {
+        "contrato_id": "CON-2024-1001",
+        "data_assinatura": "2024-01-15",
+        "valor": 125000
+      }
+    ]
   },
-  "empreendimento": {
-    "nome": "Flores de Holambra",
-    "finalidade": "Cultivo de flores para exportação"
-  },
-  "propriedades": [
-    {
-      "propriedade_id": 4,
-      "nome": "Chácara das Flores",
-      "localizacao": "Holambra/SP - Estrada HBR-040",
-      "area_total": 45.6,
-      "zonas": [
-        {
-          "zona_id": 7,
-          "nome": "Zona Flores - Rosas",
-          "hectares": 15,
-          "eficiencia": 98.1,
-          "economia": 950,
-          "irrigadores": [
-            {
-              "irrigador_id": 7,
-              "nome": "Irrigador Inteligente G7",
-              "eficiencia_hidrica": 98.1,
-              "economia": 950,
-              "bateria": 99,
-              "status_": "Ativo"
-            }
-          ]
-        }
-      ],
-      "setores": [
-        {
-          "setor_id": 6,
-          "nome": "Setor F - Rosas",
-          "umidade_atual": 80,
-          "cultura_associada": {
-            "cultura_id": 6,
-            "nome": "Rosas Vermelhas",
-            "padroes_ml": 250,
-            "statusIA": "Especialista"
+  {
+    "_id": "USR002",
+    "nome": "Carlos Eduardo Lima",
+    "email": "carlos.lima@email.com",
+    "senha": "hash_senha_2",
+    "telefone": "(11) 97654-3210",
+    "grupos": [
+      "Agricultor"
+    ],
+    "perfil_agricultor": {
+      "cpf": "34567890123",
+      "data_nascimento": "1970-11-08"
+    },
+    "empreendimentos": [
+      {
+        "nome": "Hortifruti Boa Vista",
+        "finalidade": "Produção de hortaliças orgânicas"
+      }
+    ],
+    "propriedades": [
+      {
+        "propriedade_id": 2,
+        "nome": "Sítio Boa Vista",
+        "localizacao": "Piracicaba/SP - Estrada Municipal 200",
+        "area_total": 87.25,
+        "zonas": [
+          {
+            "zona_id": 3,
+            "nome": "Zona Leste - Feijão",
+            "hectares": 18.75,
+            "eficiencia": 96.5,
+            "economia": 890,
+            "irrigadores": [
+              {
+                "irrigador_id": 3,
+                "nome": "Irrigador Inteligente C3",
+                "eficiencia_hidrica": 96.5,
+                "economia": 890,
+                "bateria": 92.7,
+                "status_": "Ativo"
+              }
+            ]
+          },
+          {
+            "zona_id": 4,
+            "nome": "Zona Oeste - Verduras",
+            "hectares": 12.3,
+            "eficiencia": 89.3,
+            "economia": 650,
+            "irrigadores": [
+              {
+                "irrigador_id": 4,
+                "nome": "Irrigador Inteligente D4",
+                "eficiencia_hidrica": 89.3,
+                "economia": 650,
+                "bateria": 76.3,
+                "status_": "Ocioso"
+              }
+            ]
           }
-        }
-      ],
-      "reservatorios": [
-        {
-          "reservatorio_id": 4,
-          "capacidade": 5000,
-          "nivel_atual": 4500
-        }
-      ]
-    }
-  ],
-  "contratos": [
-    {
-      "contrato_id": "CON-2023-1001",
-      "data_assinatura": "2023-11-05",
-      "valor": 75000
-    }
-  ]
-},
-{
-  "_id": "USR005",
-  "nome": "Fernanda Gonçalves",
-  "email": "fernanda.g@email.com",
-  "senha": "hash_senha_5",
-  "telefone": "(16) 96655-4433",
-  "grupos": [
-    "Agricultor"
-  ],
-  "perfil_agricultor": {
-    "cpf": "67890123456",
-    "data_nascimento": "1995-09-25"
-  },
-  "empreendimento": {
-    "nome": "Pomar Cítrico de Itu",
-    "finalidade": "Produção de suco de laranja concentrado"
-  },
-  "propriedades": [
-    {
-      "propriedade_id": 5,
-      "nome": "Sítio Água Limpa",
-      "localizacao": "Itu/SP - Estrada do Jacu",
-      "area_total": 60,
-      "zonas": [
-        {
-          "zona_id": 8,
-          "nome": "Zona Pomar - Laranja",
-          "hectares": 20.5,
-          "eficiencia": 93.5,
-          "economia": 1100,
-          "irrigadores": [
-            {
-              "irrigador_id": 8,
-              "nome": "Irrigador Inteligente H8",
-              "eficiencia_hidrica": 93.5,
-              "economia": 1100,
-              "bateria": 91.4,
-              "status_": "Ativo"
-            }
-          ]
-        }
-      ],
-      "setores": [
-        {
-          "setor_id": 7,
-          "nome": "Setor G - Laranja",
-          "umidade_atual": 60.5,
-          "cultura_associada": {
-            "cultura_id": 7,
-            "nome": "Laranja Pera",
-            "padroes_ml": 110,
-            "statusIA": "Otimizado"
+        ],
+        "setores": [
+          {
+            "setor_id": 3,
+            "nome": "Setor C - Feijão",
+            "umidade_atual": 75.3,
+            "culturas": [
+              {
+                "cultura_id": 3,
+                "nome": "Feijão Carioca",
+                "padroes_ml": 156,
+                "statusIA": "Otimizado"
+              }
+            ]
+          },
+          {
+            "setor_id": 4,
+            "nome": "Setor D - Verduras",
+            "umidade_atual": 78.2,
+            "culturas": [
+              {
+                "cultura_id": 4,
+                "nome": "Alface Americana",
+                "padroes_ml": 203,
+                "statusIA": "Especialista"
+              }
+            ]
           }
-        }
-      ],
-      "reservatorios": [
-        {
-          "reservatorio_id": 5,
-          "capacidade": 7500,
-          "nivel_atual": 6000
-        }
-      ]
-    }
-  ],
-  "contratos": [
-    {
-      "contrato_id": "CON-2024-1004",
-      "data_assinatura": "2024-04-01",
-      "valor": 95000
-    }
-  ]
-},
-{
-  "_id": "USR006",
-  "nome": "Lucas Martins Ferreira",
-  "email": "lucas.ferreira@email.com",
-  "senha": "hash_senha_6",
-  "telefone": "(16) 95544-3322",
-  "grupos": [
-    "Agricultor"
-  ],
-  "perfil_agricultor": {
-    "cpf": "78901234567",
-    "data_nascimento": "1988-12-01"
-  },
-  "empreendimento": {
-    "nome": "Grãos do Interior",
-    "finalidade": "Cultivo extensivo de amendoim e soja"
-  },
-  "propriedades": [
-    {
-      "propriedade_id": 6,
-      "nome": "Fazenda Sol Nascente",
-      "localizacao": "Bebedouro/SP - Rodovia BR-364",
-      "area_total": 350.2,
-      "zonas": [
-        {
-          "zona_id": 9,
-          "nome": "Zona Grãos - Amendoim",
-          "hectares": 150,
-          "eficiencia": 90.5,
-          "economia": 4500,
-          "irrigadores": [
-            {
-              "irrigador_id": 9,
-              "nome": "Irrigador Inteligente I9",
-              "eficiencia_hidrica": 90.5,
-              "economia": 4500,
-              "bateria": 82.1,
-              "status_": "Ocioso"
-            }
-          ]
-        }
-      ],
-      "setores": [
-        {
-          "setor_id": 8,
-          "nome": "Setor H - Amendoim",
-          "umidade_atual": 55,
-          "cultura_associada": {
-            "cultura_id": 8,
-            "nome": "Amendoim Runner",
-            "padroes_ml": 95,
-            "statusIA": "Aprendendo"
+        ],
+        "reservatorios": [
+          {
+            "reservatorio_id": 2,
+            "capacidade": 8000,
+            "nivel_atual": 6592
           }
-        }
-      ],
-      "reservatorios": [
-        {
-          "reservatorio_id": 6,
-          "capacidade": 25000,
-          "nivel_atual": 18750
-        }
-      ]
-    }
-  ],
-  "contratos": [
-    {
-      "contrato_id": "CON-2023-1002",
-      "data_assinatura": "2023-09-12",
-      "valor": 450000
-    }
-  ]
-},
-{
-  "_id": "USR007",
-  "nome": "João da Silva",
-  "email": "joao.silva@email.com",
-  "senha": "hash_senha_7",
-  "telefone": "(18) 91234-5678",
-  "grupos": [
-    "Agricultor"
-  ],
-  "perfil_agricultor": {
-    "cpf": "89012345678",
-    "data_nascimento": "1982-03-15"
+        ]
+      }
+    ],
+    "contratos": [
+      {
+        "contrato_id": "CON-2024-1002",
+        "data_assinatura": "2024-02-20",
+        "valor": 87500
+      }
+    ]
   },
-  "empreendimento": {
-    "nome": "Pecuária Leiteira do Vale",
-    "finalidade": "Produção de leite com pastagem irrigada"
-  },
-  "propriedades": [
-    {
-      "propriedade_id": 7,
-      "nome": "Estância do Vale",
-      "localizacao": "Franca/SP - Rodovia Cândido Portinari",
-      "area_total": 180.9,
-      "zonas": [
-        {
-          "zona_id": 10,
-          "nome": "Zona Pastagem - Brachiaria",
-          "hectares": 100,
-          "eficiencia": 88,
-          "economia": 3200,
-          "irrigadores": [
-            {
-              "irrigador_id": 10,
-              "nome": "Irrigador Inteligente J10",
-              "eficiencia_hidrica": 88,
-              "economia": 3200,
-              "bateria": 89.5,
-              "status_": "Ativo"
-            }
-          ]
-        }
-      ],
-      "setores": [
-        {
-          "setor_id": 9,
-          "nome": "Setor I - Pasto",
-          "umidade_atual": 50,
-          "cultura_associada": {
-            "cultura_id": 9,
-            "nome": "Brachiaria Brizantha",
-            "padroes_ml": 45,
-            "statusIA": "Otimizado"
+  {
+    "_id": "USR003",
+    "nome": "Ana Beatriz Pereira",
+    "email": "ana.pereira@email.com",
+    "senha": "hash_senha_3",
+    "telefone": "(19) 98877-6655",
+    "grupos": [
+      "Agricultor"
+    ],
+    "perfil_agricultor": {
+      "cpf": "45678901234",
+      "data_nascimento": "1992-01-30"
+    },
+    "empreendimentos": [
+      {
+        "nome": "Agronegócio Santa Clara",
+        "finalidade": "Produção em larga escala com IA"
+      }
+    ],
+    "propriedades": [
+      {
+        "propriedade_id": 3,
+        "nome": "Fazenda Santa Clara",
+        "localizacao": "Ribeirão Preto/SP - Via Anhanguera Km 320",
+        "area_total": 200.75,
+        "zonas": [
+          {
+            "zona_id": 5,
+            "nome": "Zona Central - Cana",
+            "hectares": 45.8,
+            "eficiencia": 92.7,
+            "economia": 2100,
+            "irrigadores": [
+              {
+                "irrigador_id": 5,
+                "nome": "Irrigador Inteligente E5",
+                "eficiencia_hidrica": 92.7,
+                "economia": 2100,
+                "bateria": 88.9,
+                "status_": "Ativo"
+              }
+            ]
+          },
+          {
+            "zona_id": 6,
+            "nome": "Zona Nordeste - Café",
+            "hectares": 22.15,
+            "eficiencia": 95.1,
+            "economia": 1320,
+            "irrigadores": [
+              {
+                "irrigador_id": 6,
+                "nome": "Irrigador Inteligente F6",
+                "eficiencia_hidrica": 95.1,
+                "economia": 1320,
+                "bateria": 15.2,
+                "status_": "Manutenção"
+              }
+            ]
           }
-        }
-      ],
-      "reservatorios": [
-        {
-          "reservatorio_id": 7,
-          "capacidade": 20000,
-          "nivel_atual": 18000
-        }
-      ]
-    }
-  ],
-  "contratos": [
-    {
-      "contrato_id": "CON-2024-1005",
-      "data_assinatura": "2024-05-18",
-      "valor": 180000
-    }
-  ]
-}]
+        ],
+        "setores": [
+          {
+            "setor_id": 5,
+            "nome": "Setor E - Cana",
+            "umidade_atual": 65.8,
+            "culturas": [
+              {
+                "cultura_id": 5,
+                "nome": "Cana-de-açúcar",
+                "padroes_ml": 78,
+                "statusIA": "Aprendendo"
+              }
+            ]
+          }
+        ],
+        "reservatorios": [
+          {
+            "reservatorio_id": 3,
+            "capacidade": 15000,
+            "nivel_atual": 10500
+          }
+        ]
+      }
+    ],
+    "contratos": [
+      {
+        "contrato_id": "CON-2024-1003",
+        "data_assinatura": "2024-03-10",
+        "valor": 200000
+      }
+    ]
+  },
+  {
+    "_id": "USR004",
+    "nome": "Ricardo Almeida Souza",
+    "email": "ricardo.souza@email.com",
+    "senha": "hash_senha_4",
+    "telefone": "(19) 97766-5544",
+    "grupos": [
+      "Agricultor"
+    ],
+    "perfil_agricultor": {
+      "cpf": "56789012345",
+      "data_nascimento": "1985-06-10"
+    },
+    "empreendimentos": [
+      {
+        "nome": "Flores de Holambra",
+        "finalidade": "Cultivo de flores para exportação"
+      }
+    ],
+    "propriedades": [
+      {
+        "propriedade_id": 4,
+        "nome": "Chácara das Flores",
+        "localizacao": "Holambra/SP - Estrada HBR-040",
+        "area_total": 45.6,
+        "zonas": [
+          {
+            "zona_id": 7,
+            "nome": "Zona Flores - Rosas",
+            "hectares": 15,
+            "eficiencia": 98.1,
+            "economia": 950,
+            "irrigadores": [
+              {
+                "irrigador_id": 7,
+                "nome": "Irrigador Inteligente G7",
+                "eficiencia_hidrica": 98.1,
+                "economia": 950,
+                "bateria": 99,
+                "status_": "Ativo"
+              }
+            ]
+          }
+        ],
+        "setores": [
+          {
+            "setor_id": 6,
+            "nome": "Setor F - Rosas",
+            "umidade_atual": 80,
+            "culturas": [
+              {
+                "cultura_id": 6,
+                "nome": "Rosas Vermelhas",
+                "padroes_ml": 250,
+                "statusIA": "Especialista"
+              }
+            ]
+          }
+        ],
+        "reservatorios": [
+          {
+            "reservatorio_id": 4,
+            "capacidade": 5000,
+            "nivel_atual": 4500
+          }
+        ]
+      }
+    ],
+    "contratos": [
+      {
+        "contrato_id": "CON-2023-1001",
+        "data_assinatura": "2023-11-05",
+        "valor": 75000
+      }
+    ]
+  },
+  {
+    "_id": "USR005",
+    "nome": "Fernanda Gonçalves",
+    "email": "fernanda.g@email.com",
+    "senha": "hash_senha_5",
+    "telefone": "(16) 96655-4433",
+    "grupos": [
+      "Agricultor"
+    ],
+    "perfil_agricultor": {
+      "cpf": "67890123456",
+      "data_nascimento": "1995-09-25"
+    },
+    "empreendimentos": [
+      {
+        "nome": "Pomar Cítrico de Itu",
+        "finalidade": "Produção de suco de laranja concentrado"
+      }
+    ],
+    "propriedades": [
+      {
+        "propriedade_id": 5,
+        "nome": "Sítio Água Limpa",
+        "localizacao": "Itu/SP - Estrada do Jacu",
+        "area_total": 60,
+        "zonas": [
+          {
+            "zona_id": 8,
+            "nome": "Zona Pomar - Laranja",
+            "hectares": 20.5,
+            "eficiencia": 93.5,
+            "economia": 1100,
+            "irrigadores": [
+              {
+                "irrigador_id": 8,
+                "nome": "Irrigador Inteligente H8",
+                "eficiencia_hidrica": 93.5,
+                "economia": 1100,
+                "bateria": 91.4,
+                "status_": "Ativo"
+              }
+            ]
+          }
+        ],
+        "setores": [
+          {
+            "setor_id": 7,
+            "nome": "Setor G - Laranja",
+            "umidade_atual": 60.5,
+            "culturas": [
+              {
+                "cultura_id": 7,
+                "nome": "Laranja Pera",
+                "padroes_ml": 110,
+                "statusIA": "Otimizado"
+              }
+            ]
+          }
+        ],
+        "reservatorios": [
+          {
+            "reservatorio_id": 5,
+            "capacidade": 7500,
+            "nivel_atual": 6000
+          }
+        ]
+      }
+    ],
+    "contratos": [
+      {
+        "contrato_id": "CON-2024-1004",
+        "data_assinatura": "2024-04-01",
+        "valor": 95000
+      }
+    ]
+  },
+  {
+    "_id": "USR006",
+    "nome": "Lucas Martins Ferreira",
+    "email": "lucas.ferreira@email.com",
+    "senha": "hash_senha_6",
+    "telefone": "(16) 95544-3322",
+    "grupos": [
+      "Agricultor"
+    ],
+    "perfil_agricultor": {
+      "cpf": "78901234567",
+      "data_nascimento": "1988-12-01"
+    },
+    "empreendimentos": [
+      {
+        "nome": "Grãos do Interior",
+        "finalidade": "Cultivo extensivo de amendoim e soja"
+      }
+    ],
+    "propriedades": [
+      {
+        "propriedade_id": 6,
+        "nome": "Fazenda Sol Nascente",
+        "localizacao": "Bebedouro/SP - Rodovia BR-364",
+        "area_total": 350.2,
+        "zonas": [
+          {
+            "zona_id": 9,
+            "nome": "Zona Grãos - Amendoim",
+            "hectares": 150,
+            "eficiencia": 90.5,
+            "economia": 4500,
+            "irrigadores": [
+              {
+                "irrigador_id": 9,
+                "nome": "Irrigador Inteligente I9",
+                "eficiencia_hidrica": 90.5,
+                "economia": 4500,
+                "bateria": 82.1,
+                "status_": "Ocioso"
+              }
+            ]
+          }
+        ],
+        "setores": [
+          {
+            "setor_id": 8,
+            "nome": "Setor H - Amendoim",
+            "umidade_atual": 55,
+            "culturas": [
+              {
+                "cultura_id": 8,
+                "nome": "Amendoim Runner",
+                "padroes_ml": 95,
+                "statusIA": "Aprendendo"
+              }
+            ]
+          }
+        ],
+        "reservatorios": [
+          {
+            "reservatorio_id": 6,
+            "capacidade": 25000,
+            "nivel_atual": 18750
+          }
+        ]
+      }
+    ],
+    "contratos": [
+      {
+        "contrato_id": "CON-2023-1002",
+        "data_assinatura": "2023-09-12",
+        "valor": 450000
+      }
+    ]
+  },
+  {
+    "_id": "USR007",
+    "nome": "João da Silva",
+    "email": "joao.silva@email.com",
+    "senha": "hash_senha_7",
+    "telefone": "(18) 91234-5678",
+    "grupos": [
+      "Agricultor"
+    ],
+    "perfil_agricultor": {
+      "cpf": "89012345678",
+      "data_nascimento": "1982-03-15"
+    },
+    "empreendimentos": [
+      {
+        "nome": "Pecuária Leiteira do Vale",
+        "finalidade": "Produção de leite com pastagem irrigada"
+      }
+    ],
+    "propriedades": [
+      {
+        "propriedade_id": 7,
+        "nome": "Estância do Vale",
+        "localizacao": "Franca/SP - Rodovia Cândido Portinari",
+        "area_total": 180.9,
+        "zonas": [
+          {
+            "zona_id": 10,
+            "nome": "Zona Pastagem - Brachiaria",
+            "hectares": 100,
+            "eficiencia": 88,
+            "economia": 3200,
+            "irrigadores": [
+              {
+                "irrigador_id": 10,
+                "nome": "Irrigador Inteligente J10",
+                "eficiencia_hidrica": 88,
+                "economia": 3200,
+                "bateria": 89.5,
+                "status_": "Ativo"
+              }
+            ]
+          }
+        ],
+        "setores": [
+          {
+            "setor_id": 9,
+            "nome": "Setor I - Pasto",
+            "umidade_atual": 50,
+            "culturas": [
+              {
+                "cultura_id": 9,
+                "nome": "Brachiaria Brizantha",
+                "padroes_ml": 45,
+                "statusIA": "Otimizado"
+              }
+            ]
+          }
+        ],
+        "reservatorios": [
+          {
+            "reservatorio_id": 7,
+            "capacidade": 20000,
+            "nivel_atual": 18000
+          }
+        ]
+      }
+    ],
+    "contratos": [
+      {
+        "contrato_id": "CON-2024-1005",
+        "data_assinatura": "2024-05-18",
+        "valor": 180000
+      }
+    ]
+  }
+]

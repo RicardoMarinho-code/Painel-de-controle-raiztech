@@ -189,92 +189,58 @@ INSERT INTO Funcionarios (cargo, id_usuario_fk) VALUES
 ('Engenheira Agrônoma', 'FUN002'),
 ('Analista de Dados', 'FUN003');
 
--- Definir os grupos de usuários.
-INSERT IGNORE INTO Grupo_usuarios (nome_grupo) VALUES
-('Administradores'),
-('Funcionarios'),
-('Agricultores');
+INSERT INTO Roles (nome_role) 
+VALUES ('Admin'), ('Agricultor'), ('Funcionario');
 
-INSERT INTO Usuario_pertence_grupo (id_usuario_fk, id_grupo_fk) VALUES
-('USR001', 3), ('USR002', 3), ('USR003', 3), ('USR004', 3), ('USR005', 3), ('USR006', 3), ('USR007', 3),
-('ADM001', 1), ('ADM002', 1), ('ADM003', 1),
-('FUN001', 2), ('FUN002', 2), ('FUN003', 2);
+INSERT INTO Permissoes (nome_permissao) 
+VALUES 
+    ('PODE_GERENCIAR_USUARIOS'),     -- Admin
+    ('PODE_VER_TODAS_FAZENDAS'),     -- Admin
+    ('PODE_EDITAR_PROPRIA_FAZENDA'), -- Agricultor
+    ('PODE_VER_RELATORIOS_IA'),      -- Agricultor
+    ('PODE_VER_SENSORES'),           -- Agricultor e Funcionario
+    ('PODE_VER_TAREFAS');            -- Funcionario
 
--- Associar cada usuário ao seu respectivo grupo.
-INSERT INTO Usuario_pertence_grupo (id_usuario_fk, id_grupo_fk) VALUES
-(1, 3),
-(2, 3),
-(3, 3),
-(4, 3),
-(5, 3),
-(6, 3),
-(7, 3),
-(8, 1),
-(9, 2),
-(12, 2),
-(13, 2),
-(14, 2);
+-- PERMISSÕES DO ADMIN
+INSERT INTO Role_Permissoes (role_id, permissao_id)
+VALUES
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_GERENCIAR_USUARIOS')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TODAS_FAZENDAS')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_EDITAR_PROPRIA_FAZENDA')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_RELATORIOS_IA')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TAREFAS'));
 
--- Inserir logs de contratos (pelo menos 4 registros)
--- Log inicial do contrato de 15/01/2024 (Agricultor 1, Empreendimento 1, valor 125000.00)
-INSERT INTO Log_Contratos (ID_contrato_afetado, data_acao, acao_realizada, valor_contrato)
-SELECT c.ID_contrato, NOW(), 'SEMENTE_INICIAL', c.valor
-FROM Contrato c
-WHERE c.data_assinatura = '2024-01-15'
-  AND c.ID_agricultor_fk = 1
-  AND c.ID_empreendimento_fk = 1
-  AND c.valor = 125000.00
-LIMIT 1;
+-- PERMISSÕES DO AGRICULTOR
+INSERT INTO Role_Permissoes (role_id, permissao_id)
+VALUES
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_EDITAR_PROPRIA_FAZENDA')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_RELATORIOS_IA')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES'));
 
--- Log inicial do contrato de 20/02/2024 (Agricultor 2, Empreendimento 2, valor 87500.00)
-INSERT INTO Log_Contratos (ID_contrato_afetado, data_acao, acao_realizada, valor_contrato)
-SELECT c.ID_contrato, NOW(), 'SEMENTE_INICIAL', c.valor
-FROM Contrato c
-WHERE c.data_assinatura = '2024-02-20'
-  AND c.ID_agricultor_fk = 2
-  AND c.ID_empreendimento_fk = 2
-  AND c.valor = 87500.00
-LIMIT 1;
+-- PERMISSÕES DO FUNCIONARIO
+INSERT INTO Role_Permissoes (role_id, permissao_id)
+VALUES
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TAREFAS'));
 
--- Log inicial do contrato de 10/03/2024 (Agricultor 3, Empreendimento 3, valor 200000.00)
-INSERT INTO Log_Contratos (ID_contrato_afetado, data_acao, acao_realizada, valor_contrato)
-SELECT c.ID_contrato, NOW(), 'SEMENTE_INICIAL', c.valor
-FROM Contrato c
-WHERE c.data_assinatura = '2024-03-10'
-  AND c.ID_agricultor_fk = 3
-  AND c.ID_empreendimento_fk = 3
-  AND c.valor = 200000.00
-LIMIT 1;
+INSERT INTO Usuario_Roles (ID_Usuario_fk, role_id) VALUES
+('USR001', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('USR002', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('USR003', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('USR004', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('USR005', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('USR006', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
+('USR007', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'));
 
--- Log inicial do contrato de 05/11/2023 (Agricultor 4, Empreendimento 4, valor 75000.00)
-INSERT INTO Log_Contratos (ID_contrato_afetado, data_acao, acao_realizada, valor_contrato)
-SELECT c.ID_contrato, NOW(), 'SEMENTE_INICIAL', c.valor
-FROM Contrato c
-WHERE c.data_assinatura = '2023-11-05'
-  AND c.ID_agricultor_fk = 4
-  AND c.ID_empreendimento_fk = 4
-  AND c.valor = 75000.00
-LIMIT 1;
+-- Ligando Admins
+INSERT INTO Usuario_Roles (ID_Usuario_fk, role_id) VALUES
+('ADM001', (SELECT role_id FROM Roles WHERE nome_role = 'Admin')),
+('ADM002', (SELECT role_id FROM Roles WHERE nome_role = 'Admin')),
+('ADM003', (SELECT role_id FROM Roles WHERE nome_role = 'Admin'));
 
--- Consulta de verificação final
-SELECT 'Dados inseridos com sucesso!' AS Status;
-
--- Contagens de verificação
-SELECT COUNT(*) AS Total_Usuarios FROM Usuarios;
-SELECT COUNT(*) AS Total_Agricultores FROM Agricultor;
-SELECT COUNT(*) AS Total_Empreendimentos FROM Empreendimento;
-SELECT COUNT(*) AS Total_Propriedades FROM PropriedadeRural;
-SELECT COUNT(*) AS Total_Zonas FROM Zona;
-SELECT COUNT(*) AS Total_Irrigadores FROM Irrigador;
-SELECT COUNT(*) AS Total_Sensores FROM Sensor;
-SELECT COUNT(*) AS Total_Medicoes FROM Medicao;
-SELECT COUNT(*) AS Total_Setores FROM Setor;
-SELECT COUNT(*) AS Total_Reservatorios FROM Reservatorio;
-SELECT COUNT(*) AS Total_DecisoesIA FROM DecisaoIA;
-SELECT COUNT(*) AS Total_Culturas FROM Cultura;
-SELECT COUNT(*) AS Total_Contratos FROM Contrato;
-SELECT COUNT(*) AS Total_Adms FROM Adm;
-SELECT COUNT(*) AS Total_Funcionarios FROM Funcionarios;
-SELECT COUNT(*) AS Total_Grupos FROM Grupo_usuarios;
-SELECT COUNT(*) AS Total_UsuarioPertenceGrupo FROM Usuario_pertence_grupo;
-SELECT COUNT(*) AS Total_LogContratos FROM Log_Contratos;
+-- Ligando Funcionários
+INSERT INTO Usuario_Roles (ID_Usuario_fk, role_id) VALUES
+('FUN001', (SELECT role_id FROM Roles WHERE nome_role = 'Funcionario')),
+('FUN002', (SELECT role_id FROM Roles WHERE nome_role = 'Funcionario')),
+('FUN003', (SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'));

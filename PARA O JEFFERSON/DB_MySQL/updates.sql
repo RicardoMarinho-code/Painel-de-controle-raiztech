@@ -6,10 +6,6 @@ where ID_irrigador = 4;
 
 select * from Irrigador
 
-update DecisaoIA
-set tipo = 'Manutenção'
-where ID_reservatorio = 2;
-
 select * from DecisaoIA
 
 update Cultura

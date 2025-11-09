@@ -1,28 +1,30 @@
-[{
-  "_id": "LOG_20251101_001",
-  "data_acao": "2025-10-31T10:00:00Z",
-  "acao_realizada": "NOVO CONTRATO",
-  "valor_contrato": 125000,
-  "contrato_id_fk": "CON-2024-1001"
-},
-{
-  "_id": "LOG_20251101_002",
-  "data_acao": "2025-10-31T10:00:01Z",
-  "acao_realizada": "NOVO CONTRATO",
-  "valor_contrato": 87500,
-  "contrato_id_fk": "CON-2024-1002"
-},
-{
-  "_id": "LOG_20251101_003",
-  "data_acao": "2025-10-31T10:00:02Z",
-  "acao_realizada": "NOVO CONTRATO",
-  "valor_contrato": 200000,
-  "contrato_id_fk": "CON-2024-1003"
-},
-{
-  "_id": "LOG_20251101_004",
-  "data_acao": "2025-10-31T10:00:03Z",
-  "acao_realizada": "NOVO CONTRATO",
-  "valor_contrato": 75000,
-  "contrato_id_fk": "CON-2023-1001"
-}]
+[
+  {
+    "data_acao": "2025-10-31T10:00:00Z",
+    "acao_realizada": "NOVO CONTRATO",
+    "valor_contrato": 125000,
+    "contrato_id": "CON-2024-1001",
+    "agricultor_id": "USR001"
+  },
+  {
+    "data_acao": "2025-10-31T10:00:01Z",
+    "acao_realizada": "NOVO CONTRATO",
+    "valor_contrato": 87500,
+    "contrato_id": "CON-2024-1002",
+    "agricultor_id": "USR002"
+  },
+  {
+    "data_acao": "2025-10-31T10:00:02Z",
+    "acao_realizada": "NOVO CONTRATO",
+    "valor_contrato": 200000,
+    "contrato_id": "CON-2024-1003",
+    "agricultor_id": "USR003"
+  },
+  {
+    "data_acao": "2025-10-31T10:00:03Z",
+    "acao_realizada": "NOVO CONTRATO",
+    "valor_contrato": 75000,
+    "contrato_id": "CON-2023-1001",
+    "agricultor_id": "USR004"
+  }
+]
