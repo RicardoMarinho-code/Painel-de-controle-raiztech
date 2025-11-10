@@ -1,11 +1,15 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+
+interface User {
+  // Simplificando a interface do usuário para o nosso caso
+  nome: string;
+  permissoes: string[];
+}
 
 interface AuthContextType {
-  user: User | null
-  loading: boolean
-  signUp: (email: string, password: string) => Promise<void>
+  user: User | null;
+  token: string | null;
+  loading: boolean;
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
@@ -21,42 +25,60 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check for mock user in localStorage
-    const mockUser = localStorage.getItem('mockUser')
-    if (mockUser) {
-      setUser(JSON.parse(mockUser))
+    // Ao carregar a aplicação, verifica se existe um token no localStorage
+    const storedToken = localStorage.getItem('authToken');
+    if (storedToken) {
+      // Se houver token, decodifica para obter os dados do usuário (sem validar, o backend fará isso)
+      try {
+        const payloadBase64 = storedToken.split('.')[1];
+        const decodedPayload = JSON.parse(atob(payloadBase64));
+        setUser({ nome: decodedPayload.nome, permissoes: decodedPayload.permissoes });
+        setToken(storedToken);
+      } catch (error) {
+        // Se o token for inválido, limpa
+        localStorage.removeItem('authToken');
+      }
     }
-    setLoading(false)
+    setLoading(false);
   }, [])
 
-  const signUp = async (email: string, password: string) => {
-    // Mock signup - just simulate success
-    const mockUser = { id: '1', email, aud: 'authenticated', role: 'authenticated' } as User
-    setUser(mockUser)
-    localStorage.setItem('mockUser', JSON.stringify(mockUser))
-  }
-
   const signIn = async (email: string, password: string) => {
-    // Mock signin - accept any email/password
-    const mockUser = { id: '1', email, aud: 'authenticated', role: 'authenticated' } as User
-    setUser(mockUser)
-    localStorage.setItem('mockUser', JSON.stringify(mockUser))
+    const response = await fetch('http://localhost:3001/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, senha: password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Falha no login');
+    }
+
+    const { token: newAuthToken } = data;
+    const payloadBase64 = newAuthToken.split('.')[1];
+    const decodedPayload = JSON.parse(atob(payloadBase64));
+
+    setUser({ nome: decodedPayload.nome, permissoes: decodedPayload.permissoes });
+    setToken(newAuthToken);
+    localStorage.setItem('authToken', newAuthToken);
   }
 
   const signOut = async () => {
-    // Mock signout - just clear state
     setUser(null)
-    localStorage.removeItem('mockUser')
+    setToken(null)
+    localStorage.removeItem('authToken')
   }
 
   const value = {
     user,
+    token,
     loading,
-    signUp,
     signIn,
     signOut
   }
