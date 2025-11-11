@@ -48,3 +48,7 @@ DELETE FROM Role_Permissoes
 WHERE
     role_id = (SELECT role_id FROM Roles WHERE nome_role = 'Funcionario')
     AND permissao_id = (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES');
+
+-- Select para o junin gostosao abaixo:
+
+SELECT ID_Usuario, nome, email FROM Usuarios;
