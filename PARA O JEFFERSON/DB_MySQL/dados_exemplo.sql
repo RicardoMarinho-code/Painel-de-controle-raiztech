@@ -1,5 +1,42 @@
 USE AgroTech;
 
+-- Definição de Roles e Permissões
+INSERT INTO Roles (nome_role) 
+VALUES ('Admin'), ('Agricultor'), ('Funcionario');
+
+INSERT INTO Permissoes (nome_permissao) 
+VALUES 
+    ('PODE_GERENCIAR_USUARIOS'),     -- Admin
+    ('PODE_VER_TODAS_FAZENDAS'),     -- Admin
+    ('PODE_EDITAR_PROPRIA_FAZENDA'), -- Agricultor
+    ('PODE_VER_RELATORIOS_IA'),      -- Agricultor
+    ('PODE_VER_SENSORES'),           -- Agricultor e Funcionario
+    ('PODE_VER_TAREFAS');            -- Funcionario
+
+-- PERMISSÕES DO ADMIN
+INSERT INTO Role_Permissoes (role_id, permissao_id)
+VALUES
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_GERENCIAR_USUARIOS')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TODAS_FAZENDAS')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_EDITAR_PROPRIA_FAZENDA')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_RELATORIOS_IA')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TAREFAS'));
+
+-- PERMISSÕES DO AGRICULTOR
+INSERT INTO Role_Permissoes (role_id, permissao_id)
+VALUES
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_EDITAR_PROPRIA_FAZENDA')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_RELATORIOS_IA')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES'));
+
+-- PERMISSÕES DO FUNCIONARIO
+INSERT INTO Role_Permissoes (role_id, permissao_id)
+VALUES
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES')),
+    ((SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TAREFAS'));
+
+
 -- Agricultores 
 CALL sp_Cadastrar_Agricultor('Maria Oliveira Costa', 'hash_senha_1', 'maria.costa@email.com', '(11) 99876-5432', '23456789012', '1980-07-22');
 CALL sp_Cadastrar_Agricultor('Carlos Eduardo Lima', 'hash_senha_2', 'carlos.lima@email.com', '(11) 97654-3210', '34567890123', '1970-11-08');
@@ -168,39 +205,3 @@ INSERT INTO Contrato (ID_contrato, data_assinatura, valor, ID_agricultor_fk, ID_
 (fn_Gerar_ID_Contrato(), '2024-04-01', 95000.00, 5, 5),
 (fn_Gerar_ID_Contrato(), '2023-09-12', 450000.00, 6, 6),
 (fn_Gerar_ID_Contrato(), '2024-05-18', 180000.00, 7, 7);
-
--- Definição de Roles e Permissões
-INSERT INTO Roles (nome_role) 
-VALUES ('Admin'), ('Agricultor'), ('Funcionario');
-
-INSERT INTO Permissoes (nome_permissao) 
-VALUES 
-    ('PODE_GERENCIAR_USUARIOS'),     -- Admin
-    ('PODE_VER_TODAS_FAZENDAS'),     -- Admin
-    ('PODE_EDITAR_PROPRIA_FAZENDA'), -- Agricultor
-    ('PODE_VER_RELATORIOS_IA'),      -- Agricultor
-    ('PODE_VER_SENSORES'),           -- Agricultor e Funcionario
-    ('PODE_VER_TAREFAS');            -- Funcionario
-
--- PERMISSÕES DO ADMIN
-INSERT INTO Role_Permissoes (role_id, permissao_id)
-VALUES
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_GERENCIAR_USUARIOS')),
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TODAS_FAZENDAS')),
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_EDITAR_PROPRIA_FAZENDA')),
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_RELATORIOS_IA')),
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES')),
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Admin'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TAREFAS'));
-
--- PERMISSÕES DO AGRICULTOR
-INSERT INTO Role_Permissoes (role_id, permissao_id)
-VALUES
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_EDITAR_PROPRIA_FAZENDA')),
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_RELATORIOS_IA')),
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES'));
-
--- PERMISSÕES DO FUNCIONARIO
-INSERT INTO Role_Permissoes (role_id, permissao_id)
-VALUES
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES')),
-    ((SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TAREFAS'));
