@@ -1,3 +1,5 @@
+use agrotech;
+
 DELIMITER $$
 CREATE FUNCTION `FN_GERAR_ID_USUARIO`(
     p_data_nascimento DATE
