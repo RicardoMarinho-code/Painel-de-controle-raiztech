@@ -1,33 +1,23 @@
--- Script de inserção de dados de exemplo para a aplicação RaizTech
--- Execute este script após criar o banco com o script de DDL.
-
 USE AgroTech;
--- usuarios 
-INSERT INTO Usuarios (ID_Usuario, nome, email, senha, telefone) VALUES
-('RTZ20050201AM9H31', 'Maria Oliveira Costa', 'maria.costa@email.com', 'hash_senha_1', '(11) 99876-5432'),
-('RTZ20050201AM9H32', 'Carlos Eduardo Lima', 'carlos.lima@email.com', 'hash_senha_2', '(11) 97654-3210'),
-('RTZ20050201AM9H33', 'Ana Beatriz Pereira', 'ana.pereira@email.com', 'hash_senha_3', '(19) 98877-6655'),
-('RTZ20050201AM9H34', 'Ricardo Almeida Souza', 'ricardo.souza@email.com', 'hash_senha_4', '(19) 97766-5544'),
-('RTZ20050201AM9H35', 'Fernanda Gonçalves', 'fernanda.g@email.com', 'hash_senha_5', '(16) 96655-4433'),
-('RTZ20050201AM9H36', 'Lucas Martins Ferreira', 'lucas.ferreira@email.com', 'hash_senha_6', '(16) 95544-3322'),
-('RTZ20050201AM9H37', 'João da Silva', 'joao.silva@email.com', 'hash_senha_7', '(18) 91234-5678'),
-('ADM001', 'Admin Geral', 'admin@agrotech.com', 'hash_senha_admin', '(61) 99999-0001'),
-('FUN001', 'Carlos Suporte', 'suporte@agrotech.com', 'hash_senha_func', '(61) 99999-0002'),
-('ADM002', 'João Cleber adm', 'jcadm@agrotech.com', 'hash_senha_jcadm', '(61) 99999-0846'),
-('ADM003', 'Vitor Nunes', 'vitor@agrotech.com', 'hash_senha_vitor', '(61) 99349-0735'),
-('FUN002', 'Alice Marinho', 'alice@agrotech.com', 'hash_senha_alice', '(61) 99999-0230'),
-('FUN003', 'Gustavo Lima', 'gustavo@agrotech.com', 'hash_senha_gustavo', '(61) 97499-0283');
 
+-- Agricultores 
+CALL sp_Cadastrar_Agricultor('Maria Oliveira Costa', 'hash_senha_1', 'maria.costa@email.com', '(11) 99876-5432', '23456789012', '1980-07-22');
+CALL sp_Cadastrar_Agricultor('Carlos Eduardo Lima', 'hash_senha_2', 'carlos.lima@email.com', '(11) 97654-3210', '34567890123', '1970-11-08');
+CALL sp_Cadastrar_Agricultor('Ana Beatriz Pereira', 'hash_senha_3', 'ana.pereira@email.com', '(19) 98877-6655', '45678901234', '1992-01-30');
+CALL sp_Cadastrar_Agricultor('Ricardo Almeida Souza', 'hash_senha_4', 'ricardo.souza@email.com', '(19) 97766-5544', '56789012345', '1985-06-10');
+CALL sp_Cadastrar_Agricultor('Fernanda Gonçalves', 'hash_senha_5', 'fernanda.g@email.com', '(16) 96655-4433', '67890123456', '1995-09-25');
+CALL sp_Cadastrar_Agricultor('Lucas Martins Ferreira', 'hash_senha_6', 'lucas.ferreira@email.com', '(16) 95544-3322', '78901234567', '1988-12-01');
+CALL sp_Cadastrar_Agricultor('João da Silva', 'hash_senha_7', 'joao.silva@email.com', '(18) 91234-5678', '89012345678', '1982-03-15');
 
+-- Admins 
+CALL sp_Cadastrar_Admin('Admin Geral', 'hash_senha_admin', 'admin@agrotech.com', '(61) 99999-0001', 1);
+CALL sp_Cadastrar_Admin('João Cleber adm', 'hash_senha_jcadm', 'jcadm@agrotech.com', '(61) 99999-0846', 1);
+CALL sp_Cadastrar_Admin('Vitor Nunes', 'hash_senha_vitor', 'vitor@agrotech.com', '(61) 99349-0735', 1);
 
-INSERT INTO Agricultor (CPF, data_nascimento, id_usuario_fk) VALUES
-('23456789012', '1980-07-22', 'RTZ20050201AM9H31'),
-('34567890123', '1970-11-08', 'RTZ20050201AM9H32'),
-('45678901234', '1992-01-30', 'RTZ20050201AM9H33'),
-('56789012345', '1985-06-10', 'RTZ20050201AM9H34'),
-('67890123456', '1995-09-25', 'RTZ20050201AM9H35'),
-('78901234567', '1988-12-01', 'RTZ20050201AM9H36'),
-('89012345678', '1982-03-15', 'RTZ20050201AM9H37');
+-- Funcionários 
+CALL sp_Cadastrar_Funcionario('Carlos Suporte', 'hash_senha_func', 'suporte@agrotech.com', '(61) 99999-0002', 'Suporte Técnico');
+CALL sp_Cadastrar_Funcionario('Alice Marinho', 'hash_senha_alice', 'alice@agrotech.com', '(61) 99999-0230', 'Engenheira Agrônoma');
+CALL sp_Cadastrar_Funcionario('Gustavo Lima', 'hash_senha_gustavo', 'gustavo@agrotech.com', '(61) 97499-0283', 'Analista de Dados');
 
 -- Inserir empreendimentos
 INSERT INTO Empreendimento (nome, finalidade, ID_agricultor_fk) VALUES
@@ -179,16 +169,7 @@ INSERT INTO Contrato (ID_contrato, data_assinatura, valor, ID_agricultor_fk, ID_
 (fn_Gerar_ID_Contrato(), '2023-09-12', 450000.00, 6, 6),
 (fn_Gerar_ID_Contrato(), '2024-05-18', 180000.00, 7, 7);
 
-INSERT INTO Adm (nivel_permissao, id_usuario_fk) VALUES
-(1, 'ADM001'),
-(1, 'ADM002'),
-(1, 'ADM003');
-
-INSERT INTO Funcionarios (cargo, id_usuario_fk) VALUES
-('Suporte Técnico', 'FUN001'),
-('Engenheira Agrônoma', 'FUN002'),
-('Analista de Dados', 'FUN003');
-
+-- Definição de Roles e Permissões
 INSERT INTO Roles (nome_role) 
 VALUES ('Admin'), ('Agricultor'), ('Funcionario');
 
@@ -223,24 +204,3 @@ INSERT INTO Role_Permissoes (role_id, permissao_id)
 VALUES
     ((SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_SENSORES')),
     ((SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'), (SELECT permissao_id FROM Permissoes WHERE nome_permissao = 'PODE_VER_TAREFAS'));
-
-INSERT INTO Usuario_Roles (ID_Usuario_fk, role_id) VALUES
-('RTZ20050201AM9H31', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('RTZ20050201AM9H32', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('RTZ20050201AM9H33', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('RTZ20050201AM9H34', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('RTZ20050201AM9H35', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('RTZ20050201AM9H36', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor')),
-('RTZ20050201AM9H37', (SELECT role_id FROM Roles WHERE nome_role = 'Agricultor'));
-
--- Ligando Admins
-INSERT INTO Usuario_Roles (ID_Usuario_fk, role_id) VALUES
-('ADM001', (SELECT role_id FROM Roles WHERE nome_role = 'Admin')),
-('ADM002', (SELECT role_id FROM Roles WHERE nome_role = 'Admin')),
-('ADM003', (SELECT role_id FROM Roles WHERE nome_role = 'Admin'));
-
--- Ligando Funcionários
-INSERT INTO Usuario_Roles (ID_Usuario_fk, role_id) VALUES
-('FUN001', (SELECT role_id FROM Roles WHERE nome_role = 'Funcionario')),
-('FUN002', (SELECT role_id FROM Roles WHERE nome_role = 'Funcionario')),
-('FUN003', (SELECT role_id FROM Roles WHERE nome_role = 'Funcionario'));
