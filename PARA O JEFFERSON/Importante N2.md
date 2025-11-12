@@ -104,7 +104,40 @@ Essa nova arquitetura torna a API RaizTech mais segura, organizada e preparada p
 
 ---
 
-### 4. Arquivos Criados na Nova Estrutura
+### 4. Arquivos Criados na Nova Estrutura (Implementação Inicial)
+
+A implementação inicial da nova arquitetura em TypeScript resultou na criação dos seguintes arquivos:
+
+*   **`src/server/config/db.ts`**: Módulo de configuração que exporta o `pool` de conexões para o MySQL e uma função `connectToMongo` para conectar ao MongoDB via `mongoose`. Este arquivo centraliza a gestão das conexões com os bancos de dados.
+
+*   **`src/server/models/MedicaoLog.model.ts`**: Define o `Schema` e o `Model` do Mongoose para a coleção `medicoes`. Garante que todos os dados de medição de sensores salvos no MongoDB sigam uma estrutura tipada e consistente, conforme planejado para o armazenamento de logs de alto volume.
+
+*(Esta seção será expandida conforme novos arquivos como services, controllers e rotas forem criados.)*
+
+---
+
+---
+
+### 5. Implementação do Endpoint de Autenticação
+
+Para cumprir o requisito de segurança, foi implementado o fluxo de login que gera um token JWT.
+
+*   **Dependências Adicionadas**: `jsonwebtoken` para criar e assinar tokens e `bcryptjs` para comparar senhas de forma segura (hash).
+
+*   **`src/server/services/auth.service.ts`**: Contém a lógica principal de login:
+    1.  Busca o usuário no MySQL pelo `email`.
+    2.  Usa `bcrypt.compare` para verificar se a senha está correta.
+    3.  Executa uma consulta SQL com `JOINs` para buscar todas as `permissoes` associadas aos `roles` do usuário no banco de dados.
+    4.  Cria um payload com `userId`, `nome` e a lista de `permissoes`.
+    5.  Assina e gera um token JWT com validade de 8 horas, que é retornado ao cliente.
+
+*(Esta seção será expandida com a criação dos controllers e rotas de autenticação.)*
+
+---
+
+---
+
+### 5. Arquivos Criados na Nova Estrutura
 
 A implementação inicial da nova arquitetura em TypeScript resultou na criação dos seguintes arquivos:
 
@@ -167,3 +200,41 @@ Para finalizar a implementação de segurança, foi criado um middleware de auto
     3.  Se o usuário não tiver a permissão, a API retorna um erro `403 Forbidden`.
 
 *   **Aplicação na Rota**: A rota `/api/historico/correlacoes` agora usa uma cadeia de middlewares: primeiro `verifyToken` para autenticar, e depois `checkPermission('PODE_VER_RELATORIOS_IA')` para autorizar. Isso garante que apenas usuários logados e com a permissão correta possam acessar os dados.
+
+---
+
+### 8. Como Executar a Nova Arquitetura
+
+Com a migração para TypeScript e a introdução de um servidor de API dedicado, o processo de execução em ambiente de desenvolvimento agora envolve dois passos principais.
+
+1.  **Configuração do Ambiente (`.env`)**
+    É mandatório criar um arquivo `.env` na raiz do projeto. Este arquivo deve conter as credenciais para ambos os bancos de dados e a chave secreta para o JWT.
+
+    ```env
+    # Credenciais do MySQL para o pool de conexões
+    DB_HOST=localhost
+    DB_USER=seu_usuario_mysql
+    DB_PASSWORD=sua_senha_mysql
+    DB_DATABASE=AgroTech
+    
+    # String de conexão do MongoDB para o Mongoose
+    MONGO_URI="mongodb+srv://<user>:<password>@<cluster-url>/<database-name>?retryWrites=true&w=majority"
+    
+    # Chave para JWT
+    JWT_SECRET=sua_chave_secreta_super_segura
+    ```
+
+2.  **Executando os Servidores**
+    Abra dois terminais na raiz do projeto.
+
+    *   **Terminal 1: Backend (API)**
+        Execute o comando abaixo para iniciar o servidor Node.js com `ts-node`, que compila e executa o código TypeScript em tempo real. Este servidor é responsável por toda a lógica de negócio e comunicação com os bancos.
+        ```bash
+        npm run server:dev
+        ```
+
+    *   **Terminal 2: Frontend (React + Vite)**
+        Execute o comando padrão para iniciar o servidor de desenvolvimento do frontend, que serve a interface do usuário.
+        ```bash
+        npm run dev
+        ```

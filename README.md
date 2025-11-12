@@ -18,23 +18,51 @@ Para iniciar o projeto em seu ambiente de desenvolvimento, siga os passos abaixo
 
 ### Pré-requisitos
 
-Certifique-se de ter o [Node.js](https://nodejs.org/) e o [npm](https://www.npmjs.com/) instalados.
+Certifique-se de ter o [Node.js](https://nodejs.org/) (versão 18 ou superior) e o [npm](https://www.npmjs.com/) instalados.
 
 ### Passos
 
-1. Instale as dependências:
+1.  **Clone o repositório**
 
-   ```bash
-   npm i
-   ```
+2.  **Instale as dependências**
+    Na raiz do projeto, execute:
+    ```bash
+    npm install
+    ```
 
-2. Execute o servidor de desenvolvimento:
+3.  **Configure as Variáveis de Ambiente**
+    Crie um arquivo chamado `.env` na raiz do projeto. Ele guardará as credenciais de acesso aos bancos de dados. Copie o conteúdo abaixo e substitua pelos seus dados.
 
-   ```bash
-   npm run dev
-   ```
+    ```env
+    # Variáveis do Banco de Dados MySQL
+    DB_HOST=localhost
+    DB_USER=seu_usuario_mysql
+    DB_PASSWORD=sua_senha_mysql
+    DB_DATABASE=AgroTech
+    
+    # Variável do Banco de Dados MongoDB
+    MONGO_URI="mongodb+srv://<user>:<password>@<cluster-url>/<database-name>?retryWrites=true&w=majority"
+    
+    # Chave secreta para assinar os tokens JWT
+    JWT_SECRET=sua_chave_secreta_super_segura
+    ```
 
-O aplicativo estará disponível em [http://localhost:8080](http://localhost:8080).
+4.  **Execute a Aplicação**
+    O projeto é dividido em duas partes que precisam ser executadas em terminais separados:
+
+    *   **Backend (API em TypeScript)**
+        Este comando inicia o servidor da API, que se conectará aos bancos de dados (MySQL e MongoDB).
+        ```bash
+        npm run server:dev
+        ```
+        A API estará disponível em `http://localhost:3001`.
+
+    *   **Frontend (Painel de Controle em React)**
+        Este comando inicia o servidor de desenvolvimento do Vite para a interface do usuário.
+        ```bash
+        npm run dev
+        ```
+        O painel estará disponível em `http://localhost:8080`.
 
 ## Scripts Adicionais
 
