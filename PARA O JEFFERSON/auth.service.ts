@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { mysqlPool } from '../config/db';
+//import { mysqlPool } from '../config/db';
+import { mysqlPool, connectToMongo } from './config/db';
 
 async function login(email: string, senhaInserida: string) {
   // 1. Buscar usuário e sua senha (hash) no MySQL
