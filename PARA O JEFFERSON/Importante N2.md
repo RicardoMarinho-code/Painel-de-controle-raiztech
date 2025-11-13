@@ -238,3 +238,9 @@ Com a migração para TypeScript e a introdução de um servidor de API dedicado
         ```bash
         npm run dev
         ```
+
+        Alteraçoes lucas, verificar direito:
+
+        1- Movi o db.ts ficando src/server/config/db.ts , obedescendo o definido tanto na linha 6 import { connectToMongo } from './config/db'; de index.ts e a linha 3 import { mysqlPool } from '../config/db'; de auth.service.ts;
+        
+        2- Mudei em ambos para import { mysqlPool, connectToMongo } from './config/db';
