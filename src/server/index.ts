@@ -3,7 +3,8 @@ dotenv.config(); // Carrega as variáveis de ambiente
 
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
-import { connectToMongo } from './config/db';
+//import { connectToMongo } from './config/db';
+import { mysqlPool, connectToMongo } from './config/db';
 import historyRoutes from './routes/history.routes';
 import authRoutes from './routes/auth.routes'; // Importa as rotas de autenticação
 
