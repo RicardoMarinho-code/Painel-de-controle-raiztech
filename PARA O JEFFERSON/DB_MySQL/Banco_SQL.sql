@@ -156,6 +156,8 @@ create table ADM (
     constraint fk_ADM_Usuarios foreign key (ID_Usuario_fk) references Usuarios(ID_Usuario)
 );
 
+-- Essas 4 tabelas abaixo relacionadas a Roles e Permissõe dos usuários são relacionadas à tabela obrigatoria "grupos_usuarios"
+-- acabei renomeando e separando-as por causa do tamanho e dimensão do nosso projeto.
 create table Roles (
     role_id int AUTO_INCREMENT primary key,
     nome_role varchar(50) not null unique comment 'Ex: Admin, Agricultor, Funcionario'
